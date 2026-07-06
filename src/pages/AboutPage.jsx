@@ -1,5 +1,6 @@
 import Nav from '../components/Nav'
 import Footer from '../components/Footer'
+import model from '../assets/mk.png'
 
 export default function AboutPage() {
   const team = [
@@ -21,7 +22,7 @@ export default function AboutPage() {
       <main className="bg-dark min-h-screen">
         {/* Hero */}
         <section className="relative h-[60vh] min-h-[400px] overflow-hidden">
-          <img src="/hero.png" alt="About MK 1974" className="absolute inset-0 w-full h-full object-cover opacity-50" />
+          <img src={model} alt="About MK 1974" className="absolute inset-0 w-full h-full object-cover opacity-50" />
           <div className="absolute inset-0 bg-gradient-to-t from-dark to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 px-8 md:px-12 pb-16">
             <div className="max-w-[1440px] mx-auto">

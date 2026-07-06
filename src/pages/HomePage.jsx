@@ -3,12 +3,13 @@ import { Link } from 'react-router-dom'
 import { PRODUCTS, TESTIMONIALS, CATEGORIES } from '../data/products'
 import Nav from '../components/Nav'
 import Footer from '../components/Footer'
+import model from '../assets/mk.png'
 
 // ─── Hero Banner ──────────────────────────────────────────────────────────────
 function HeroSection() {
   return (
     <section id="hero" className="relative h-screen min-h-[600px] overflow-hidden">
-      <img src="/hero.png" alt="MK 1974 SS25" className="absolute inset-0 w-full h-full object-cover object-[60%_top]" />
+      <img src={model} alt="MK 1974 SS25" className="absolute inset-0 w-full h-full object-cover object-[60%_top]" />
       <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/30 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-r from-dark/50 via-transparent to-transparent" />
 
