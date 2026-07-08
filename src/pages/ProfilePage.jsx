@@ -30,7 +30,7 @@ function OverviewTab({ user, orders, wishlist }) {
         {[
           { label: 'Total Orders', value: orders.length, color: 'text-lime' },
           { label: 'Wishlist Items', value: wishlist.length, color: 'text-blue-400' },
-          { label: 'Member Since', value: user?.createdAt ? new Date(user.createdAt).getFullYear() : '2025', color: 'text-cream' },
+          // { label: 'Member Since', value: user?.createdAt ? new Date(user.createdAt).getFullYear() : '2025', color: 'text-cream' },
         ].map(stat => (
           <div key={stat.label} className="bg-surface border border-white/[0.06] p-6">
             <p className="text-muted text-[0.68rem] tracking-[0.25em] uppercase mb-2">{stat.label}</p>

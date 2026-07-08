@@ -7,14 +7,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        lime: '#c8f542',
-        'lime-dim': '#aed630',
-        dark: '#0c0c0c',
-        surface: '#141414',
-        surface2: '#1c1c1c',
-        cream: '#e8e4de',
-        muted: '#6b6b6b',
-        'muted-light': '#999',
+        lime: '#000000',
+        'lime-dim': '#333338',
+        dark: '#eae6df',
+        surface: '#ffffff',
+        surface2: '#f5f2ed',
+        cream: '#1a1a1f',
+        muted: '#5e5e66',
+        'muted-light': '#82828c',
       },
       fontFamily: {
         playfair: ['"Playfair Display"', 'serif'],

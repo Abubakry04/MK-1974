@@ -104,10 +104,19 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className="border-t border-white/[0.05] px-8 md:px-12 py-5 max-w-[1440px] mx-auto flex flex-col sm:flex-row justify-between items-center gap-3 text-muted text-[0.65rem] tracking-[0.15em] uppercase">
         <p>© 2025 MK 1974. All rights reserved.</p>
-        <div className="flex gap-6">
+        <div className="flex gap-6 items-center">
           <a href="#" className="hover:text-cream transition-colors">Privacy</a>
           <a href="#" className="hover:text-cream transition-colors">Terms</a>
           <a href="#" className="hover:text-cream transition-colors">Return Policy</a>
+          <span className="w-px h-3 bg-white/10" />
+          <Link
+            id="footer-admin-link"
+            to="/admin"
+            className="flex items-center gap-1.5 text-white/20 hover:text-lime transition-colors duration-200"
+          >
+            <span style={{ fontSize: '0.55rem' }}>◈</span>
+            Admin
+          </Link>
         </div>
       </div>
     </footer>

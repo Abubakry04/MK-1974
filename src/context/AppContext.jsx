@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react'
+import * as api from '../admin/api/apiClient'
 
 // ─── Context ──────────────────────────────────────────────────────────────────
 export const AppContext = createContext(null)
@@ -6,6 +7,14 @@ export const useApp = () => useContext(AppContext)
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
 export function AppProvider({ children }) {
+  // ── Toast ──
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' })
+
+  const showToast = useCallback((message, type = 'success') => {
+    setToast({ visible: true, message, type })
+    setTimeout(() => setToast({ visible: false, message: '', type: 'success' }), 3000)
+  }, [])
+
   // ── Cart ──
   const [cart, setCart] = useState(() => {
     try { return JSON.parse(localStorage.getItem('mk1974_cart') || '[]') } catch { return [] }
@@ -63,25 +72,66 @@ export function AppProvider({ children }) {
     try { return JSON.parse(localStorage.getItem('mk1974_user') || 'null') } catch { return null }
   })
 
-  const login = useCallback((userData) => {
-    setUser(userData)
-    localStorage.setItem('mk1974_user', JSON.stringify(userData))
-    showToast(`Welcome back, ${userData.firstName}!`)
-  }, [])
+  // Restore token if user exists on reload
+  useEffect(() => {
+    if (user?.token) {
+      api.setToken(user.token)
+    }
+  }, [user])
+
+  const login = useCallback(async (credentials) => {
+    try {
+      const data = await api.auth.login({
+        email: credentials.email,
+        password: credentials.password,
+      })
+      const token = typeof data === 'string' ? data : (data?.token || data?.accessToken || data?.jwt)
+      if (token) api.setToken(token)
+
+      const clientData = {
+        id: data?.userId || data?.id || '1',
+        email: credentials.email,
+        firstName: data?.firstName || 'User',
+        lastName: data?.lastName || '',
+        role: data?.role || 'Customer',
+        token,
+      }
+      setUser(clientData)
+      localStorage.setItem('mk1974_user', JSON.stringify(clientData))
+      showToast(`Welcome back, ${clientData.firstName}!`)
+      return { success: true }
+    } catch (err) {
+      return { success: false, error: err.message || 'Login failed.' }
+    }
+  }, [showToast])
 
   const logout = useCallback(() => {
     setUser(null)
+    api.setToken(null)
     localStorage.removeItem('mk1974_user')
     showToast('You have been logged out.')
-  }, [])
+  }, [showToast])
 
-  const register = useCallback((userData) => {
-    const newUser = { ...userData, id: Date.now().toString(), createdAt: new Date().toISOString() }
-    setUser(newUser)
-    localStorage.setItem('mk1974_user', JSON.stringify(newUser))
-    showToast(`Welcome to MK 1974, ${newUser.firstName}!`)
-    return newUser
-  }, [])
+  const register = useCallback(async (userData) => {
+    try {
+      await api.auth.register({
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: userData.email,
+        password: userData.password,
+        role: 2, // Role 2 in payload for customer
+      })
+      
+      // Auto login
+      const result = await login({ email: userData.email, password: userData.password })
+      if (!result.success) {
+        return { success: false, error: result.error || 'Registration complete, but login failed.' }
+      }
+      return { success: true }
+    } catch (err) {
+      return { success: false, error: err.message || 'Registration failed.' }
+    }
+  }, [login])
 
   // ── Orders ──
   const [orders, setOrders] = useState(() => {
@@ -113,13 +163,6 @@ export function AppProvider({ children }) {
     return newOrder
   }, [cart, cartTotal, clearCart])
 
-  // ── Toast ──
-  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' })
-
-  const showToast = useCallback((message, type = 'success') => {
-    setToast({ visible: true, message, type })
-    setTimeout(() => setToast({ visible: false, message: '', type: 'success' }), 3000)
-  }, [])
 
   // ── Search ──
   const [searchOpen, setSearchOpen] = useState(false)

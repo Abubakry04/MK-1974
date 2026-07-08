@@ -35,14 +35,26 @@ export default function AuthPage() {
     e.preventDefault()
     if (!validate()) return
     setLoading(true)
-    await new Promise(r => setTimeout(r, 800)) // Simulate async
 
     if (mode === 'login') {
-      login({ firstName: 'John', lastName: 'Doe', email: form.email, id: '1' })
-      navigate('/profile')
+      const result = await login({ email: form.email, password: form.password })
+      if (result.success) {
+        navigate('/profile')
+      } else {
+        setErrors({ general: result.error })
+      }
     } else if (mode === 'register') {
-      register({ firstName: form.firstName, lastName: form.lastName, email: form.email })
-      navigate('/profile')
+      const result = await register({
+        firstName: form.firstName,
+        lastName: form.lastName,
+        email: form.email,
+        password: form.password
+      })
+      if (result.success) {
+        navigate('/profile')
+      } else {
+        setErrors({ general: result.error })
+      }
     } else {
       showToast('Password reset link sent to ' + form.email)
       setMode('login')
@@ -89,6 +101,11 @@ export default function AuthPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              {errors.general && (
+                <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-xs px-4 py-3">
+                  {errors.general}
+                </div>
+              )}
               {mode === 'register' && (
                 <div className="grid grid-cols-2 gap-3">
                   {['firstName', 'lastName'].map(field => (
