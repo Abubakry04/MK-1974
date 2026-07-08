@@ -2,7 +2,7 @@
     "rewrites": [
         {
             "source": "/api/:path*",
-            "destination": "https://mk-brand-api.onrender./swagger/index.html"
+            "destination": "https://mk-brand-api.onrender.com/api/:path*"
         },
         {
             "source": "/(.*)",

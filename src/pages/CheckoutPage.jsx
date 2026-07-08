@@ -4,12 +4,7 @@ import { useApp } from '../context/AppContext'
 import Nav from '../components/Nav'
 import Footer from '../components/Footer'
 
-const NIGERIAN_STATES = [
-  'Abia', 'Adamawa', 'Akwa Ibom', 'Anambra', 'Bauchi', 'Bayelsa', 'Benue', 'Borno',
-  'Cross River', 'Delta', 'Ebonyi', 'Edo', 'Ekiti', 'Enugu', 'FCT', 'Gombe', 'Imo',
-  'Jigawa', 'Kaduna', 'Kano', 'Katsina', 'Kebbi', 'Kogi', 'Kwara', 'Lagos', 'Nasarawa',
-  'Niger', 'Ogun', 'Ondo', 'Osun', 'Oyo', 'Plateau', 'Rivers', 'Sokoto', 'Taraba',
-  'Yobe', 'Zamfara'
+const NIGERIAN_STATES = ['Lagos'
 ]
 
 const STEPS = ['Details', 'Payment', 'Confirm']
@@ -150,7 +145,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
-                  <div>
+                  {/* <div>
                     <h2 className="text-cream font-semibold text-[0.82rem] tracking-[0.25em] uppercase mb-5">Delivery Option</h2>
                     <div className="space-y-3">
                       {[
@@ -173,7 +168,7 @@ export default function CheckoutPage() {
                         </label>
                       ))}
                     </div>
-                  </div>
+                  </div> */}
 
                   <button type="submit" className="btn-primary">
                     Continue to Payment
