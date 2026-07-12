@@ -1,6 +1,5 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { PRODUCTS } from '../data/products'
 import { useApp } from '../context/AppContext'
 import Nav from '../components/Nav'
 import Footer from '../components/Footer'
@@ -9,7 +8,7 @@ function StarRating({ rating, size = 14 }) {
   return (
     <div className="flex items-center gap-0.5">
       {[...Array(5)].map((_, i) => (
-        <svg key={i} width={size} height={size} viewBox="0 0 24 24" fill={i < Math.floor(rating) ? '#c8f542' : 'none'} stroke="#c8f542" strokeWidth="1.5">
+        <svg key={i} width={size} height={size} viewBox="0 0 24 24" fill={i < Math.floor(rating) ? '#968574' : 'none'} stroke="#968574" strokeWidth="1.5">
           <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
         </svg>
       ))}
@@ -26,9 +25,9 @@ const MOCK_REVIEWS = [
 export default function ProductPage() {
   const { slug } = useParams()
   const navigate = useNavigate()
-  const { addToCart, toggleWishlist, isWishlisted, showToast } = useApp()
+  const { products, addToCart, toggleWishlist, isWishlisted, showToast } = useApp()
 
-  const product = PRODUCTS.find(p => p.slug === slug)
+  const product = useMemo(() => products.find(p => p.slug === slug), [products, slug])
 
   const [selectedSize, setSelectedSize] = useState(null)
   const [selectedColor, setSelectedColor] = useState(0)
@@ -54,7 +53,7 @@ export default function ProductPage() {
     )
   }
 
-  const related = PRODUCTS.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4)
+  const related = products.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4)
 
   const handleAddToCart = () => {
     if (!selectedSize) { showToast('Please select a size', 'error'); return }
@@ -141,11 +140,11 @@ export default function ProductPage() {
 
                 {/* Price */}
                 <div className="flex items-baseline gap-3 mb-6">
-                  <span className="text-cream text-3xl font-light">£{product.price}</span>
+                  <span className="text-cream text-3xl font-light">₦{product.price}</span>
                   {product.originalPrice && (
                     <>
-                      <span className="text-muted text-xl line-through">£{product.originalPrice}</span>
-                      <span className="text-lime text-[0.75rem] font-semibold">Save £{product.originalPrice - product.price}</span>
+                      <span className="text-muted text-xl line-through">₦{product.originalPrice}</span>
+                      <span className="text-lime text-[0.75rem] font-semibold">Save ₦{product.originalPrice - product.price}</span>
                     </>
                   )}
                 </div>
@@ -194,14 +193,14 @@ export default function ProductPage() {
 
                   {/* Size guide panel */}
                   {showSizeGuide && (
-                    <div className="mt-4 p-5 bg-surface border border-white/10">
-                      <p className="text-cream text-[0.72rem] font-semibold tracking-[0.2em] uppercase mb-3">Size Guide (cm)</p>
-                      <table className="w-full text-[0.72rem] text-cream/70">
-                        <thead><tr className="border-b border-white/10">{['Size', 'Chest', 'Waist', 'Hip'].map(h => <th key={h} className="text-left py-2 text-cream/40 font-normal">{h}</th>)}</tr></thead>
+                    <div className="mt-4 p-5 bg-surface2 border border-black/[0.08]">
+                      <p className="text-[0.72rem] font-semibold tracking-[0.2em] uppercase mb-3" style={{ color: '#1A1A1A' }}>Size Guide (cm)</p>
+                      <table className="w-full text-[0.72rem]" style={{ color: 'rgba(26,26,26,0.7)' }}>
+                        <thead><tr className="border-b border-black/[0.08]">{['Size', 'Chest', 'Waist', 'Hip'].map(h => <th key={h} className="text-left py-2 font-normal" style={{ color: 'rgba(26,26,26,0.5)' }}>{h}</th>)}</tr></thead>
                         <tbody>
                           {[['XS','84-88','72-76','88-92'],['S','88-92','76-80','92-96'],['M','92-96','80-84','96-100'],['L','96-101','84-89','100-105'],['XL','101-106','89-94','105-110'],['XXL','106-112','94-100','110-116']].map(([s,...d]) => (
-                            <tr key={s} className="border-b border-white/[0.04]">
-                              <td className="py-2.5 font-semibold text-cream">{s}</td>
+                            <tr key={s} className="border-b border-black/[0.04]">
+                              <td className="py-2.5 font-semibold" style={{ color: '#1A1A1A' }}>{s}</td>
                               {d.map((v, i) => <td key={i} className="py-2.5">{v}</td>)}
                             </tr>
                           ))}
@@ -251,12 +250,12 @@ export default function ProductPage() {
                 </div>
 
                 {/* Delivery */}
-                <div className="border border-white/[0.06] p-5 bg-surface">
+                <div className="border border-black/[0.08] p-5 bg-surface2">
                   <div className="flex items-start gap-3">
                     <svg className="text-lime mt-0.5 shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                       <rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
                     </svg>
-                    <p className="text-cream/60 text-[0.78rem] leading-[1.7]">{product.deliveryInfo}</p>
+                    <p className="text-[0.78rem] leading-[1.7]" style={{ color: 'rgba(26,26,26,0.7)' }}>{product.deliveryInfo}</p>
                   </div>
                 </div>
               </div>
@@ -300,9 +299,9 @@ export default function ProductPage() {
               )}
               {activeTab === 'reviews' && (
                 <div>
-                  <div className="flex items-center gap-6 mb-8 p-6 bg-surface border border-white/[0.06]">
+                  <div className="flex items-center gap-6 mb-8 p-6 bg-surface2 border border-black/[0.08]">
                     <div className="text-center">
-                      <div className="font-playfair italic font-black text-cream text-5xl mb-1">{product.rating}</div>
+                      <div className="font-playfair italic font-black text-5xl mb-1" style={{ color: '#1A1A1A' }}>{product.rating}</div>
                       <StarRating rating={product.rating} size={16} />
                       <p className="text-muted text-[0.7rem] mt-1">{product.reviews} reviews</p>
                     </div>
@@ -310,7 +309,7 @@ export default function ProductPage() {
                       {[5,4,3,2,1].map(n => (
                         <div key={n} className="flex items-center gap-3 mb-1.5">
                           <span className="text-muted text-[0.65rem] w-4">{n}★</span>
-                          <div className="flex-1 h-1.5 bg-surface2">
+                          <div className="flex-1 h-1.5 bg-surface">
                             <div className="h-full bg-lime" style={{ width: `${n === 5 ? 70 : n === 4 ? 20 : 5}%` }} />
                           </div>
                         </div>
@@ -336,12 +335,12 @@ export default function ProductPage() {
                   ))}
 
                   {/* Write a review */}
-                  <div className="mt-8 p-6 bg-surface border border-white/[0.06]">
-                    <h3 className="text-cream font-semibold text-[0.85rem] tracking-[0.15em] uppercase mb-5">Write a Review</h3>
+                  <div className="mt-8 p-6 bg-surface2 border border-black/[0.08]">
+                    <h3 className="font-semibold text-[0.85rem] tracking-[0.15em] uppercase mb-5" style={{ color: '#1A1A1A' }}>Write a Review</h3>
                     <div className="flex items-center gap-2 mb-4">
                       {[1,2,3,4,5].map(n => (
                         <button key={n} onClick={() => setReviewRating(n)}>
-                          <svg width="22" height="22" viewBox="0 0 24 24" fill={n <= reviewRating ? '#c8f542' : 'none'} stroke="#c8f542" strokeWidth="1.5">
+                          <svg width="22" height="22" viewBox="0 0 24 24" fill={n <= reviewRating ? '#968574' : 'none'} stroke="#968574" strokeWidth="1.5">
                             <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
                           </svg>
                         </button>
@@ -352,7 +351,7 @@ export default function ProductPage() {
                       onChange={e => setReviewText(e.target.value)}
                       placeholder="Share your experience with this product..."
                       rows={4}
-                      className="w-full bg-dark border border-white/10 text-cream text-[0.82rem] p-4 focus:outline-none focus:border-lime/40 transition-colors resize-none placeholder-muted"
+                      className="w-full bg-surface border border-black/10 text-onlight text-[0.82rem] p-4 focus:outline-none focus:border-lime/40 transition-colors resize-none placeholder-muted"
                     />
                     <button className="btn-primary mt-3">Submit Review</button>
                   </div>
@@ -360,11 +359,11 @@ export default function ProductPage() {
               )}
               {activeTab === 'delivery' && (
                 <div className="space-y-6 text-cream/70 text-[0.88rem] font-light leading-[1.9]">
-                  <div><h4 className="text-cream font-semibold text-[0.82rem] tracking-[0.2em] uppercase mb-2">UK Delivery</h4>
-                    <p>Standard (3-5 days) — Free on orders over £75, otherwise £3.99<br/>Express (1-2 days) — £5.99<br/>Next Day (order before 2pm) — £8.99</p>
+                  <div><h4 className="text-cream font-semibold text-[0.82rem] tracking-[0.2em] uppercase mb-2">delivery</h4>
+                    <p>Standard (3-5 days) — Free on orders over ₦75, otherwise ₦3.99<br/>Express (1-2 days) — ₦5.99<br/>Next Day (order before 2pm) — ₦8.99</p>
                   </div>
                   <div><h4 className="text-cream font-semibold text-[0.82rem] tracking-[0.2em] uppercase mb-2">International</h4>
-                    <p>Europe — £12.99 (5-8 days)<br/>Rest of World — £18.99 (7-14 days)</p>
+                    <p>Europe — ₦12.99 (5-8 days)<br/>Rest of World — ₦18.99 (7-14 days)</p>
                   </div>
                   <div><h4 className="text-cream font-semibold text-[0.82rem] tracking-[0.2em] uppercase mb-2">Returns</h4>
                     <p>We offer free returns within 30 days. Items must be unworn, with tags attached. Start a return from your profile.</p>
@@ -385,7 +384,7 @@ export default function ProductPage() {
                       <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     </div>
                     <h3 className="text-cream text-[0.82rem] font-medium mb-1">{p.name}</h3>
-                    <span className="text-cream/60 text-[0.82rem]">£{p.price}</span>
+                    <span className="text-cream/60 text-[0.82rem]">₦{p.price}</span>
                   </Link>
                 ))}
               </div>

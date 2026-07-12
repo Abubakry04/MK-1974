@@ -11,7 +11,7 @@ export default function Toast() {
       style={{ transform: "translateX(-50%)" }}
     >
       <div className={`flex items-center gap-3 px-5 py-3.5 text-[0.72rem] font-medium tracking-[0.12em] whitespace-nowrap shadow-2xl ${
-        toast.type === 'error' ? 'bg-red-900/90 text-red-200 border border-red-700/40' : 'bg-surface border border-white/10 text-cream'
+        toast.type === 'error' ? 'bg-red-900/90 text-red-200 border border-red-700/40' : 'bg-surface border border-black/10 text-onlight'
       }`}>
         {toast.type === 'error' ? (
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-red-400">

@@ -2,24 +2,9 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 
-const products = [
-  { id: 'prod-1', slug: 'volt-track-jacket', img: '/product2.png', alt: 'Volt Track Jacket', badge: 'New', name: 'Volt Track Jacket', variant: 'Olive / Stone / Black', price: 89, category: 'tracksuit' },
-  { id: 'prod-2', slug: 'motion-jogger-set', img: '/product1.png', alt: 'Motion Jogger Set', badge: 'Bestseller', name: 'Motion Jogger Set', variant: 'Charcoal / Black', price: 75, category: 'joggers' },
-  { id: 'prod-3', slug: 'shadow-tapered-jogger', img: '/product3.png', alt: 'Shadow Tapered Jogger', name: 'Shadow Tapered Jogger', variant: 'Black / Graphite', price: 59, category: 'joggers' },
-  { id: 'prod-4', slug: 'apex-full-tracksuit', img: '/hero.png', alt: 'Apex Full Tracksuit', badge: 'Limited', name: 'Apex Full Tracksuit', variant: 'Black / Volt', price: 129, category: 'tracksuit' },
-  { id: 'prod-5', slug: 'terra-fleece-set', img: '/product1.png', alt: 'Terra Fleece Set', name: 'Terra Fleece Set', variant: 'Sand / Stone / Dusk', price: 95, category: 'fleece' },
-  { id: 'prod-6', slug: 'drift-track-top', img: '/product2.png', alt: 'Drift Track Top', name: 'Drift Track Top', variant: 'Olive / Midnight', price: 69, category: 'tracksuit' },
-]
-
-const filters = [
-  { label: 'All', value: 'all' },
-  { label: 'Tracksuits', value: 'tracksuit' },
-  { label: 'Joggers', value: 'joggers' },
-  { label: 'Fleece', value: 'fleece' },
-]
-
 function ProductCard({ product }) {
   const { addToCart } = useApp()
+  const firstColor = product.colors[0]?.name || 'Standard'
 
   return (
     <article id={product.id} className="group cursor-pointer">
@@ -27,8 +12,8 @@ function ProductCard({ product }) {
       {/* Image */}
       <div className="relative overflow-hidden aspect-[3/4] bg-surface2 mb-4">
         <img
-          src={product.img}
-          alt={product.alt}
+          src={product.images[0]}
+          alt={product.name}
           loading="lazy"
           className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
         />
@@ -45,10 +30,10 @@ function ProductCard({ product }) {
         {/* Add to bag overlay */}
         <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-400 ease-[cubic-bezier(.16,1,.3,1)]">
           <button
-            onClick={(e) => { e.preventDefault(); addToCart({ id: product.id, name: product.name, price: product.price, slug: product.slug, images: [product.img], sizes: ['S','M','L','XL'], colors: [{name: product.variant}] }, 'M', product.variant) }}
+            onClick={(e) => { e.preventDefault(); addToCart(product, product.sizes[0] || 'M', firstColor) }}
             className="w-full bg-dark/90 backdrop-blur-sm text-cream text-[0.65rem] font-medium tracking-[0.25em] uppercase py-4 hover:bg-lime hover:text-dark transition-colors duration-200"
           >
-            Add to Bag — £{product.price}
+            Add to Bag — ₦{product.price}
           </button>
         </div>
       </div>
@@ -59,9 +44,9 @@ function ProductCard({ product }) {
         <div className="flex justify-between items-start">
           <div>
             <h3 className="text-cream text-[0.88rem] font-medium tracking-[0.05em]">{product.name}</h3>
-            <p className="text-muted text-[0.75rem] tracking-[0.05em] mt-0.5">{product.variant}</p>
+            <p className="text-muted text-[0.75rem] tracking-[0.05em] mt-0.5">{firstColor}</p>
           </div>
-          <span className="text-cream text-[0.88rem] font-light tracking-wider">£{product.price}</span>
+          <span className="text-cream text-[0.88rem] font-light tracking-wider">₦{product.price}</span>
         </div>
       </Link>
     </article>
@@ -69,8 +54,21 @@ function ProductCard({ product }) {
 }
 
 export default function Collection() {
+  const { products, categories: appCats } = useApp()
   const [activeFilter, setActiveFilter] = useState('all')
-  const visible = products.filter(p => activeFilter === 'all' || p.category === activeFilter)
+
+  const filters = [
+    { label: 'All', value: 'all' },
+    ...appCats.filter(c => c.toLowerCase() !== 'all').map(name => ({
+      label: name,
+      value: name.toLowerCase()
+    }))
+  ]
+
+  const visible = products.filter(p => {
+    if (activeFilter === 'all') return true
+    return (p.categories || []).some(c => c.name.toLowerCase() === activeFilter.toLowerCase())
+  })
 
   return (
     <section id="collection" className="bg-dark py-24 md:py-32 px-8 md:px-12">
@@ -86,7 +84,7 @@ export default function Collection() {
           </div>
 
           {/* Filters */}
-          <div className="flex gap-1">
+          <div className="flex gap-1 flex-wrap">
             {filters.map(f => (
               <button
                 key={f.value}
@@ -104,13 +102,19 @@ export default function Collection() {
         </div>
 
         {/* Product grid */}
-        <div id="productsGrid" className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12">
-          {visible.map(p => <ProductCard key={p.id} product={p} />)}
-        </div>
+        {visible.length > 0 ? (
+          <div id="productsGrid" className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12">
+            {visible.map(p => <ProductCard key={p.id} product={p} />)}
+          </div>
+        ) : (
+          <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(242,235,220,0.3)', fontSize: 13 }}>
+            No products found in this category.
+          </div>
+        )}
 
         {/* View all CTA */}
         <div className="mt-20 flex justify-center">
-          <Link to="/collection" className="btn-ghost">
+          <Link to="/shop" className="btn-ghost">
             View Full Collection
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M5 12h14M12 5l7 7-7 7"/>

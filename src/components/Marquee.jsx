@@ -1,5 +1,5 @@
 export default function Marquee() {
-  const items = ['TRACKSUITS', 'JOGGERS', 'PERFORMANCE FLEECE', 'STREET READY', 'SS 2025', 'FREE SHIPPING OVER £75', 'LIMITED DROPS']
+  const items = ['TRACKSUITS', 'JOGGERS', 'PERFORMANCE FLEECE', 'STREET READY', 'SS 2025', 'FREE SHIPPING OVER ₦75', 'LIMITED DROPS']
   const doubled = [...items, ...items]
 
   return (

@@ -2,12 +2,12 @@ import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
-    <footer id="contact" className="bg-surface border-t border-white/[0.05]">
+    <footer id="contact" className="bg-surface2 border-t border-white/[0.06]">
       {/* Main grid */}
       <div className="max-w-[1440px] mx-auto px-8 md:px-12 py-20 grid grid-cols-2 md:grid-cols-4 gap-12">
         {/* Brand */}
         <div className="col-span-2 md:col-span-1">
-          <Link to="/" className="block font-playfair italic font-black text-cream text-[1.8rem] tracking-tight mb-4">
+          <Link to="/" className="block font-playfair italic font-black text-black text-[1.8rem] tracking-tight mb-4">
             MK 1974
           </Link>
           <p className="text-muted text-[0.78rem] font-light leading-[1.8] mb-8 max-w-[220px]">
@@ -36,7 +36,7 @@ export default function Footer() {
 
         {/* Shop */}
         <div>
-          <h4 className="text-cream text-[0.62rem] font-semibold tracking-[0.3em] uppercase mb-6">Shop</h4>
+          <h4 className="text-black text-[0.62rem] font-semibold tracking-[0.3em] uppercase mb-6">Shop</h4>
           <ul className="flex flex-col gap-3.5">
             {[
               { label: "New Arrivals", to: "/shop?sort=newest" },
@@ -57,7 +57,7 @@ export default function Footer() {
 
         {/* Info */}
         <div>
-          <h4 className="text-cream text-[0.62rem] font-semibold tracking-[0.3em] uppercase mb-6">Info</h4>
+          <h4 className="text-black text-[0.62rem] font-semibold tracking-[0.3em] uppercase mb-6">Info</h4>
           <ul className="flex flex-col gap-3.5">
             {[
               { label: "About MK 1974", to: "/about" },
@@ -77,7 +77,7 @@ export default function Footer() {
 
         {/* Support */}
         <div>
-          <h4 className="text-cream text-[0.62rem] font-semibold tracking-[0.3em] uppercase mb-6">Support</h4>
+          <h4 className="text-black text-[0.62rem] font-semibold tracking-[0.3em] uppercase mb-6">Support</h4>
           <ul className="flex flex-col gap-3.5">
             {[
               { label: "FAQ", to: "/contact" },
@@ -109,14 +109,16 @@ export default function Footer() {
           <a href="#" className="hover:text-cream transition-colors">Terms</a>
           <a href="#" className="hover:text-cream transition-colors">Return Policy</a>
           <span className="w-px h-3 bg-white/10" />
-          <Link
+          <a
             id="footer-admin-link"
-            to="/admin"
-            className="flex items-center gap-1.5 text-white/20 hover:text-lime transition-colors duration-200"
+            href="http://localhost:5174"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-muted hover:text-lime transition-colors duration-200"
           >
             <span style={{ fontSize: '0.55rem' }}>◈</span>
             Admin
-          </Link>
+          </a>
         </div>
       </div>
     </footer>

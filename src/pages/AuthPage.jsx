@@ -116,7 +116,7 @@ export default function AuthPage() {
                         value={form[field]}
                         onChange={handleChange}
                         placeholder={field === 'firstName' ? 'First Name' : 'Last Name'}
-                        className={`w-full bg-surface border text-cream text-[0.85rem] px-4 py-3.5 focus:outline-none transition-colors placeholder-muted ${errors[field] ? 'border-red-500/60' : 'border-white/10 focus:border-lime/40'}`}
+                        className={`w-full bg-surface border text-onlight text-[0.85rem] px-4 py-3.5 focus:outline-none transition-colors placeholder-muted ${errors[field] ? 'border-red-500/60' : 'border-black/10 focus:border-lime/40'}`}
                       />
                       {errors[field] && <p className="text-red-400 text-[0.65rem] mt-1">{errors[field]}</p>}
                     </div>
@@ -132,7 +132,7 @@ export default function AuthPage() {
                   value={form.email}
                   onChange={handleChange}
                   placeholder="Email Address"
-                  className={`w-full bg-surface border text-cream text-[0.85rem] px-4 py-3.5 focus:outline-none transition-colors placeholder-muted ${errors.email ? 'border-red-500/60' : 'border-white/10 focus:border-lime/40'}`}
+                  className={`w-full bg-surface border text-onlight text-[0.85rem] px-4 py-3.5 focus:outline-none transition-colors placeholder-muted ${errors.email ? 'border-red-500/60' : 'border-black/10 focus:border-lime/40'}`}
                 />
                 {errors.email && <p className="text-red-400 text-[0.65rem] mt-1">{errors.email}</p>}
               </div>
@@ -146,7 +146,7 @@ export default function AuthPage() {
                     value={form.password}
                     onChange={handleChange}
                     placeholder="Password"
-                    className={`w-full bg-surface border text-cream text-[0.85rem] px-4 py-3.5 focus:outline-none transition-colors placeholder-muted ${errors.password ? 'border-red-500/60' : 'border-white/10 focus:border-lime/40'}`}
+                    className={`w-full bg-surface border text-onlight text-[0.85rem] px-4 py-3.5 focus:outline-none transition-colors placeholder-muted ${errors.password ? 'border-red-500/60' : 'border-black/10 focus:border-lime/40'}`}
                   />
                   {errors.password && <p className="text-red-400 text-[0.65rem] mt-1">{errors.password}</p>}
                 </div>
@@ -160,7 +160,7 @@ export default function AuthPage() {
                     value={form.confirmPassword}
                     onChange={handleChange}
                     placeholder="Confirm Password"
-                    className={`w-full bg-surface border text-cream text-[0.85rem] px-4 py-3.5 focus:outline-none transition-colors placeholder-muted ${errors.confirmPassword ? 'border-red-500/60' : 'border-white/10 focus:border-lime/40'}`}
+                    className={`w-full bg-surface border text-onlight text-[0.85rem] px-4 py-3.5 focus:outline-none transition-colors placeholder-muted ${errors.confirmPassword ? 'border-red-500/60' : 'border-black/10 focus:border-lime/40'}`}
                   />
                   {errors.confirmPassword && <p className="text-red-400 text-[0.65rem] mt-1">{errors.confirmPassword}</p>}
                 </div>

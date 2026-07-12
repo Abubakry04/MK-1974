@@ -1,15 +1,14 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { PRODUCTS } from '../data/products'
 import { useApp } from '../context/AppContext'
 
 export default function SearchOverlay() {
-  const { searchOpen, setSearchOpen } = useApp()
+  const { searchOpen, setSearchOpen, products } = useApp()
   const [query, setQuery] = useState('')
   const navigate = useNavigate()
 
   const results = query.length > 1
-    ? PRODUCTS.filter(p =>
+    ? products.filter(p =>
         p.name.toLowerCase().includes(query.toLowerCase()) ||
         p.category.toLowerCase().includes(query.toLowerCase()) ||
         p.tags.some(t => t.includes(query.toLowerCase()))
@@ -89,7 +88,7 @@ export default function SearchOverlay() {
                     <p className="text-cream font-medium text-[0.9rem] group-hover:text-lime transition-colors">{p.name}</p>
                     <p className="text-muted text-[0.75rem]">{p.category} · {p.colors[0].name}</p>
                   </div>
-                  <span className="text-cream text-[0.9rem] font-medium">£{p.price}</span>
+                  <span className="text-cream text-[0.9rem] font-medium">₦{p.price}</span>
                 </button>
               ))}
             </div>

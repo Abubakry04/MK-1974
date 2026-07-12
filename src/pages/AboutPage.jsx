@@ -19,10 +19,10 @@ export default function AboutPage() {
   return (
     <>
       <Nav />
-      <main className="bg-dark min-h-screen">
+      <main className="bg-surface2 min-h-screen">
         {/* Hero */}
         <section className="relative h-[60vh] min-h-[400px] overflow-hidden">
-          <img src={model} alt="About MK 1974" className="absolute inset-0 w-full h-full object-cover opacity-50" />
+          <img src={model} alt="About MK 1974" className="absolute inset-0 w-full h-full object-cover opacity-50" style={{ filter: 'sepia(0.25) brightness(0.85) contrast(1.1)' }} />
           <div className="absolute inset-0 bg-gradient-to-t from-dark to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 px-8 md:px-12 pb-16">
             <div className="max-w-[1440px] mx-auto">
@@ -32,13 +32,13 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Story */}
-        <section className="px-8 md:px-12 py-20">
+        {/* Story — dark bg, cream text ✓ */}
+        <section className="bg-surface2 px-8 md:px-12 py-20">
           <div className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
             <div>
               <p className="eyebrow mb-4">How It Started</p>
-              <h2 className="font-playfair font-black italic text-cream text-4xl mb-6">Built for Movement, Made for Life.</h2>
-              <div className="space-y-4 text-cream/70 text-[0.92rem] font-light leading-[1.9]">
+              <h2 className="font-playfair font-black italic text-black text-4xl mb-6">Built for Movement, Made for Life.</h2>
+              <div className="space-y-4 text-black text-[0.92rem] font-light leading-[1.9]">
                 <p>MK 1974 was born from a single conviction: that athletic wear should never compromise between performance and style. Founded by Mohammed K. in the back streets of Manchester, the brand began as a small run of hand-sewn tracksuits for local athletes who refused to choose between looking sharp and moving freely.</p>
                 <p>Today, MK 1974 is worn by athletes, creatives, and street culture enthusiasts across the UK and beyond. But the ethos remains the same — every thread, every stitch, every silhouette is engineered for the person who demands both.</p>
                 <p>Our name is a tribute to the year that movement became culture, when sport stepped off the track and onto the streets for good.</p>
@@ -50,8 +50,8 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Mission / Vision */}
-        <section className="bg-surface px-8 md:px-12 py-20">
+        {/* Mission / Vision — light surface cards on dark page */}
+        <section className="bg-surface2 px-8 md:px-12 py-20">
           <div className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-dark border border-white/[0.06] p-10">
               <p className="eyebrow mb-4">Mission</p>
@@ -70,18 +70,18 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Values */}
-        <section className="px-8 md:px-12 py-20">
+        {/* Values — dark bg section, light surface cards */}
+        <section className="bg-surface2 px-8 md:px-12 py-20">
           <div className="max-w-[1440px] mx-auto">
             <div className="text-center mb-14">
               <p className="eyebrow mb-4">What We Stand For</p>
-              <h2 className="font-playfair font-black italic text-cream text-4xl">Our Values</h2>
+              <h2 className="font-playfair font-black italic text-4xl" style={{ color: '#1A1A1A' }}>Our Values</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {values.map(v => (
-                <div key={v.title} className="bg-surface border border-white/[0.06] p-8 text-center">
+                <div key={v.title} className="bg-surface2 border border-black/[0.08] p-8 text-center">
                   <div className="text-4xl mb-4">{v.icon}</div>
-                  <h3 className="text-cream font-semibold text-[0.85rem] tracking-[0.2em] uppercase mb-3">{v.title}</h3>
+                  <h3 className="font-semibold text-[0.85rem] tracking-[0.2em] uppercase mb-3" style={{ color: '#1A1A1A' }}>{v.title}</h3>
                   <p className="text-muted text-[0.82rem] font-light leading-[1.7]">{v.desc}</p>
                 </div>
               ))}
@@ -89,17 +89,17 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Team */}
-        <section className="bg-surface px-8 md:px-12 py-20">
+        {/* Team — light surface section with dark cards */}
+        <section className="bg-surface2 px-8 md:px-12 py-20">
           <div className="max-w-[1440px] mx-auto">
             <div className="text-center mb-14">
               <p className="eyebrow mb-4">The People</p>
-              <h2 className="font-playfair font-black italic text-cream text-4xl">Meet the Brand</h2>
+              <h2 className="font-playfair font-black italic text-4xl" style={{ color: '#1A1A1A' }}>Meet the Brand</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {team.map(member => (
                 <div key={member.name} className="bg-dark border border-white/[0.06] p-8 text-center">
-                  <div className="w-16 h-16 bg-lime flex items-center justify-center text-dark font-black text-2xl mx-auto mb-5">
+                  <div className="w-16 h-16 bg-lime flex items-center justify-center text-white font-black text-2xl mx-auto mb-5">
                     {member.name[0]}
                   </div>
                   <h3 className="text-cream font-semibold text-[0.9rem] mb-1">{member.name}</h3>
@@ -111,8 +111,8 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Stats */}
-        <section className="px-8 md:px-12 py-16 border-t border-white/[0.05]">
+        {/* Stats — dark bg */}
+        {/* <section className="bg-dark px-8 md:px-12 py-16 border-t border-white/[0.05]">
           <div className="max-w-[1440px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
               { value: '50+', label: 'Countries Shipped To' },
@@ -126,7 +126,7 @@ export default function AboutPage() {
               </div>
             ))}
           </div>
-        </section>
+        </section> */}
       </main>
       <Footer />
     </>

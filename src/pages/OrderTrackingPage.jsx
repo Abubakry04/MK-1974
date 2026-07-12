@@ -49,10 +49,10 @@ export default function OrderTrackingPage() {
           </div>
 
           {/* Status timeline */}
-          <div className="bg-surface border border-white/[0.06] p-8 mb-8">
+          <div className="bg-surface2 border border-black/[0.08] p-8 mb-8">
             <div className="relative">
               {/* Progress line */}
-              <div className="absolute left-5 top-5 bottom-5 w-[1px] bg-white/10 hidden md:block" />
+              <div className="absolute left-5 top-5 bottom-5 w-[1px] bg-black/10 hidden md:block" />
               <div
                 className="absolute left-5 top-5 w-[1px] bg-lime hidden md:block transition-all duration-1000"
                 style={{ height: `${(currentStepIndex / (STATUS_STEPS.length - 1)) * 100}%` }}
@@ -65,8 +65,8 @@ export default function OrderTrackingPage() {
                   return (
                     <div key={step.key} className="flex items-start gap-6 md:gap-8">
                       <div className={`relative z-10 w-10 h-10 flex items-center justify-center shrink-0 border-2 transition-all ${
-                        isDone ? 'border-lime bg-lime text-dark' : 'border-white/20 bg-dark text-muted'
-                      } ${isCurrent ? 'shadow-[0_0_20px_rgba(200,245,66,0.4)]' : ''}`}>
+                        isDone ? 'border-lime bg-lime text-dark' : 'border-black/20 bg-surface text-muted'
+                      } ${isCurrent ? 'shadow-[0_0_20px_rgba(176,141,87,0.4)]' : ''}`}>
                         {isDone && i < currentStepIndex ? (
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
                         ) : (
@@ -75,7 +75,7 @@ export default function OrderTrackingPage() {
                       </div>
                       <div className="flex-1 pt-1.5">
                         <div className="flex items-center justify-between mb-1">
-                          <p className={`text-[0.85rem] font-semibold tracking-[0.05em] ${isDone ? 'text-cream' : 'text-muted'}`}>{step.label}</p>
+                          <p className="text-[0.85rem] font-semibold tracking-[0.05em]" style={isDone ? { color: '#1A1A1A' } : { color: 'rgba(26,26,26,0.45)' }}>{step.label}</p>
                           {isCurrent && <span className="text-lime text-[0.6rem] font-black tracking-[0.2em] uppercase animate-pulse">Current</span>}
                         </div>
                         <p className="text-muted text-[0.75rem] leading-[1.6]">{step.desc}</p>
@@ -92,9 +92,9 @@ export default function OrderTrackingPage() {
 
           {/* Order details */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-surface border border-white/[0.06] p-6">
-              <h2 className="text-cream font-semibold text-[0.8rem] tracking-[0.25em] uppercase mb-4">Delivery Address</h2>
-              <p className="text-cream/80 text-[0.88rem] leading-[1.8]">
+            <div className="bg-surface2 border border-black/[0.08] p-6">
+              <h2 className="font-semibold text-[0.8rem] tracking-[0.25em] uppercase mb-4" style={{ color: '#1A1A1A' }}>Delivery Address</h2>
+              <p className="text-[0.88rem] leading-[1.8]" style={{ color: 'rgba(26,26,26,0.8)' }}>
                 {order.firstName} {order.lastName}<br />
                 {order.address}<br />
                 {order.city}, {order.lga}<br />
@@ -102,18 +102,18 @@ export default function OrderTrackingPage() {
               </p>
             </div>
 
-            <div className="bg-surface border border-white/[0.06] p-6">
-              <h2 className="text-cream font-semibold text-[0.8rem] tracking-[0.25em] uppercase mb-4">Order Summary</h2>
+            <div className="bg-surface2 border border-black/[0.08] p-6">
+              <h2 className="font-semibold text-[0.8rem] tracking-[0.25em] uppercase mb-4" style={{ color: '#1A1A1A' }}>Order Summary</h2>
               <div className="space-y-2">
                 {order.items.map(item => (
                   <div key={item.key} className="flex justify-between text-[0.82rem]">
-                    <span className="text-cream/70">{item.product.name} × {item.qty}</span>
-                    <span className="text-cream">£{(item.price * item.qty).toFixed(2)}</span>
+                    <span style={{ color: 'rgba(26,26,26,0.7)' }}>{item.product.name} × {item.qty}</span>
+                    <span className="font-medium" style={{ color: '#1A1A1A' }}>₦{(item.price * item.qty).toFixed(2)}</span>
                   </div>
                 ))}
-                <div className="border-t border-white/[0.05] pt-3 flex justify-between">
-                  <span className="text-cream font-semibold text-[0.85rem]">Total</span>
-                  <span className="text-lime font-bold">£{order.total.toFixed(2)}</span>
+                <div className="border-t border-black/[0.08] pt-3 flex justify-between">
+                  <span className="font-semibold text-[0.85rem]" style={{ color: '#1A1A1A' }}>Total</span>
+                  <span className="font-bold" style={{ color: '#968574' }}>₦{order.total.toFixed(2)}</span>
                 </div>
               </div>
             </div>
