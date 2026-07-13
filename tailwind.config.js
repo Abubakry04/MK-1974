@@ -11,7 +11,7 @@ export default {
         'lime-dim': '#76685A',
         dark: '#1E1F21',
         surface: '#FAF9F6',
-        surface2: '#EAE6DF',
+        surface2: '#F5F5DC',
         cream: '#FAF9F6',
         muted: '#7A756D',
         'muted-light': '#B2ACA3',
