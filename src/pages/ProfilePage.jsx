@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
-import { PRODUCTS } from '../data/products'
 import Nav from '../components/Nav'
 import Footer from '../components/Footer'
 
@@ -29,10 +28,9 @@ function OverviewTab({ user, orders, wishlist }) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
         {[
           { label: 'Total Orders', value: orders.length, color: 'text-lime' },
-          { label: 'Wishlist Items', value: wishlist.length, color: 'text-blue-400' },
-          // { label: 'Member Since', value: user?.createdAt ? new Date(user.createdAt).getFullYear() : '2025', color: 'text-cream' },
+          { label: 'Wishlist Items', value: wishlist.length, color: 'text-lime-dim' },
         ].map(stat => (
-          <div key={stat.label} className="bg-surface border border-white/[0.06] p-6">
+          <div key={stat.label} className="bg-surface2 border border-black/[0.08] p-6">
             <p className="text-muted text-[0.68rem] tracking-[0.25em] uppercase mb-2">{stat.label}</p>
             <p className={`text-3xl font-bold ${stat.color}`}>{stat.value}</p>
           </div>
@@ -44,16 +42,16 @@ function OverviewTab({ user, orders, wishlist }) {
           <h3 className="text-cream font-semibold text-[0.8rem] tracking-[0.25em] uppercase mb-4">Recent Orders</h3>
           <div className="space-y-3">
             {orders.slice(0, 3).map(order => (
-              <Link key={order.id} to={`/order-tracking/${order.id}`} className="flex items-center justify-between bg-surface border border-white/[0.06] p-4 hover:border-white/20 transition-all">
+              <Link key={order.id} to={`/order-tracking/${order.id}`} className="flex items-center justify-between bg-surface2 border border-black/[0.08] p-4 hover:border-black/20 transition-all">
                 <div>
-                  <p className="text-cream font-medium text-[0.85rem]">Order #{order.id}</p>
+                  <p className="font-medium text-[0.85rem]" style={{ color: '#1A1A1A' }}>Order #{order.id}</p>
                   <p className="text-muted text-[0.72rem]">{new Date(order.createdAt).toLocaleDateString()} · {order.items.length} item{order.items.length > 1 ? 's' : ''}</p>
                 </div>
                 <div className="flex items-center gap-4">
                   <span className={`text-[0.6rem] font-semibold tracking-[0.2em] uppercase px-3 py-1 border ${ORDER_STATUS_COLORS[order.status] || 'text-muted'}`}>
                     {order.status.replace(/_/g, ' ')}
                   </span>
-                  <span className="text-lime font-semibold">£{order.total.toFixed(2)}</span>
+                  <span className="text-lime font-semibold">₦{order.total.toFixed(2)}</span>
                 </div>
               </Link>
             ))}
@@ -79,10 +77,10 @@ function OrdersTab({ orders }) {
       <h2 className="font-playfair font-black italic text-cream text-3xl mb-8">Order History</h2>
       <div className="space-y-4">
         {orders.map(order => (
-          <div key={order.id} className="bg-surface border border-white/[0.06] p-6">
+          <div key={order.id} className="bg-surface2 border border-black/[0.08] p-6">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <p className="text-cream font-semibold text-[0.9rem]">Order #{order.id}</p>
+                <p className="font-semibold text-[0.9rem]" style={{ color: '#1A1A1A' }}>Order #{order.id}</p>
                 <p className="text-muted text-[0.72rem]">{new Date(order.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
               </div>
               <div className="flex items-center gap-4">
@@ -97,20 +95,20 @@ function OrdersTab({ orders }) {
 
             <div className="flex gap-3 mb-4">
               {order.items.slice(0, 3).map(item => (
-                <div key={item.key} className="w-14 h-18 aspect-[3/4] overflow-hidden bg-surface2">
+                <div key={item.key} className="w-14 h-18 aspect-[3/4] overflow-hidden bg-surface">
                   <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-cover" />
                 </div>
               ))}
               {order.items.length > 3 && (
-                <div className="w-14 aspect-[3/4] bg-surface2 flex items-center justify-center">
+                <div className="w-14 aspect-[3/4] bg-surface flex items-center justify-center">
                   <span className="text-muted text-[0.72rem]">+{order.items.length - 3}</span>
                 </div>
               )}
             </div>
 
-            <div className="flex justify-between items-center border-t border-white/[0.05] pt-4">
+            <div className="flex justify-between items-center border-t border-black/[0.08] pt-4">
               <span className="text-muted text-[0.75rem]">{order.items.reduce((s, i) => s + i.qty, 0)} items</span>
-              <span className="text-cream font-semibold">£{order.total.toFixed(2)}</span>
+              <span className="font-semibold" style={{ color: '#1A1A1A' }}>₦{order.total.toFixed(2)}</span>
             </div>
           </div>
         ))}
@@ -119,8 +117,8 @@ function OrdersTab({ orders }) {
   )
 }
 
-function WishlistTab({ wishlist, toggleWishlist, addToCart }) {
-  const wishlisted = PRODUCTS.filter(p => wishlist.includes(p.id))
+function WishlistTab({ wishlist, toggleWishlist, addToCart, products }) {
+  const wishlisted = products.filter(p => wishlist.includes(p.id))
 
   if (wishlisted.length === 0) {
     return (
@@ -151,7 +149,7 @@ function WishlistTab({ wishlist, toggleWishlist, addToCart }) {
               <h3 className="text-cream text-[0.82rem] font-medium mb-1">{p.name}</h3>
             </Link>
             <div className="flex items-center justify-between">
-              <span className="text-cream/60 text-[0.8rem]">£{p.price}</span>
+              <span className="text-cream/60 text-[0.8rem]">₦{p.price}</span>
               <button onClick={() => addToCart(p, p.sizes[2] || p.sizes[0], p.colors[0].name)} className="text-[0.65rem] tracking-[0.2em] uppercase text-lime hover:text-lime-dim transition-colors">
                 Add to Bag
               </button>
@@ -188,7 +186,7 @@ function ProfileTab({ user, onUpdate }) {
               name={f.name}
               value={form[f.name]}
               onChange={e => setForm(p => ({ ...p, [e.target.name]: e.target.value }))}
-              className="w-full bg-surface border border-white/10 text-cream text-[0.85rem] px-4 py-3 focus:outline-none focus:border-lime/40 transition-colors"
+              className="w-full bg-surface border border-black/10 text-onlight text-[0.85rem] px-4 py-3 focus:outline-none focus:border-lime/40 transition-colors"
             />
           </div>
         ))}
@@ -199,7 +197,7 @@ function ProfileTab({ user, onUpdate }) {
 }
 
 export default function ProfilePage() {
-  const { user, orders, wishlist, toggleWishlist, addToCart, logout, showToast } = useApp()
+  const { user, orders, wishlist, toggleWishlist, addToCart, logout, showToast, products } = useApp()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('overview')
 
@@ -230,22 +228,22 @@ export default function ProfilePage() {
         <div className="max-w-[1200px] mx-auto py-12 flex flex-col md:flex-row gap-10">
           {/* Sidebar */}
           <aside className="md:w-64 shrink-0">
-            <div className="bg-surface border border-white/[0.06] p-6 mb-4">
+            <div className="bg-surface2 border border-black/[0.08] p-6 mb-4">
               <div className="w-14 h-14 bg-lime flex items-center justify-center text-dark font-black text-xl mb-4">
                 {user.firstName?.[0]}{user.lastName?.[0]}
               </div>
-              <p className="text-cream font-semibold text-[0.9rem]">{user.firstName} {user.lastName}</p>
+              <p className="font-semibold text-[0.9rem]" style={{ color: '#1A1A1A' }}>{user.firstName} {user.lastName}</p>
               <p className="text-muted text-[0.75rem]">{user.email}</p>
             </div>
 
-            <nav className="bg-surface border border-white/[0.06]">
+            <nav className="bg-surface2 border border-black/[0.08]">
               {NAV_ITEMS.map(item => (
                 <button
                   key={item.id}
                   id={`profile-nav-${item.id}`}
                   onClick={() => setActiveTab(item.id)}
                   className={`w-full flex items-center gap-3 px-5 py-3.5 text-[0.78rem] font-medium tracking-[0.1em] border-l-2 transition-all ${
-                    activeTab === item.id ? 'border-lime text-lime bg-lime/5' : 'border-transparent text-cream/60 hover:text-cream hover:bg-white/[0.02]'
+                    activeTab === item.id ? 'border-lime text-lime bg-lime/5' : 'border-transparent text-onlight/70 hover:text-onlight hover:bg-black/[0.02]'
                   }`}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -257,7 +255,7 @@ export default function ProfilePage() {
 
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-5 py-3.5 text-[0.78rem] font-medium tracking-[0.1em] text-red-400/70 hover:text-red-400 transition-colors border-t border-white/[0.05]"
+                className="w-full flex items-center gap-3 px-5 py-3.5 text-[0.78rem] font-medium tracking-[0.1em] text-red-600/80 hover:text-red-600 transition-colors border-t border-black/[0.08]"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" strokeLinecap="round" strokeLinejoin="round"/>
@@ -271,7 +269,7 @@ export default function ProfilePage() {
           <div className="flex-1">
             {activeTab === 'overview' && <OverviewTab user={user} orders={orders} wishlist={wishlist} />}
             {activeTab === 'orders' && <OrdersTab orders={orders} />}
-            {activeTab === 'wishlist' && <WishlistTab wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} />}
+            {activeTab === 'wishlist' && <WishlistTab wishlist={wishlist} toggleWishlist={toggleWishlist} addToCart={addToCart} products={products} />}
             {activeTab === 'profile' && <ProfileTab user={user} onUpdate={() => showToast('Profile updated!')} />}
             {activeTab === 'settings' && (
               <div>
@@ -282,14 +280,14 @@ export default function ProfilePage() {
                     { label: 'SMS Notifications', desc: 'Receive order updates via text message' },
                     { label: 'Marketing Emails', desc: 'Receive exclusive offers and new arrival alerts' },
                   ].map(setting => (
-                    <div key={setting.label} className="flex items-center justify-between p-4 bg-surface border border-white/[0.06]">
+                    <div key={setting.label} className="flex items-center justify-between p-4 bg-surface2 border border-black/[0.08]">
                       <div>
-                        <p className="text-cream text-[0.85rem] font-medium">{setting.label}</p>
+                        <p className="text-[0.85rem] font-medium" style={{ color: '#1A1A1A' }}>{setting.label}</p>
                         <p className="text-muted text-[0.72rem]">{setting.desc}</p>
                       </div>
                       <label className="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" defaultChecked className="sr-only peer" />
-                        <div className="w-10 h-5 bg-surface2 peer-checked:bg-lime rounded-full transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-dark after:rounded-full after:w-4 after:h-4 after:transition-transform peer-checked:after:translate-x-5" />
+                        <div className="w-10 h-5 bg-surface peer-checked:bg-lime rounded-full transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-dark after:rounded-full after:w-4 after:h-4 after:transition-transform peer-checked:after:translate-x-5" />
                       </label>
                     </div>
                   ))}

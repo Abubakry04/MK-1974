@@ -2,7 +2,7 @@ import { useApp } from '../context/AppContext'
 import { Link } from 'react-router-dom'
 
 export default function CartDrawer() {
-  const { cart, cartOpen, setCartOpen, removeFromCart, updateQty, cartTotal, cartCount } = useApp()
+  const { cart, cartOpen, setCartOpen, removeFromCart, updateQty, cartTotal, cartCount, products } = useApp()
   const shipping = cartTotal >= 75 ? 0 : 3.99
 
   return (
@@ -17,7 +17,7 @@ export default function CartDrawer() {
 
       {/* Drawer */}
       <div
-        className={`fixed top-0 right-0 bottom-0 z-[160] w-full max-w-[420px] bg-surface flex flex-col transition-transform duration-500 ease-[cubic-bezier(.16,1,.3,1)] ${
+        className={`fixed top-0 right-0 bottom-0 z-[160] w-full max-w-[420px] bg-dark flex flex-col transition-transform duration-500 ease-[cubic-bezier(.16,1,.3,1)] ${
           cartOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -57,34 +57,37 @@ export default function CartDrawer() {
             </div>
           ) : (
             <div className="space-y-0 divide-y divide-white/[0.04]">
-              {cart.map((item) => (
-                <div key={item.key} className="flex gap-4 py-5">
-                  <Link to={`/product/${item.product.slug}`} onClick={() => setCartOpen(false)} className="shrink-0 w-20 aspect-[3/4] overflow-hidden bg-surface2">
-                    <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-cover" />
-                  </Link>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2 mb-1">
-                      <Link to={`/product/${item.product.slug}`} onClick={() => setCartOpen(false)}>
-                        <h3 className="text-cream text-[0.82rem] font-medium leading-tight hover:text-lime transition-colors">{item.product.name}</h3>
-                      </Link>
-                      <button onClick={() => removeFromCart(item.key)} className="text-muted hover:text-cream transition-colors shrink-0">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                          <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                        </svg>
-                      </button>
-                    </div>
-                    <p className="text-muted text-[0.68rem] mb-3">{item.size} · {item.color}</p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-0">
-                        <button onClick={() => updateQty(item.key, item.qty - 1)} className="w-7 h-7 border border-white/15 text-cream hover:border-white/30 text-xs flex items-center justify-center transition-all">−</button>
-                        <span className="w-8 h-7 border-t border-b border-white/15 text-cream text-[0.72rem] flex items-center justify-center">{item.qty}</span>
-                        <button onClick={() => updateQty(item.key, item.qty + 1)} className="w-7 h-7 border border-white/15 text-cream hover:border-white/30 text-xs flex items-center justify-center transition-all">+</button>
+              {cart.map((item) => {
+                const freshProduct = products.find(p => p.id === item.product.id) || item.product
+                return (
+                  <div key={item.key} className="flex gap-4 py-5">
+                    <Link to={`/product/${freshProduct.slug}`} onClick={() => setCartOpen(false)} className="shrink-0 w-20 aspect-[3/4] overflow-hidden bg-surface2">
+                      <img src={freshProduct.images?.[0] || '/product2.png'} alt={freshProduct.name} className="w-full h-full object-cover" />
+                    </Link>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <Link to={`/product/${freshProduct.slug}`} onClick={() => setCartOpen(false)}>
+                          <h3 className="text-cream text-[0.82rem] font-medium leading-tight hover:text-lime transition-colors">{freshProduct.name}</h3>
+                        </Link>
+                        <button onClick={() => removeFromCart(item.key)} className="text-muted hover:text-cream transition-colors shrink-0">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                          </svg>
+                        </button>
                       </div>
-                      <span className="text-cream text-[0.85rem] font-medium">£{(item.price * item.qty).toFixed(2)}</span>
+                      <p className="text-muted text-[0.68rem] mb-3">{item.size} · {item.color}</p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-0">
+                          <button onClick={() => updateQty(item.key, item.qty - 1)} className="w-7 h-7 border border-white/15 text-cream hover:border-white/30 text-xs flex items-center justify-center transition-all">−</button>
+                          <span className="w-8 h-7 border-t border-b border-white/15 text-cream text-[0.72rem] flex items-center justify-center">{item.qty}</span>
+                          <button onClick={() => updateQty(item.key, item.qty + 1)} className="w-7 h-7 border border-white/15 text-cream hover:border-white/30 text-xs flex items-center justify-center transition-all">+</button>
+                        </div>
+                        <span className="text-cream text-[0.85rem] font-medium">₦{(item.price * item.qty).toFixed(2)}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>
@@ -95,22 +98,22 @@ export default function CartDrawer() {
             <div className="space-y-2 mb-5">
               <div className="flex justify-between text-[0.78rem]">
                 <span className="text-cream/60">Subtotal</span>
-                <span className="text-cream">£{cartTotal.toFixed(2)}</span>
+                <span className="text-cream">₦{cartTotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-[0.78rem]">
                 <span className="text-cream/60">Shipping</span>
                 <span className={shipping === 0 ? 'text-lime' : 'text-cream'}>
-                  {shipping === 0 ? 'FREE' : `£${shipping.toFixed(2)}`}
+                  {shipping === 0 ? 'FREE' : `₦${shipping.toFixed(2)}`}
                 </span>
               </div>
               {shipping > 0 && (
                 <p className="text-muted text-[0.65rem]">
-                  Add £{(75 - cartTotal).toFixed(2)} more for free shipping
+                  Add ₦{(75 - cartTotal).toFixed(2)} more for free shipping
                 </p>
               )}
               <div className="flex justify-between pt-3 border-t border-white/[0.04]">
                 <span className="text-cream font-semibold text-[0.82rem]">Estimated Total</span>
-                <span className="text-cream font-semibold text-[0.88rem]">£{(cartTotal + shipping).toFixed(2)}</span>
+                <span className="text-cream font-semibold text-[0.88rem]">₦{(cartTotal + shipping).toFixed(2)}</span>
               </div>
             </div>
             <div className="flex flex-col gap-3">

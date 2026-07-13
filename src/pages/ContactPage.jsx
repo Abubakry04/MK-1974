@@ -25,7 +25,7 @@ export default function ContactPage() {
     { q: 'Can I return or exchange my order?', a: 'Yes! We offer free returns within 30 days of delivery. Items must be unworn with original tags attached. Start a return from your customer profile.' },
     { q: 'What payment methods do you accept?', a: 'We accept bank transfer payments. After placing your order, you\'ll receive our bank details to complete payment. Upload your receipt to confirm.' },
     { q: 'How do I track my order?', a: 'Once your order is placed, log in to your account and visit the Orders section. Click Track on any order to view its live status.' },
-    { q: 'Do you ship internationally?', a: 'Yes! We ship to Europe (£12.99) and worldwide (£18.99). Delivery times vary by location.' },
+    { q: 'Do you ship internationally?', a: 'Yes! We ship to Europe (₦12.99) and worldwide (₦18.99). Delivery times vary by location.' },
     { q: 'How do I find my size?', a: 'Check our Size Guide on any product page. We recommend going a size up if you prefer a relaxed fit, or staying true to size for our slim/tapered styles.' },
   ]
 
@@ -34,10 +34,10 @@ export default function ContactPage() {
       <Nav />
       <main className="bg-dark min-h-screen pt-20">
         {/* Header */}
-        <div className="bg-surface border-b border-white/[0.05] px-8 md:px-12 py-16">
+        <div className="bg-surface border-b border-black/[0.07] px-8 md:px-12 py-16">
           <div className="max-w-[1440px] mx-auto">
             <p className="eyebrow mb-3">Get in Touch</p>
-            <h1 className="font-playfair font-black italic text-cream text-4xl md:text-5xl">Contact Us</h1>
+            <h1 className="font-playfair font-black italic text-4xl md:text-5xl" style={{ color: '#1A1A1A' }}>Contact Us</h1>
           </div>
         </div>
 
@@ -45,21 +45,21 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             {/* Contact Form */}
             <div>
-              <h2 className="font-playfair font-black italic text-cream text-3xl mb-8">Send a Message</h2>
+              <h2 className="font-playfair font-black italic text-white text-3xl mb-8">Send a Message</h2>
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-[0.65rem] tracking-[0.2em] uppercase text-muted mb-2">Name</label>
-                    <input name="name" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required className="w-full bg-surface border border-white/10 text-cream text-[0.85rem] px-4 py-3 focus:outline-none focus:border-lime/40 transition-colors" />
+                    <input name="name" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required className="w-full bg-surface2 border border-black/10 text-onlight text-[0.85rem] px-4 py-3 focus:outline-none focus:border-lime/40 transition-colors" />
                   </div>
                   <div>
                     <label className="block text-[0.65rem] tracking-[0.2em] uppercase text-muted mb-2">Email</label>
-                    <input name="email" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} required className="w-full bg-surface border border-white/10 text-cream text-[0.85rem] px-4 py-3 focus:outline-none focus:border-lime/40 transition-colors" />
+                    <input name="email" type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} required className="w-full bg-surface2 border border-black/10 text-onlight text-[0.85rem] px-4 py-3 focus:outline-none focus:border-lime/40 transition-colors" />
                   </div>
                 </div>
                 <div>
                   <label className="block text-[0.65rem] tracking-[0.2em] uppercase text-muted mb-2">Subject</label>
-                  <select name="subject" value={form.subject} onChange={e => setForm(f => ({ ...f, subject: e.target.value }))} className="w-full bg-surface border border-white/10 text-cream text-[0.85rem] px-4 py-3 focus:outline-none focus:border-lime/40 appearance-none">
+                  <select name="subject" value={form.subject} onChange={e => setForm(f => ({ ...f, subject: e.target.value }))} className="w-full bg-surface2 border border-black/10 text-onlight text-[0.85rem] px-4 py-3 focus:outline-none focus:border-lime/40 appearance-none">
                     <option value="">Select a topic</option>
                     <option>Order Issue</option>
                     <option>Returns & Exchanges</option>
@@ -70,7 +70,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <label className="block text-[0.65rem] tracking-[0.2em] uppercase text-muted mb-2">Message</label>
-                  <textarea name="message" rows={5} value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} required className="w-full bg-surface border border-white/10 text-cream text-[0.85rem] px-4 py-3 focus:outline-none focus:border-lime/40 transition-colors resize-none" />
+                  <textarea name="message" rows={5} value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} required className="w-full bg-surface border border-black/10 text-onlight text-[0.85rem] px-4 py-3 focus:outline-none focus:border-lime/40 transition-colors resize-none" />
                 </div>
                 <button type="submit" id="contact-submit-btn" className="btn-primary">
                   Send Message
@@ -81,26 +81,26 @@ export default function ContactPage() {
 
             {/* Contact Info */}
             <div>
-              <h2 className="font-playfair font-black italic text-cream text-3xl mb-8">Other Ways to Reach Us</h2>
+              <h2 className="font-playfair font-black italic text-white text-3xl mb-8">Other Ways to Reach Us</h2>
               <div className="space-y-4 mb-12">
                 {contacts.map(c => (
-                  <a key={c.label} href={c.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-5 p-5 bg-surface border border-white/[0.06] hover:border-lime/30 transition-all group">
+                  <a key={c.label} href={c.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-5 p-5 bg-surface2 border border-black/[0.08] hover:border-lime/40 transition-all group">
                     <div className="w-11 h-11 bg-dark border border-white/10 group-hover:border-lime/40 flex items-center justify-center transition-all shrink-0">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-cream/60 group-hover:text-lime transition-colors">
                         <path d={c.icon} strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
                     <div>
-                      <p className="text-cream/50 text-[0.65rem] tracking-[0.25em] uppercase mb-1">{c.label}</p>
-                      <p className="text-cream text-[0.88rem] font-medium">{c.value}</p>
+                      <p className="text-[0.65rem] tracking-[0.25em] uppercase mb-1" style={{ color: 'rgba(26,26,26,0.6)' }}>{c.label}</p>
+                      <p className="text-[0.88rem] font-medium" style={{ color: '#1A1A1A' }}>{c.value}</p>
                     </div>
                   </a>
                 ))}
               </div>
 
-              <div className="bg-surface border border-white/[0.06] p-6">
-                <p className="text-cream font-semibold text-[0.82rem] tracking-[0.2em] uppercase mb-2">Response Time</p>
-                <p className="text-muted text-[0.82rem] leading-[1.7]">We respond to all enquiries within <span className="text-cream font-medium">24 hours</span>, Monday to Friday. For urgent matters, reach us via WhatsApp.</p>
+              <div className="bg-surface2 border border-black/[0.08] p-6">
+                <p className="font-semibold text-[0.82rem] tracking-[0.2em] uppercase mb-2" style={{ color: '#1A1A1A' }}>Response Time</p>
+                <p className="text-muted text-[0.82rem] leading-[1.7]">We respond to all enquiries within <span className="font-medium" style={{ color: '#1A1A1A' }}>24 hours</span>, Monday to Friday. For urgent matters, reach us via WhatsApp.</p>
               </div>
             </div>
           </div>
@@ -127,14 +127,14 @@ export default function ContactPage() {
 function FaqItem({ q, a }) {
   const [open, setOpen] = useState(false)
   return (
-    <div className="bg-surface border border-white/[0.06]">
+    <div className="bg-surface2 border border-black/[0.08]">
       <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between p-5 text-left">
-        <span className="text-cream text-[0.88rem] font-medium pr-4">{q}</span>
+        <span className="text-[0.88rem] font-medium pr-4" style={{ color: '#1A1A1A' }}>{q}</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={`text-lime shrink-0 transition-transform duration-300 ${open ? 'rotate-45' : ''}`}>
           <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
         </svg>
       </button>
-      {open && <div className="px-5 pb-5 text-cream/60 text-[0.82rem] font-light leading-[1.8]">{a}</div>}
+      {open && <div className="px-5 pb-5 text-[0.82rem] font-light leading-[1.8]" style={{ color: 'rgba(26,26,26,0.6)' }}>{a}</div>}
     </div>
   )
 }

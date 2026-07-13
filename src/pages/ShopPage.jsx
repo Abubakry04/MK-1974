@@ -14,14 +14,14 @@ const SORT_OPTIONS = [
 ]
 
 const PRICE_RANGES = [
-  { label: 'Under £50', min: 0, max: 50 },
-  { label: '£50 – £100', min: 50, max: 100 },
-  { label: '£100 – £150', min: 100, max: 150 },
-  { label: 'Over £150', min: 150, max: Infinity },
+  { label: 'Under ₦50', min: 0, max: 50 },
+  { label: '₦50 – ₦100', min: 50, max: 100 },
+  { label: '₦100 – ₦150', min: 100, max: 150 },
+  { label: 'Over ₦150', min: 150, max: Infinity },
 ]
 
 const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
-const CATEGORIES = ['All', 'Men', 'Women', 'Tracksuits', 'Joggers', 'Hoodies', 'Fleece', 'Activewear']
+
 
 function ProductCard({ product }) {
   const { addToCart, toggleWishlist, isWishlisted } = useApp()
@@ -84,7 +84,7 @@ function ProductCard({ product }) {
                 onClick={() => addToCart(product, product.sizes[2] || product.sizes[0], product.colors[0].name)}
                 className="w-full bg-lime text-dark text-[0.6rem] font-black tracking-[0.25em] uppercase py-2.5 hover:bg-lime-dim transition-colors"
               >
-                Add to Bag — £{product.price}
+                Add to Bag — ₦{product.price}
               </button>
             </div>
           </div>
@@ -95,8 +95,8 @@ function ProductCard({ product }) {
         <div className="flex justify-between items-start mb-1.5">
           <h3 className="text-cream text-[0.85rem] font-medium tracking-[0.03em] leading-tight">{product.name}</h3>
           <div className="text-right shrink-0 ml-3">
-            <span className="text-cream text-[0.88rem]">£{product.price}</span>
-            {product.originalPrice && <span className="block text-muted text-[0.7rem] line-through">£{product.originalPrice}</span>}
+            <span className="text-cream text-[0.88rem]">₦{product.price}</span>
+            {product.originalPrice && <span className="block text-muted text-[0.7rem] line-through">₦{product.originalPrice}</span>}
           </div>
         </div>
         <div className="flex items-center gap-1.5">
@@ -110,14 +110,17 @@ function ProductCard({ product }) {
   )
 }
 
-function FilterSidebar({ filters, setFilters, onClose }) {
+function FilterSidebar({ filters, setFilters, onClose, categories }) {
+  const [showAllCategories, setShowAllCategories] = useState(false)
+  const displayedCategories = showAllCategories ? categories : categories.slice(0, 5)
+
   return (
     <div className="space-y-8">
       {/* Category */}
       <div>
-        <h4 className="text-cream text-[0.65rem] font-semibold tracking-[0.3em] uppercase mb-4">Category</h4>
+        <h4 className="text-black text-[0.65rem] font-semibold tracking-[0.3em] uppercase mb-4">Category</h4>
         <div className="space-y-2.5">
-          {CATEGORIES.map(cat => (
+          {displayedCategories.map(cat => (
             <label key={cat} className="flex items-center gap-3 cursor-pointer group">
               <input
                 type="radio"
@@ -133,15 +136,23 @@ function FilterSidebar({ filters, setFilters, onClose }) {
                   <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0c0c0c" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
                 )}
               </div>
-              <span className={`text-[0.8rem] transition-colors ${filters.category === cat.toLowerCase() ? 'text-lime' : 'text-cream/60 group-hover:text-cream'}`}>{cat}</span>
+              <span className={`text-[0.8rem] transition-colors ${filters.category === cat.toLowerCase() ? 'text-black' : 'text-black/40 group-hover:text-black'}`}>{cat}</span>
             </label>
           ))}
+          {categories.length > 5 && (
+            <button
+              onClick={() => setShowAllCategories(!showAllCategories)}
+              className="text-black/40 hover:text-black text-[0.72rem] font-semibold tracking-wider uppercase mt-2 block"
+            >
+              {showAllCategories ? 'Show Less' : `+ View All (${categories.length})`}
+            </button>
+          )}
         </div>
       </div>
 
       {/* Price */}
       <div>
-        <h4 className="text-cream text-[0.65rem] font-semibold tracking-[0.3em] uppercase mb-4">Price Range</h4>
+        <h4 className="text-black text-[0.65rem] font-semibold tracking-[0.3em] uppercase mb-4">Price Range</h4>
         <div className="space-y-2.5">
           {PRICE_RANGES.map(r => (
             <label key={r.label} className="flex items-center gap-3 cursor-pointer group">
@@ -159,7 +170,7 @@ function FilterSidebar({ filters, setFilters, onClose }) {
                   <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0c0c0c" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
                 )}
               </div>
-              <span className={`text-[0.8rem] transition-colors ${filters.priceRange === r.label ? 'text-lime' : 'text-cream/60 group-hover:text-cream'}`}>{r.label}</span>
+              <span className={`text-[0.8rem] transition-colors ${filters.priceRange === r.label ? 'text-black' : 'text-black/60 group-hover:text-black'}`}>{r.label}</span>
             </label>
           ))}
         </div>
@@ -167,7 +178,7 @@ function FilterSidebar({ filters, setFilters, onClose }) {
 
       {/* Sizes */}
       <div>
-        <h4 className="text-cream text-[0.65rem] font-semibold tracking-[0.3em] uppercase mb-4">Size</h4>
+        <h4 className="text-black text-[0.65rem] font-semibold tracking-[0.3em] uppercase mb-4">Size</h4>
         <div className="flex flex-wrap gap-2">
           {SIZES.map(s => (
             <button
@@ -177,7 +188,7 @@ function FilterSidebar({ filters, setFilters, onClose }) {
                 sizes: f.sizes.includes(s) ? f.sizes.filter(x => x !== s) : [...f.sizes, s]
               }))}
               className={`w-10 h-10 text-[0.7rem] font-medium border transition-all ${
-                filters.sizes.includes(s) ? 'border-lime text-lime' : 'border-white/20 text-cream/60 hover:border-white/40 hover:text-cream'
+                filters.sizes.includes(s) ? 'border-lime text-black/40' : 'border-black/20 text-black/60 hover:border-black/40 hover:text-black'
               }`}
             >{s}</button>
           ))}
@@ -186,7 +197,7 @@ function FilterSidebar({ filters, setFilters, onClose }) {
 
       {/* Availability */}
       <div>
-        <h4 className="text-cream text-[0.65rem] font-semibold tracking-[0.3em] uppercase mb-4">Availability</h4>
+        <h4 className="text-black text-[0.65rem] font-semibold tracking-[0.3em] uppercase mb-4">Availability</h4>
         <label className="flex items-center gap-3 cursor-pointer group">
           <input
             type="checkbox"
@@ -195,13 +206,13 @@ function FilterSidebar({ filters, setFilters, onClose }) {
             className="hidden"
           />
           <div className={`w-4 h-4 border flex items-center justify-center transition-all ${
-            filters.inStockOnly ? 'border-lime bg-lime' : 'border-white/20 group-hover:border-white/40'
+            filters.inStockOnly ? 'border-black/40 bg-lime' : 'border-black/20 group-hover:border-black'
           }`}>
             {filters.inStockOnly && (
               <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0c0c0c" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
             )}
           </div>
-          <span className="text-cream/60 text-[0.8rem] group-hover:text-cream transition-colors">In Stock Only</span>
+          <span className="text-black/60 text-[0.8rem] group-hover:text-black transition-colors">In Stock Only</span>
         </label>
       </div>
 
@@ -216,6 +227,7 @@ function FilterSidebar({ filters, setFilters, onClose }) {
 }
 
 export default function ShopPage() {
+  const { products: storeProducts, categories: storefrontCategories } = useApp()
   const [searchParams] = useSearchParams()
   const [sort, setSort] = useState(searchParams.get('sort') || 'newest')
   const [filters, setFilters] = useState({
@@ -232,7 +244,7 @@ export default function ShopPage() {
   const PER_PAGE = 8
 
   const filtered = useMemo(() => {
-    let products = [...PRODUCTS]
+    let products = [...storeProducts]
 
     // Search
     if (searchQuery) {
@@ -246,11 +258,14 @@ export default function ShopPage() {
 
     // Category
     if (filters.category !== 'all') {
-      products = products.filter(p =>
-        p.category.toLowerCase() === filters.category ||
-        p.subcategory.toLowerCase() === filters.category ||
-        p.tags.includes(filters.category)
-      )
+      products = products.filter(p => {
+        const catClean = filters.category.toLowerCase()
+        const matchMain = p.category?.toLowerCase() === catClean
+        const matchSub = p.subcategory?.toLowerCase() === catClean
+        const matchTag = p.tags?.some(t => t.toLowerCase() === catClean)
+        const matchApi = p.categories?.some(c => c.name.toLowerCase() === catClean)
+        return matchMain || matchSub || matchTag || matchApi
+      })
     }
 
     // Price
@@ -279,12 +294,12 @@ export default function ShopPage() {
   return (
     <>
       <Nav />
-      <main className="bg-dark min-h-screen pt-24">
+      <main className="bg-surface2 min-h-screen pt-24">
         {/* Page header */}
-        <div className="bg-surface border-b border-white/[0.05] px-8 md:px-12 py-10">
+        <div className="bg-surface2  px-8 md:px-12 py-10">
           <div className="max-w-[1440px] mx-auto">
             <p className="eyebrow mb-2">Browse</p>
-            <h1 className="font-playfair font-black italic text-cream text-4xl md:text-5xl">Shop All</h1>
+            <h1 className="font-playfair font-black italic text-4xl md:text-5xl" style={{ color: '#1A1A1A' }}>Shop All</h1>
           </div>
         </div>
 
@@ -302,7 +317,7 @@ export default function ShopPage() {
                 value={searchQuery}
                 onChange={e => { setSearchQuery(e.target.value); setPage(1) }}
                 placeholder="Search products..."
-                className="w-full bg-surface border border-white/10 text-cream placeholder-muted text-[0.82rem] pl-10 pr-4 py-3 focus:outline-none focus:border-lime/40 transition-colors"
+                className="w-full bg-surface border border-black/10 text-onlight placeholder-muted text-[0.82rem] pl-10 pr-4 py-3 focus:outline-none focus:border-lime/40 transition-colors"
               />
             </div>
 
@@ -325,7 +340,7 @@ export default function ShopPage() {
                   id="sort-select"
                   value={sort}
                   onChange={e => { setSort(e.target.value); setPage(1) }}
-                  className="bg-surface border border-white/10 text-cream text-[0.75rem] tracking-[0.1em] px-4 py-3 pr-8 focus:outline-none focus:border-lime/40 appearance-none cursor-pointer"
+                  className="bg-surface border border-black/10 text-onlight text-[0.75rem] tracking-[0.1em] px-4 py-3 pr-8 focus:outline-none focus:border-lime/40 appearance-none cursor-pointer"
                 >
                   {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
                 </select>
@@ -341,7 +356,7 @@ export default function ShopPage() {
           <div className="flex gap-10">
             {/* Sidebar */}
             <aside className={`shrink-0 w-56 ${filtersOpen ? 'block' : 'hidden'} lg:block`}>
-              <FilterSidebar filters={filters} setFilters={setFilters} onClose={() => setFiltersOpen(false)} />
+              <FilterSidebar filters={filters} setFilters={setFilters} onClose={() => setFiltersOpen(false)} categories={storefrontCategories} />
             </aside>
 
             {/* Grid */}

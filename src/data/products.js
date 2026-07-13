@@ -21,7 +21,7 @@ export const PRODUCTS = [
     rating: 4.8,
     reviews: 124,
     tags: ['tracksuit', 'men', 'bestseller', 'performance'],
-    deliveryInfo: 'Free UK delivery on orders over £75. Express 1-2 days £5.99.',
+    deliveryInfo: 'Free delivery on orders over ₦75. Express 1-2 days ₦5.99.',
     specs: {
       material: '80% Polyester, 20% Elastane',
       fit: 'Slim Tapered',
@@ -51,7 +51,7 @@ export const PRODUCTS = [
     rating: 4.6,
     reviews: 67,
     tags: ['jacket', 'men', 'new'],
-    deliveryInfo: 'Free UK delivery on orders over £75. Express 1-2 days £5.99.',
+    deliveryInfo: 'Free delivery on orders over ₦75. Express 1-2 days ₦5.99.',
     specs: {
       material: '100% Recycled Polyester',
       fit: 'Regular',
@@ -81,7 +81,7 @@ export const PRODUCTS = [
     rating: 4.9,
     reviews: 208,
     tags: ['joggers', 'men', 'bestseller'],
-    deliveryInfo: 'Free UK delivery on orders over £75.',
+    deliveryInfo: 'Free delivery on orders over ₦75.',
     specs: {
       material: '60% Cotton, 40% Polyester',
       fit: 'Slim Tapered',
@@ -111,7 +111,7 @@ export const PRODUCTS = [
     rating: 4.5,
     reviews: 89,
     tags: ['joggers', 'men'],
-    deliveryInfo: 'Free UK delivery on orders over £75.',
+    deliveryInfo: 'Free delivery on orders over ₦75.',
     specs: {
       material: '70% Cotton, 30% Polyester',
       fit: 'Slim Tapered',
@@ -142,7 +142,7 @@ export const PRODUCTS = [
     rating: 4.7,
     reviews: 55,
     tags: ['fleece', 'unisex', 'sale'],
-    deliveryInfo: 'Free UK delivery on orders over £75.',
+    deliveryInfo: 'Free delivery on orders over ₦75.',
     specs: {
       material: '85% Polyester Fleece, 15% Spandex',
       fit: 'Relaxed',
@@ -172,7 +172,7 @@ export const PRODUCTS = [
     rating: 4.4,
     reviews: 42,
     tags: ['jacket', 'men'],
-    deliveryInfo: 'Free UK delivery on orders over £75.',
+    deliveryInfo: 'Free delivery on orders over ₦75.',
     specs: {
       material: '95% Polyester, 5% Elastane',
       fit: 'Athletic',
@@ -203,7 +203,7 @@ export const PRODUCTS = [
     rating: 4.9,
     reviews: 156,
     tags: ['hoodie', 'men', 'new'],
-    deliveryInfo: 'Free UK delivery on orders over £75.',
+    deliveryInfo: 'Free delivery on orders over ₦75.',
     specs: {
       material: '380gsm Brushed Cotton Fleece',
       fit: 'Oversized',
@@ -233,7 +233,7 @@ export const PRODUCTS = [
     rating: 4.8,
     reviews: 73,
     tags: ['women', 'activewear', 'new'],
-    deliveryInfo: 'Free UK delivery on orders over £75.',
+    deliveryInfo: 'Free delivery on orders over ₦75.',
     specs: {
       material: '78% Nylon, 22% Spandex',
       fit: 'Fitted',

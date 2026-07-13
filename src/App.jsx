@@ -1,7 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AppProvider } from './context/AppContext'
-import { AdminProvider } from './admin/context/AdminContext'
-import AdminLayout from './admin/AdminLayout'
 import CartDrawer from './components/CartDrawer'
 import Toast from './components/Toast'
 import SearchOverlay from './components/SearchOverlay'
@@ -41,12 +39,6 @@ export default function App() {
           {/* Legacy routes */}
           <Route path="/collection" element={<CollectionPage />} />
           <Route path="/lookbook" element={<LookbookPage />} />
-          {/* Admin — completely separate from customer app */}
-          <Route path="/admin" element={
-            <AdminProvider>
-              <AdminLayout />
-            </AdminProvider>
-          } />
         </Routes>
 
         {/* Global overlays — always mounted */}
