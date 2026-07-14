@@ -123,7 +123,7 @@ export default function ProductPage() {
             </div>
 
             {/* ── Product Info ── */}
-            <div className="flex flex-col">
+            <div className="flex flex-col md:sticky md:top-32 h-fit">
               <div className="mb-6">
                 <p className="eyebrow mb-2">{product.category}</p>
                 <h1 className="font-playfair font-black italic text-cream text-3xl md:text-4xl mb-3">{product.name}</h1>

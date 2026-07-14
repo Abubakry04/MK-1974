@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useApp } from "../context/AppContext";
+import logo from "../assets/mk2.png";
 
 export default function Nav() {
   const { cartCount, setCartOpen, setSearchOpen, user, wishlist } = useApp();
@@ -67,7 +68,7 @@ export default function Nav() {
         } ${
           transparent
             ? "bg-transparent"
-            : "bg-dark/95 backdrop-blur-2xl border-b border-white/[0.06]"
+            : "bg-dark/80 backdrop-blur-md border-b border-white/[0.04] shadow-sm"
         }`}
       >
         {/* ── Top bar ── */}
@@ -84,17 +85,22 @@ export default function Nav() {
             ))}
           </ul>
 
-          {/* CENTER — brand wordmark */}
+          {/* CENTER — brand wordmark / logo */}
           <Link
             to="/"
             id="nav-logo"
-            className={`absolute left-1/2 -translate-x-1/2 font-playfair italic font-black tracking-tight transition-all duration-300 select-none ${
+            className={`absolute left-1/2 -translate-x-1/2 transition-all duration-300 select-none flex items-center justify-center ${
               transparent
-                ? "text-cream text-[1.65rem] hover:text-lime"
-                : "text-cream text-[1.5rem] hover:text-lime"
+                ? "opacity-90 hover:opacity-100"
+                : "opacity-100 hover:opacity-70"
             }`}
           >
-            MK 1974
+            <img 
+              src={logo} 
+              alt="MK 1974" 
+              className="h-12 w-auto object-contain filter invert brightness-0 contrast-200 sepia-0 hue-rotate-0 saturate-0" 
+              style={{ filter: "invert(1) brightness(100)" }}
+            />
           </Link>
 
           {/* RIGHT links + icons */}
@@ -215,12 +221,11 @@ export default function Nav() {
           </div>
         </div>
 
-        {/* Thin gold accent line under nav when scrolled */}
+        {/* Thin accent line under nav when scrolled */}
         <div
-          className="h-px w-full transition-opacity duration-500"
+          className="h-px w-full transition-opacity duration-500 bg-gradient-to-r from-transparent via-lime to-transparent"
           style={{
-            background: "linear-gradient(90deg, transparent, #968574 40%, #968574 60%, transparent)",
-            opacity: scrolled && !transparent ? 0.25 : 0,
+            opacity: scrolled && !transparent ? 0.35 : 0,
           }}
         />
       </nav>
