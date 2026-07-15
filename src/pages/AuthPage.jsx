@@ -68,7 +68,7 @@ export default function AuthPage() {
       <main className="min-h-screen bg-dark flex">
         {/* Left decorative panel */}
         <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-          <img src="/hero.png" alt="MK 1974" className="absolute inset-0 w-full h-full object-cover opacity-60" />
+          <img src="/product1.png" alt="MK 1974" className="absolute inset-0 w-full h-full object-cover opacity-60" />
           <div className="absolute inset-0 bg-gradient-to-r from-dark via-dark/60 to-transparent" />
           <div className="relative z-10 flex flex-col justify-end p-16 pb-20">
             <p className="eyebrow mb-4">Member Exclusives</p>

@@ -24,17 +24,19 @@
   .btn-primary {
     @apply inline-flex items-center gap-3 bg-lime text-white px-8 py-3.5
            text-[0.7rem] font-semibold tracking-[0.2em] uppercase
-           transition-all duration-300 hover:bg-lime-dim hover:text-white;
+           transition-all duration-300 hover:bg-lime-dim hover:text-white
+           shadow-md hover:shadow-lg hover:shadow-lime/30 hover:-translate-y-0.5;
   }
   .btn-ghost {
     @apply inline-flex items-center gap-3 border border-white/20 text-cream
            px-8 py-3.5 text-[0.7rem] font-medium tracking-[0.2em] uppercase
-           transition-all duration-300 hover:border-lime hover:text-lime;
+           transition-all duration-300 hover:border-lime hover:text-lime
+           hover:shadow-[0_4px_12px_rgba(150,133,116,0.15)] hover:-translate-y-0.5;
   }
   .btn-text {
     @apply inline-flex items-center gap-2 text-[0.7rem] font-medium tracking-[0.2em]
            uppercase border-b border-current pb-0.5 transition-all duration-200
-           hover:gap-4;
+           hover:gap-4 hover:text-lime;
   }
 
   /* ── Labels ── */

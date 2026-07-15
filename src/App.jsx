@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { useEffect } from 'react'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AppProvider } from './context/AppContext'
 import CartDrawer from './components/CartDrawer'
 import Toast from './components/Toast'
@@ -20,11 +21,34 @@ import ContactPage from './pages/ContactPage'
 import CollectionPage from './pages/CollectionPage'
 import LookbookPage from './pages/LookbookPage'
 
+function ScrollToTop() {
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    // Robust scroll to top bypassing smooth scroll issues
+    const html = document.documentElement
+    const body = document.body
+
+    html.style.scrollBehavior = 'auto'
+    html.scrollTop = 0
+    body.scrollTop = 0
+    window.scrollTo(0, 0)
+
+    // Restore CSS smooth scroll after a brief delay
+    setTimeout(() => {
+      html.style.scrollBehavior = ''
+    }, 10)
+  }, [pathname])
+
+  return null
+}
+
 // ─── App ──────────────────────────────────────────────────────────────────────
 export default function App() {
   return (
     <AppProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/shop" element={<ShopPage />} />

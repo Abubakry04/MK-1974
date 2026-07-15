@@ -52,8 +52,8 @@ function ProductCard({ product }) {
         {/* Wishlist */}
         <button
           onClick={() => toggleWishlist(product.id)}
-          className={`absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-dark/60 backdrop-blur-sm transition-all duration-200 ${
-            isWishlisted(product.id) ? 'text-lime' : 'text-cream/60 hover:text-cream'
+          className={`absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-surface/80 backdrop-blur-sm rounded-full transition-all duration-200 shadow-sm hover:scale-110 ${
+            isWishlisted(product.id) ? 'text-lime' : 'text-onlight/60 hover:text-onlight'
           }`}
           aria-label="Add to wishlist"
         >
@@ -92,16 +92,16 @@ function ProductCard({ product }) {
       </div>
 
       <Link to={`/product/${product.slug}`}>
-        <div className="flex justify-between items-start mb-1.5">
-          <h3 className="text-cream text-[0.85rem] font-medium tracking-[0.03em] leading-tight">{product.name}</h3>
+        <div className="flex justify-between items-start mb-1.5 mt-4">
+          <h3 className="text-onlight text-[0.85rem] font-medium tracking-[0.03em] leading-tight group-hover:text-lime transition-colors">{product.name}</h3>
           <div className="text-right shrink-0 ml-3">
-            <span className="text-cream text-[0.88rem]">₦{product.price}</span>
+            <span className="text-onlight font-semibold text-[0.88rem]">₦{product.price}</span>
             {product.originalPrice && <span className="block text-muted text-[0.7rem] line-through">₦{product.originalPrice}</span>}
           </div>
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 mt-2">
           {product.colors.slice(0, 4).map(c => (
-            <div key={c.name} className="w-3 h-3 rounded-full border border-white/20" style={{ background: c.hex }} title={c.name} />
+            <div key={c.name} className="w-3.5 h-3.5 rounded-full border border-black/10 shadow-sm" style={{ background: c.hex }} title={c.name} />
           ))}
           {product.colors.length > 4 && <span className="text-muted text-[0.65rem]">+{product.colors.length - 4}</span>}
         </div>
@@ -362,9 +362,9 @@ export default function ShopPage() {
             {/* Grid */}
             <div className="flex-1">
               {paginated.length === 0 ? (
-                <div className="text-center py-20">
-                  <p className="text-cream/30 text-[0.85rem] tracking-[0.2em] uppercase">No products found</p>
-                  <button onClick={() => { setSearchQuery(''); setFilters({ category: 'all', priceRange: '', priceMin: 0, priceMax: Infinity, sizes: [], inStockOnly: false }) }} className="btn-ghost mt-6">
+                <div className="text-center py-20 bg-surface border border-black/[0.04] rounded-md shadow-sm">
+                  <p className="text-onlight/40 text-[0.85rem] tracking-[0.2em] uppercase">No products found</p>
+                  <button onClick={() => { setSearchQuery(''); setFilters({ category: 'all', priceRange: '', priceMin: 0, priceMax: Infinity, sizes: [], inStockOnly: false }) }} className="btn-text mt-6">
                     Clear Filters
                   </button>
                 </div>
@@ -380,7 +380,7 @@ export default function ShopPage() {
                       <button
                         onClick={() => setPage(p => Math.max(1, p - 1))}
                         disabled={page === 1}
-                        className="w-10 h-10 border border-white/10 text-cream/60 hover:border-white/30 hover:text-cream disabled:opacity-30 transition-all flex items-center justify-center"
+                        className="w-10 h-10 border border-black/10 text-onlight/60 hover:border-black/30 hover:text-onlight disabled:opacity-30 transition-all flex items-center justify-center rounded-sm"
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
                       </button>
@@ -388,15 +388,15 @@ export default function ShopPage() {
                         <button
                           key={i}
                           onClick={() => setPage(i + 1)}
-                          className={`w-10 h-10 text-[0.75rem] font-medium border transition-all ${
-                            page === i + 1 ? 'border-lime text-lime' : 'border-white/10 text-cream/60 hover:border-white/30 hover:text-cream'
+                          className={`w-10 h-10 text-[0.75rem] font-medium border transition-all rounded-sm ${
+                            page === i + 1 ? 'border-lime text-lime bg-lime/10' : 'border-black/10 text-onlight/60 hover:border-black/30 hover:text-onlight'
                           }`}
                         >{i + 1}</button>
                       ))}
                       <button
                         onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                         disabled={page === totalPages}
-                        className="w-10 h-10 border border-white/10 text-cream/60 hover:border-white/30 hover:text-cream disabled:opacity-30 transition-all flex items-center justify-center"
+                        className="w-10 h-10 border border-black/10 text-onlight/60 hover:border-black/30 hover:text-onlight disabled:opacity-30 transition-all flex items-center justify-center rounded-sm"
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
                       </button>

@@ -7,14 +7,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        lime: '#968574',
-        'lime-dim': '#76685A',
-        dark: '#1E1F21',
-        surface: '#FAF9F6',
-        surface2: '#F5F5DC',
-        cream: '#FAF9F6',
-        muted: '#7A756D',
-        'muted-light': '#B2ACA3',
+        lime: '#8B8074',
+        'lime-dim': '#6C6258',
+        dark: '#1C1C1C',
+        surface: '#F8F7F4',
+        surface2: '#EFECE7',
+        cream: '#FDFCFB',
+        muted: '#8A8681',
+        'muted-light': '#C1BFBA',
         onlight: '#1A1A1A',
       },
       fontFamily: {

@@ -145,7 +145,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
-                  {/* <div>
+                  <div>
                     <h2 className="text-cream font-semibold text-[0.82rem] tracking-[0.25em] uppercase mb-5">Delivery Option</h2>
                     <div className="space-y-3">
                       {[
@@ -153,7 +153,7 @@ export default function CheckoutPage() {
                         { value: 'express', label: 'Express Delivery', desc: '1-2 business days', price: '₦5.99' },
                         { value: 'next-day', label: 'Next Day Delivery', desc: 'Order before 2pm', price: '₦8.99' },
                       ].map(opt => (
-                        <label key={opt.value} className={`flex items-center justify-between p-4 border cursor-pointer transition-all ${form.delivery === opt.value ? 'border-lime bg-lime/5' : 'border-white/10 hover:border-white/20'}`}>
+                        <label key={opt.value} className={`flex items-center justify-between p-4 border cursor-pointer transition-all rounded-sm ${form.delivery === opt.value ? 'border-lime bg-lime/10' : 'border-white/10 hover:border-white/30'}`}>
                           <div className="flex items-center gap-4">
                             <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${form.delivery === opt.value ? 'border-lime' : 'border-white/30'}`}>
                               {form.delivery === opt.value && <div className="w-2 h-2 rounded-full bg-lime" />}
@@ -168,7 +168,7 @@ export default function CheckoutPage() {
                         </label>
                       ))}
                     </div>
-                  </div> */}
+                  </div>
 
                   <button type="submit" className="btn-primary">
                     Continue to Payment
