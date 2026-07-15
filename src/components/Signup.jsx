@@ -12,7 +12,7 @@ export default function Signup() {
   };
 
   return (
-    <section className="relative bg-dark overflow-hidden">
+    <section className="relative bg-surface2 overflow-hidden">
       {/* Full-bleed product image */}
       <div className="relative h-[60vh] overflow-hidden">
         <img
