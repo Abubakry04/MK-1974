@@ -1,7 +1,5 @@
 import { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react'
 import * as api from '../api/apiClient'
-import { PRODUCTS as STATIC_PRODUCTS, CATEGORIES as STATIC_CATEGORIES } from '../data/products'
-
 
 // ─── Context ──────────────────────────────────────────────────────────────────
 //
@@ -166,16 +164,11 @@ export function AppProvider({ children }) {
       }
     })
 
-    return [...STATIC_PRODUCTS, ...mappedApi]
+    return mappedApi
   }, [apiProducts, apiColors, apiSizes])
 
   const dynamicCategories = useMemo(() => {
     const list = ['All']
-    STATIC_CATEGORIES.forEach(c => {
-      if (c.label && !list.includes(c.label)) {
-        list.push(c.label)
-      }
-    })
     apiCategories.forEach(c => {
       if (c.name && !list.some(m => m.toLowerCase() === c.name.toLowerCase())) {
         list.push(c.name)
