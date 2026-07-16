@@ -26,5 +26,5 @@ export default {
   plugins: [],
 }
 
-#EFECE7
-#F8F5F0
+// #EFECE7
+// #F8F5F0
