@@ -288,6 +288,7 @@ export function AppProvider({ children }) {
         firstName: userData.firstName,
         lastName: userData.lastName,
         email: userData.email,
+        phoneNumber: userData.phoneNumber,
         password: userData.password,
         role: 2, // Role 2 in payload for customer
       })
