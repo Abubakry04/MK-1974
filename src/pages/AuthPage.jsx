@@ -8,7 +8,7 @@ export default function AuthPage() {
   const { login, register, showToast } = useApp()
   const navigate = useNavigate()
   const [mode, setMode] = useState('login') // login | register | forgot
-  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '', confirmPassword: '' })
+  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phoneNumber: '', password: '', confirmPassword: '' })
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({})
 
@@ -25,6 +25,7 @@ export default function AuthPage() {
     if (mode === 'register') {
       if (!form.firstName) errs.firstName = 'First name is required'
       if (!form.lastName) errs.lastName = 'Last name is required'
+      if (!form.phoneNumber) errs.phoneNumber = 'Phone number is required'
       if (form.password !== form.confirmPassword) errs.confirmPassword = 'Passwords do not match'
     }
     setErrors(errs)
@@ -48,6 +49,7 @@ export default function AuthPage() {
         firstName: form.firstName,
         lastName: form.lastName,
         email: form.email,
+        phoneNumber: form.phoneNumber,
         password: form.password
       })
       if (result.success) {
@@ -136,6 +138,21 @@ export default function AuthPage() {
                 />
                 {errors.email && <p className="text-red-400 text-[0.65rem] mt-1">{errors.email}</p>}
               </div>
+
+              {/* Phone Number */}
+              {mode === 'register' && (
+                <div>
+                  <input
+                    type="tel"
+                    name="phoneNumber"
+                    value={form.phoneNumber}
+                    onChange={handleChange}
+                    placeholder="Phone Number"
+                    className={`w-full bg-surface border text-onlight text-[0.85rem] px-4 py-3.5 focus:outline-none transition-colors placeholder-muted ${errors.phoneNumber ? 'border-red-500/60' : 'border-black/10 focus:border-lime/40'}`}
+                  />
+                  {errors.phoneNumber && <p className="text-red-400 text-[0.65rem] mt-1">{errors.phoneNumber}</p>}
+                </div>
+              )}
 
               {/* Password */}
               {mode !== 'forgot' && (

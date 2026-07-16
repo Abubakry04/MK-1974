@@ -11,7 +11,7 @@ export default {
         'lime-dim': '#6C6258',
         dark: '#1C1C1C',
         surface: '#F8F7F4',
-        surface2: '#EFECE7',
+        surface2: '#F8F5F0',
         cream: '#FDFCFB',
         muted: '#8A8681',
         'muted-light': '#C1BFBA',
@@ -25,3 +25,6 @@ export default {
   },
   plugins: [],
 }
+
+#EFECE7
+#F8F5F0
