@@ -64,7 +64,10 @@ export const colors = {
   remove: (id)   => request('DELETE', `/api/Color/${id}`),
 }
 
-// ─── Sizes ────────────────────────────────────────────────────────────────────
+// ─── Orders ───────────────────────────────────────────────────────────────────
+export const orders = {
+  create: (body) => request('POST', '/api/Order', body),
+}
 export const sizes = {
   getAll: () => request('GET', '/api/Size'),
   create: (body) => request('POST', '/api/Size', body),

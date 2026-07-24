@@ -1,7 +1,9 @@
 import { useApp } from '../../context/AppContext'
+import useScrollReveal from '../../hooks/useScrollReveal'
 
 export default function Newsletter() {
   const { showToast } = useApp()
+  const { ref, isVisible } = useScrollReveal()
   const handleSubmit = (e) => {
     e.preventDefault()
     e.target.reset()
@@ -9,7 +11,16 @@ export default function Newsletter() {
   }
 
   return (
-    <section id="newsletter" className="bg-surface2 border-t border-black/[0.05] py-20 px-8 md:px-12">
+    <section
+      id="newsletter"
+      ref={ref}
+      className="bg-surface2 border-t border-black/[0.05] py-20 px-8 md:px-12"
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? 'translateY(0)' : 'translateY(32px)',
+        transition: 'opacity 0.8s cubic-bezier(.16,1,.3,1) 0.15s, transform 0.8s cubic-bezier(.16,1,.3,1) 0.15s',
+      }}
+    >
       <div className="max-w-[700px] mx-auto text-center">
         <p className="eyebrow mb-4">Stay in the Loop</p>
         <h2 className="font-playfair font-black italic text-black mb-4" style={{ fontSize: 'clamp(2rem,4vw,3rem)' }}>

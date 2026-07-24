@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import Nav from '../components/Nav'
 import Footer from '../components/Footer'
+import usePageMeta from '../hooks/usePageMeta'
 
 const SORT_OPTIONS = [
   { label: 'Newest', value: 'newest' },
@@ -19,8 +20,7 @@ const PRICE_RANGES = [
   { label: 'Over ₦150', min: 150, max: Infinity },
 ]
 
-const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
-
+const SIZES = ['S', 'M', 'L', 'XL']
 
 function ProductCard({ product }) {
   const { addToCart, toggleWishlist, isWishlisted } = useApp()
@@ -83,7 +83,7 @@ function ProductCard({ product }) {
                 onClick={() => addToCart(product, product.sizes[2] || product.sizes[0], product.colors[0].name)}
                 className="w-full bg-lime text-dark text-[0.6rem] font-black tracking-[0.25em] uppercase py-2.5 hover:bg-lime-dim transition-colors"
               >
-                Add to Bag — ₦{product.price}
+                Add to Bag — ₦{product.price.toLocaleString()}
               </button>
             </div>
           </div>
@@ -94,8 +94,8 @@ function ProductCard({ product }) {
         <div className="flex justify-between items-start mb-1.5 mt-4">
           <h3 className="text-onlight text-[0.85rem] font-medium tracking-[0.03em] leading-tight group-hover:text-lime transition-colors">{product.name}</h3>
           <div className="text-right shrink-0 ml-3">
-            <span className="text-onlight font-semibold text-[0.88rem]">₦{product.price}</span>
-            {product.originalPrice && <span className="block text-muted text-[0.7rem] line-through">₦{product.originalPrice}</span>}
+            <span className="text-onlight font-semibold text-[0.88rem]">₦{product.price.toLocaleString()}</span>
+            {product.originalPrice && <span className="block text-muted text-[0.7rem] line-through">₦{product.originalPrice.toLocaleString()}</span>}
           </div>
         </div>
         <div className="flex items-center gap-1.5 mt-2">
@@ -225,8 +225,11 @@ function FilterSidebar({ filters, setFilters, onClose, categories }) {
   )
 }
 
+const EMPTY_FILTERS = { category: 'all', priceRange: '', priceMin: 0, priceMax: Infinity, sizes: [], inStockOnly: false }
+
 export default function ShopPage() {
-  const { products: storeProducts, categories: storefrontCategories } = useApp()
+  usePageMeta('Shop All', 'Browse the full MK 1974 collection — premium tracksuits, jerseys, joggers and streetwear.')
+  const { products: storeProducts, categories: storefrontCategories, apiLoading } = useApp()
   const [searchParams] = useSearchParams()
   const [sort, setSort] = useState(searchParams.get('sort') || 'newest')
   const [filters, setFilters] = useState({
@@ -245,7 +248,6 @@ export default function ShopPage() {
   const filtered = useMemo(() => {
     let products = [...storeProducts]
 
-    // Search
     if (searchQuery) {
       const q = searchQuery.toLowerCase()
       products = products.filter(p =>
@@ -255,7 +257,6 @@ export default function ShopPage() {
       )
     }
 
-    // Category
     if (filters.category !== 'all') {
       products = products.filter(p => {
         const catClean = filters.category.toLowerCase()
@@ -267,15 +268,12 @@ export default function ShopPage() {
       })
     }
 
-    // Price
     if (filters.priceMin || filters.priceMax < Infinity) {
       products = products.filter(p => p.price >= filters.priceMin && p.price <= filters.priceMax)
     }
 
-    // In stock
     if (filters.inStockOnly) products = products.filter(p => p.inStock)
 
-    // Sort
     switch (sort) {
       case 'price-asc': products.sort((a, b) => a.price - b.price); break
       case 'price-desc': products.sort((a, b) => b.price - a.price); break
@@ -285,7 +283,7 @@ export default function ShopPage() {
     }
 
     return products
-  }, [filters, sort, searchQuery])
+  }, [filters, sort, searchQuery, storeProducts])
 
   const totalPages = Math.ceil(filtered.length / PER_PAGE)
   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE)
@@ -295,10 +293,16 @@ export default function ShopPage() {
       <Nav />
       <main className="bg-surface2 min-h-screen pt-24">
         {/* Page header */}
-        <div className="bg-surface2  px-8 md:px-12 py-10">
-          <div className="max-w-[1440px] mx-auto">
-            <p className="eyebrow mb-2">Browse</p>
-            <h1 className="font-playfair font-black italic text-4xl md:text-5xl" style={{ color: '#1A1A1A' }}>Shop All</h1>
+        <div className="bg-surface2 px-8 md:px-12 py-10 border-b border-black/[0.04]">
+          <div className="max-w-[1440px] mx-auto flex items-end justify-between">
+            <div>
+              <p className="eyebrow mb-2">Browse</p>
+              <h1 className="font-playfair font-black italic text-4xl md:text-5xl" style={{ color: '#1A1A1A' }}>Shop All</h1>
+            </div>
+            <div className="hidden md:flex items-center gap-2 pb-1">
+              <div className="w-8 h-px bg-lime/40" />
+              <span className="text-muted text-[0.65rem] tracking-[0.25em] uppercase">{filtered.length} pieces</span>
+            </div>
           </div>
         </div>
 
@@ -321,11 +325,11 @@ export default function ShopPage() {
             </div>
 
             <div className="flex items-center gap-4">
-              {/* Filter toggle (mobile) */}
+              {/* Filter toggle (mobile) — opens bottom drawer */}
               <button
                 id="filter-toggle"
-                onClick={() => setFiltersOpen(!filtersOpen)}
-                className="lg:hidden flex items-center gap-2 text-cream/60 text-[0.72rem] tracking-[0.2em] uppercase hover:text-cream transition-colors border border-white/10 px-4 py-3"
+                onClick={() => setFiltersOpen(true)}
+                className="lg:hidden flex items-center gap-2 text-onlight text-[0.72rem] tracking-[0.2em] uppercase hover:text-lime transition-colors border border-black/20 px-4 py-3"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/>
@@ -353,17 +357,33 @@ export default function ShopPage() {
           </div>
 
           <div className="flex gap-10">
-            {/* Sidebar */}
-            <aside className={`shrink-0 w-56 ${filtersOpen ? 'block' : 'hidden'} lg:block`}>
+            {/* Sidebar — desktop only */}
+            <aside className="shrink-0 w-56 hidden lg:block">
               <FilterSidebar filters={filters} setFilters={setFilters} onClose={() => setFiltersOpen(false)} categories={storefrontCategories} />
             </aside>
 
             {/* Grid */}
             <div className="flex-1">
-              {paginated.length === 0 ? (
+              {apiLoading ? (
+                <div className="py-8 space-y-6">
+                  <div className="flex items-center justify-center py-6 gap-3">
+                    <div className="w-5 h-5 border-2 border-lime border-t-transparent rounded-full animate-spin" />
+                    <span className="text-[0.7rem] font-bold tracking-[0.25em] uppercase text-dark/50">Loading Collection...</span>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-5 gap-y-10">
+                    {[...Array(8)].map((_, i) => (
+                      <div key={i} className="animate-pulse">
+                        <div className="aspect-[3/4] bg-dark/5 rounded-md mb-4 border border-dark/5" />
+                        <div className="h-4 bg-dark/10 rounded w-3/4 mb-2" />
+                        <div className="h-3 bg-dark/10 rounded w-1/2" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : paginated.length === 0 ? (
                 <div className="text-center py-20 bg-surface border border-black/[0.04] rounded-md shadow-sm">
                   <p className="text-onlight/40 text-[0.85rem] tracking-[0.2em] uppercase">No products found</p>
-                  <button onClick={() => { setSearchQuery(''); setFilters({ category: 'all', priceRange: '', priceMin: 0, priceMax: Infinity, sizes: [], inStockOnly: false }) }} className="btn-text mt-6">
+                  <button onClick={() => { setSearchQuery(''); setFilters(EMPTY_FILTERS) }} className="btn-text mt-6">
                     Clear Filters
                   </button>
                 </div>
@@ -407,6 +427,52 @@ export default function ShopPage() {
           </div>
         </div>
       </main>
+
+      {/* ── Mobile Filter Bottom Drawer ── */}
+      <>
+        {/* Backdrop */}
+        <div
+          className={`fixed inset-0 z-[200] bg-dark/60 backdrop-blur-sm transition-opacity duration-300 lg:hidden ${
+            filtersOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          }`}
+          onClick={() => setFiltersOpen(false)}
+        />
+        {/* Drawer */}
+        <div
+          className={`fixed inset-x-0 bottom-0 z-[210] bg-white rounded-t-2xl transition-transform duration-500 ease-[cubic-bezier(.16,1,.3,1)] lg:hidden max-h-[80vh] flex flex-col ${
+            filtersOpen ? 'translate-y-0' : 'translate-y-full'
+          }`}
+        >
+          {/* Handle + header */}
+          <div className="flex items-center justify-between px-6 pt-4 pb-5 border-b border-black/[0.06] shrink-0">
+            <div className="w-10 h-1 rounded-full bg-black/15 absolute top-3 left-1/2 -translate-x-1/2" />
+            <p className="text-black font-semibold text-[0.85rem] tracking-[0.1em] uppercase mt-2">Filters</p>
+            <button
+              onClick={() => setFiltersOpen(false)}
+              className="text-black/40 hover:text-black transition-colors mt-2"
+              aria-label="Close filters"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+          {/* Scrollable filter content */}
+          <div className="overflow-y-auto flex-1 px-6 py-6">
+            <FilterSidebar filters={filters} setFilters={setFilters} onClose={() => setFiltersOpen(false)} categories={storefrontCategories} />
+          </div>
+          {/* Apply button */}
+          <div className="shrink-0 px-6 pb-8 pt-4 border-t border-black/[0.06]">
+            <button
+              onClick={() => setFiltersOpen(false)}
+              className="btn-primary w-full justify-center"
+            >
+              Show {filtered.length} Results
+            </button>
+          </div>
+        </div>
+      </>
+
       <Footer />
     </>
   )

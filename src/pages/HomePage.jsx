@@ -10,9 +10,11 @@ import Newsletter from '../components/home/Newsletter'
 import SocialGallery from '../components/home/SocialGallery'
 
 import FlashSale from '../components/home/FlashSale'
+import usePageMeta from '../hooks/usePageMeta'
 
 // ─── HomePage ──────────────────────────────────────────────────────────────────
 export default function HomePage() {
+  usePageMeta('Built for the Street', 'MK 1974 — Premium tracksuits, jerseys and street-ready clothing. Shop the latest collection.')
   return (
     <>
       <Nav />

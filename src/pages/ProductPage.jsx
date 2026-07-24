@@ -1,8 +1,9 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import Nav from '../components/Nav'
 import Footer from '../components/Footer'
+import usePageMeta from '../hooks/usePageMeta'
 
 function StarRating({ rating, size = 14 }) {
   return (
@@ -25,9 +26,14 @@ const MOCK_REVIEWS = [
 export default function ProductPage() {
   const { slug } = useParams()
   const navigate = useNavigate()
-  const { products, addToCart, toggleWishlist, isWishlisted, showToast } = useApp()
+  const { products, addToCart, toggleWishlist, isWishlisted, showToast, addToRecentlyViewed, recentlyViewed } = useApp()
 
   const product = useMemo(() => products.find(p => p.slug === slug), [products, slug])
+
+  usePageMeta(
+    product ? product.name : 'Product',
+    product ? `${product.name} — ${product.description?.slice(0, 120) || 'Premium MK 1974 streetwear.'}` : ''
+  )
 
   const [selectedSize, setSelectedSize] = useState(null)
   const [selectedColor, setSelectedColor] = useState(0)
@@ -37,6 +43,25 @@ export default function ProductPage() {
   const [showSizeGuide, setShowSizeGuide] = useState(false)
   const [reviewText, setReviewText] = useState('')
   const [reviewRating, setReviewRating] = useState(5)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [lightboxIndex, setLightboxIndex] = useState(0)
+
+  // Track recently viewed
+  useEffect(() => {
+    if (product) addToRecentlyViewed(product)
+  }, [product?.id])
+
+  // Keyboard navigation for lightbox
+  useEffect(() => {
+    if (!lightboxOpen) return
+    const handler = (e) => {
+      if (e.key === 'Escape') setLightboxOpen(false)
+      if (e.key === 'ArrowRight') setLightboxIndex(i => (i + 1) % product.images.length)
+      if (e.key === 'ArrowLeft') setLightboxIndex(i => (i - 1 + product.images.length) % product.images.length)
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [lightboxOpen, product])
 
   if (!product) {
     return (
@@ -99,13 +124,22 @@ export default function ProductPage() {
                 ))}
               </div>
 
-              {/* Main image */}
-              <div className="flex-1 relative aspect-[3/4] overflow-hidden bg-surface2">
+              {/* Main image — clickable for lightbox */}
+              <div
+                className="flex-1 relative aspect-[3/4] overflow-hidden bg-surface2 cursor-zoom-in"
+                onClick={() => { setLightboxIndex(selectedImage); setLightboxOpen(true) }}
+                title="Click to zoom"
+              >
                 <img
                   src={product.images[selectedImage]}
                   alt={product.name}
                   className="w-full h-full object-cover transition-all duration-500"
                 />
+                {/* Zoom hint */}
+                <div className="absolute bottom-3 right-3 bg-dark/60 backdrop-blur-sm text-cream/70 text-[0.55rem] tracking-[0.2em] uppercase px-2 py-1 flex items-center gap-1.5 rounded-sm pointer-events-none">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                  Zoom
+                </div>
                 {product.badge && (
                   <div className="absolute top-4 left-4">
                     <span className={`text-[0.6rem] font-black tracking-[0.25em] uppercase px-3 py-1.5 ${
@@ -140,11 +174,11 @@ export default function ProductPage() {
 
                 {/* Price */}
                 <div className="flex items-baseline gap-3 mb-6">
-                  <span className="text-cream text-3xl font-light">₦{product.price}</span>
+                  <span className="text-cream text-3xl font-light">₦{product.price.toLocaleString()}</span>
                   {product.originalPrice && (
                     <>
-                      <span className="text-muted text-xl line-through">₦{product.originalPrice}</span>
-                      <span className="text-lime text-[0.75rem] font-semibold">Save ₦{product.originalPrice - product.price}</span>
+                      <span className="text-muted text-xl line-through">₦{product.originalPrice.toLocaleString()}</span>
+                      <span className="text-lime text-[0.75rem] font-semibold">Save ₦{(product.originalPrice - product.price).toLocaleString()}</span>
                     </>
                   )}
                 </div>
@@ -264,7 +298,7 @@ export default function ProductPage() {
 
           {/* ── Tabs: Description / Specs / Reviews ── */}
           <div className="mt-20 border-t border-white/[0.05]">
-            <div className="flex gap-0 border-b border-white/[0.05]">
+            <div className="flex gap-0 border-b border-white/[0.05] overflow-x-auto whitespace-nowrap pb-2 hide-scrollbar">
               {[
                 { id: 'description', label: 'Description' },
                 { id: 'specs', label: 'Specifications' },
@@ -274,7 +308,7 @@ export default function ProductPage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-6 py-4 text-[0.68rem] font-semibold tracking-[0.25em] uppercase transition-all border-b-2 ${
+                  className={`shrink-0 px-6 py-4 text-[0.68rem] font-semibold tracking-[0.25em] uppercase transition-all border-b-2 ${
                     activeTab === tab.id ? 'border-lime text-lime' : 'border-transparent text-cream/40 hover:text-cream'
                   }`}
                 >{tab.label}</button>
@@ -384,7 +418,26 @@ export default function ProductPage() {
                       <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     </div>
                     <h3 className="text-cream text-[0.82rem] font-medium mb-1">{p.name}</h3>
-                    <span className="text-cream/60 text-[0.82rem]">₦{p.price}</span>
+                    <span className="text-cream/60 text-[0.82rem]">₦{p.price.toLocaleString()}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ── Recently Viewed ── */}
+          {recentlyViewed.filter(p => p.id !== product.id).length > 0 && (
+            <div className="mt-16 border-t border-white/[0.05] pt-16">
+              <p className="eyebrow mb-3">Your History</p>
+              <h2 className="font-playfair font-black italic text-cream text-3xl mb-10">Recently Viewed</h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {recentlyViewed.filter(p => p.id !== product.id).slice(0, 6).map(p => (
+                  <Link key={p.id} to={`/product/${p.slug}`} className="group block">
+                    <div className="aspect-[3/4] overflow-hidden bg-surface2 mb-2">
+                      <img src={p.images[0]} alt={p.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    </div>
+                    <h3 className="text-cream text-[0.75rem] font-medium leading-tight truncate group-hover:text-lime transition-colors">{p.name}</h3>
+                    <span className="text-muted text-[0.72rem]">₦{p.price.toLocaleString()}</span>
                   </Link>
                 ))}
               </div>
@@ -392,6 +445,79 @@ export default function ProductPage() {
           )}
         </div>
       </main>
+
+      {/* ── Lightbox ── */}
+      {lightboxOpen && (
+        <div
+          className="fixed inset-0 z-[300] bg-dark/95 backdrop-blur-md flex items-center justify-center"
+          onClick={() => setLightboxOpen(false)}
+        >
+          {/* Close button */}
+          <button
+            onClick={() => setLightboxOpen(false)}
+            className="absolute top-6 right-6 text-cream/60 hover:text-cream transition-colors z-10"
+            aria-label="Close lightbox"
+          >
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+
+          {/* Prev */}
+          <button
+            onClick={e => { e.stopPropagation(); setLightboxIndex(i => (i - 1 + product.images.length) % product.images.length) }}
+            className="absolute left-4 md:left-8 text-cream/50 hover:text-cream transition-colors z-10 w-12 h-12 flex items-center justify-center border border-white/10 hover:border-white/30 bg-dark/50"
+            aria-label="Previous image"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+
+          {/* Image */}
+          <div
+            className="max-w-3xl max-h-[85vh] w-full px-16 md:px-24"
+            onClick={e => e.stopPropagation()}
+          >
+            <img
+              src={product.images[lightboxIndex]}
+              alt={product.name}
+              className="w-full h-full object-contain max-h-[85vh]"
+              style={{ transition: 'opacity 0.25s ease' }}
+            />
+          </div>
+
+          {/* Next */}
+          <button
+            onClick={e => { e.stopPropagation(); setLightboxIndex(i => (i + 1) % product.images.length) }}
+            className="absolute right-4 md:right-8 text-cream/50 hover:text-cream transition-colors z-10 w-12 h-12 flex items-center justify-center border border-white/10 hover:border-white/30 bg-dark/50"
+            aria-label="Next image"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+
+          {/* Counter */}
+          <p className="absolute bottom-6 left-1/2 -translate-x-1/2 text-cream/40 text-[0.65rem] tracking-[0.3em] uppercase">
+            {lightboxIndex + 1} / {product.images.length}
+          </p>
+
+          {/* Thumbnail strip */}
+          {product.images.length > 1 && (
+            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-2">
+              {product.images.map((img, i) => (
+                <button
+                  key={i}
+                  onClick={e => { e.stopPropagation(); setLightboxIndex(i) }}
+                  className={`w-10 h-12 overflow-hidden border-2 transition-all ${
+                    lightboxIndex === i ? 'border-lime' : 'border-white/20 hover:border-white/50'
+                  }`}
+                >
+                  <img src={img} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       <Footer />
     </>
   )

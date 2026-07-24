@@ -1,9 +1,46 @@
 import { useApp } from '../context/AppContext'
 import { Link } from 'react-router-dom'
 
+function UpsellCard({ product }) {
+  const { addToCart } = useApp()
+  return (
+    <div className="flex gap-3 items-center py-3">
+      <Link
+        to={`/product/${product.slug}`}
+        className="shrink-0 w-14 aspect-[3/4] overflow-hidden bg-surface2"
+        onClick={() => {}}
+      >
+        <img src={product.images?.[0] || '/product2.png'} alt={product.name} className="w-full h-full object-cover" />
+      </Link>
+      <div className="flex-1 min-w-0">
+        <p className="text-cream text-[0.75rem] font-medium leading-tight truncate">{product.name}</p>
+        <p className="text-muted text-[0.68rem] mt-0.5">₦{product.price.toLocaleString()}</p>
+      </div>
+      <button
+        onClick={() => addToCart(product, product.sizes?.[1] || product.sizes?.[0], product.colors?.[0]?.name)}
+        className="shrink-0 text-[0.58rem] font-bold tracking-[0.2em] uppercase border border-lime/40 text-lime px-2.5 py-1.5 hover:bg-lime hover:text-dark transition-all duration-200 whitespace-nowrap"
+      >
+        + Add
+      </button>
+    </div>
+  )
+}
+
 export default function CartDrawer() {
-  const { cart, cartOpen, setCartOpen, removeFromCart, updateQty, cartTotal, cartCount, products } = useApp()
+  const { cart, cartOpen, setCartOpen, removeFromCart, updateQty, cartTotal, cartCount, products, user, showToast } = useApp()
   const shipping = cartTotal >= 75 ? 0 : 3.99
+
+  // Pick 2 upsell products from a different category than cart items
+  const upsellProducts = (() => {
+    if (cart.length === 0 || products.length === 0) return []
+    const cartProductIds = new Set(cart.map(i => i.product.id))
+    const cartCategories = new Set(cart.map(i => i.product.category))
+    const candidates = products.filter(p => !cartProductIds.has(p.id) && !cartCategories.has(p.category) && p.inStock)
+    if (candidates.length === 0) {
+      return products.filter(p => !cartProductIds.has(p.id) && p.inStock).slice(0, 2)
+    }
+    return candidates.slice(0, 2)
+  })()
 
   return (
     <>
@@ -56,39 +93,53 @@ export default function CartDrawer() {
               <Link to="/shop" onClick={() => setCartOpen(false)} className="btn-primary mt-2">Shop Now</Link>
             </div>
           ) : (
-            <div className="space-y-0 divide-y divide-white/[0.04]">
-              {cart.map((item) => {
-                const freshProduct = products.find(p => p.id === item.product.id) || item.product
-                return (
-                  <div key={item.key} className="flex gap-4 py-5">
-                    <Link to={`/product/${freshProduct.slug}`} onClick={() => setCartOpen(false)} className="shrink-0 w-20 aspect-[3/4] overflow-hidden bg-surface2">
-                      <img src={freshProduct.images?.[0] || '/product2.png'} alt={freshProduct.name} className="w-full h-full object-cover" />
-                    </Link>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2 mb-1">
-                        <Link to={`/product/${freshProduct.slug}`} onClick={() => setCartOpen(false)}>
-                          <h3 className="text-cream text-[0.82rem] font-medium leading-tight hover:text-lime transition-colors">{freshProduct.name}</h3>
-                        </Link>
-                        <button onClick={() => removeFromCart(item.key)} className="text-muted hover:text-cream transition-colors shrink-0">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                          </svg>
-                        </button>
-                      </div>
-                      <p className="text-muted text-[0.68rem] mb-3">{item.size} · {item.color}</p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-0">
-                          <button onClick={() => updateQty(item.key, item.qty - 1)} className="w-7 h-7 border border-white/15 text-cream hover:border-white/30 text-xs flex items-center justify-center transition-all">−</button>
-                          <span className="w-8 h-7 border-t border-b border-white/15 text-cream text-[0.72rem] flex items-center justify-center">{item.qty}</span>
-                          <button onClick={() => updateQty(item.key, item.qty + 1)} className="w-7 h-7 border border-white/15 text-cream hover:border-white/30 text-xs flex items-center justify-center transition-all">+</button>
+            <>
+              <div className="space-y-0 divide-y divide-white/[0.04]">
+                {cart.map((item) => {
+                  const freshProduct = products.find(p => p.id === item.product.id) || item.product
+                  return (
+                    <div key={item.key} className="flex gap-4 py-5">
+                      <Link to={`/product/${freshProduct.slug}`} onClick={() => setCartOpen(false)} className="shrink-0 w-20 aspect-[3/4] overflow-hidden bg-surface2">
+                        <img src={freshProduct.images?.[0] || '/product2.png'} alt={freshProduct.name} className="w-full h-full object-cover" />
+                      </Link>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2 mb-1">
+                          <Link to={`/product/${freshProduct.slug}`} onClick={() => setCartOpen(false)}>
+                            <h3 className="text-cream text-[0.82rem] font-medium leading-tight hover:text-lime transition-colors">{freshProduct.name}</h3>
+                          </Link>
+                          <button onClick={() => removeFromCart(item.key)} className="text-muted hover:text-cream transition-colors shrink-0">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                            </svg>
+                          </button>
                         </div>
-                        <span className="text-cream text-[0.85rem] font-medium">₦{(item.price * item.qty).toFixed(2)}</span>
+                        <p className="text-muted text-[0.68rem] mb-3">{item.size} · {item.color}</p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-0">
+                            <button onClick={() => updateQty(item.key, item.qty - 1)} className="w-7 h-7 border border-white/15 text-cream hover:border-white/30 text-xs flex items-center justify-center transition-all">−</button>
+                            <span className="w-8 h-7 border-t border-b border-white/15 text-cream text-[0.72rem] flex items-center justify-center">{item.qty}</span>
+                            <button onClick={() => updateQty(item.key, item.qty + 1)} className="w-7 h-7 border border-white/15 text-cream hover:border-white/30 text-xs flex items-center justify-center transition-all">+</button>
+                          </div>
+                          <span className="text-cream text-[0.85rem] font-medium">₦{(item.price * item.qty).toLocaleString()}</span>
+                        </div>
                       </div>
                     </div>
+                  )
+                })}
+              </div>
+
+              {/* Upsell section */}
+              {upsellProducts.length > 0 && (
+                <div className="mt-6 pt-6 border-t border-white/[0.05]">
+                  <p className="text-muted text-[0.6rem] font-semibold tracking-[0.3em] uppercase mb-3">You May Also Like</p>
+                  <div className="divide-y divide-white/[0.04]">
+                    {upsellProducts.map(p => (
+                      <UpsellCard key={p.id} product={p} />
+                    ))}
                   </div>
-                )
-              })}
-            </div>
+                </div>
+              )}
+            </>
           )}
         </div>
 
@@ -98,35 +149,45 @@ export default function CartDrawer() {
             <div className="space-y-2 mb-5">
               <div className="flex justify-between text-[0.78rem]">
                 <span className="text-cream/60">Subtotal</span>
-                <span className="text-cream">₦{cartTotal.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-[0.78rem]">
-                <span className="text-cream/60">Shipping</span>
-                <span className={shipping === 0 ? 'text-lime' : 'text-cream'}>
-                  {shipping === 0 ? 'FREE' : `₦${shipping.toFixed(2)}`}
-                </span>
+                <span className="text-cream">₦{cartTotal.toLocaleString()}</span>
               </div>
               {shipping > 0 && (
                 <p className="text-muted text-[0.65rem]">
-                  Add ₦{(75 - cartTotal).toFixed(2)} more for free shipping
+                  Add ₦{(75 - cartTotal).toLocaleString()} more for free shipping
                 </p>
               )}
               <div className="flex justify-between pt-3 border-t border-white/[0.04]">
                 <span className="text-cream font-semibold text-[0.82rem]">Estimated Total</span>
-                <span className="text-cream font-semibold text-[0.88rem]">₦{(cartTotal + shipping).toFixed(2)}</span>
+                <span className="text-cream font-semibold text-[0.88rem]">₦{(cartTotal + shipping).toLocaleString()}</span>
               </div>
             </div>
             <div className="flex flex-col gap-3">
-              <Link
-                to="/checkout"
-                onClick={() => setCartOpen(false)}
-                className="btn-primary w-full justify-center"
-              >
-                Checkout
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </Link>
+              {user ? (
+                <Link
+                  to="/checkout"
+                  onClick={() => setCartOpen(false)}
+                  className="btn-primary w-full justify-center"
+                >
+                  Checkout
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              ) : (
+                <Link
+                  to="/auth?mode=register&redirect=/checkout"
+                  onClick={() => {
+                    showToast('Please sign in or create an account to proceed to checkout.')
+                    setCartOpen(false)
+                  }}
+                  className="btn-primary w-full justify-center"
+                >
+                  Checkout
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              )}
               <Link
                 to="/cart"
                 onClick={() => setCartOpen(false)}

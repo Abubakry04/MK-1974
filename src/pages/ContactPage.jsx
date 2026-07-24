@@ -2,9 +2,11 @@ import { useState } from 'react'
 import { useApp } from '../context/AppContext'
 import Nav from '../components/Nav'
 import Footer from '../components/Footer'
+import usePageMeta from '../hooks/usePageMeta'
 
 export default function ContactPage() {
   const { showToast } = useApp()
+  usePageMeta('Contact Us', 'Get in touch with the MK 1974 team. We\'re here to help with any queries.')
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
 
   const handleSubmit = e => {

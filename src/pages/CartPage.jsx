@@ -3,10 +3,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import Nav from '../components/Nav'
 import Footer from '../components/Footer'
+import usePageMeta from '../hooks/usePageMeta'
 
 // ─── Cart Page ─────────────────────────────────────────────────────────────────
 export default function CartPage() {
-  const { cart, removeFromCart, updateQty, cartTotal, showToast, products } = useApp()
+  usePageMeta('Your Bag', 'Review the items in your MK 1974 shopping bag.')
+  const { cart, removeFromCart, updateQty, cartTotal, showToast, products, user } = useApp()
   const navigate = useNavigate()
   const [coupon, setCoupon] = useState('')
 
@@ -114,10 +116,23 @@ export default function CartPage() {
                     </div>
                   </div>
 
-                  <button onClick={() => navigate('/checkout')} className="btn-primary w-full justify-center">
-                    Proceed to Checkout
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  </button>
+                  {user ? (
+                    <button onClick={() => navigate('/checkout')} className="btn-primary w-full justify-center">
+                      Proceed to Checkout
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={() => {
+                        showToast('Please sign in or create an account to proceed to checkout.')
+                        navigate('/auth?mode=register&redirect=/checkout')
+                      }} 
+                      className="btn-primary w-full justify-center"
+                    >
+                      Proceed to Checkout
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </button>
+                  )}
 
                   <Link to="/shop" className="block text-center text-muted text-[0.7rem] tracking-[0.15em] uppercase mt-4 hover:text-lime transition-colors">
                     ← Continue Shopping
