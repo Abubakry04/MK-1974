@@ -1,7 +1,9 @@
 import Nav from '../components/Nav'
 import Footer from '../components/Footer'
+import usePageMeta from '../hooks/usePageMeta'
 
 export default function AboutPage() {
+  usePageMeta('About Us', 'Learn about MK 1974 — our story, our values, and the team behind the brand.')
   const team = [
     { name: 'Mohammed K.', role: 'Founder & Creative Director', bio: 'Born in 1974, Mohammed built MK from a passion for athletic excellence and street culture.' },
     { name: 'Aisha D.', role: 'Head of Design', bio: 'With 12 years at leading sportswear labels, Aisha brings precision and artistry to every piece.' },

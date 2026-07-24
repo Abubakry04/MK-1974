@@ -43,6 +43,15 @@
   .eyebrow {
     @apply text-[0.62rem] font-medium tracking-[0.35em] uppercase text-lime;
   }
+
+  /* ── Utils ── */
+  .hide-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* ── Animations ── */

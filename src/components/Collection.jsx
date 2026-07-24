@@ -54,7 +54,7 @@ function ProductCard({ product }) {
 }
 
 export default function Collection() {
-  const { products, categories: appCats } = useApp()
+  const { products, categories: appCats, apiLoading } = useApp()
   const [activeFilter, setActiveFilter] = useState('all')
 
   const filters = [
@@ -102,7 +102,23 @@ export default function Collection() {
         </div>
 
         {/* Product grid */}
-        {visible.length > 0 ? (
+        {apiLoading ? (
+          <div className="py-8 space-y-6">
+            <div className="flex items-center justify-center py-6 gap-3">
+              <div className="w-5 h-5 border-2 border-lime border-t-transparent rounded-full animate-spin" />
+              <span className="text-[0.7rem] font-bold tracking-[0.25em] uppercase text-cream/50">Loading Collection...</span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="aspect-[3/4] bg-white/5 rounded-md mb-4 border border-white/5" />
+                  <div className="h-4 bg-white/10 rounded w-3/4 mb-2" />
+                  <div className="h-3 bg-white/10 rounded w-1/2" />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : visible.length > 0 ? (
           <div id="productsGrid" className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12">
             {visible.map(p => <ProductCard key={p.id} product={p} />)}
           </div>

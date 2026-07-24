@@ -47,7 +47,7 @@ export default function Signup() {
           <input
             type="email"
             id="emailInput"
-            className="flex-1 w-full bg-transparent border border-white/15 border-r-0 text-cream placeholder-muted text-[0.8rem] font-light tracking-[0.08em] px-6 py-4 outline-none focus:border-lime/50 transition-colors duration-200"
+            className="flex-1 w-full bg-transparent border border-white/15 border-b-0 sm:border-b sm:border-white/15 sm:border-r-0 text-cream placeholder-muted text-[0.8rem] font-light tracking-[0.08em] px-6 py-4 outline-none focus:border-lime/50 transition-colors duration-200"
             placeholder="Enter your email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}

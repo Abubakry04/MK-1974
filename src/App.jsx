@@ -15,6 +15,7 @@ import OrderTrackingPage from './pages/OrderTrackingPage'
 import AuthPage from './pages/AuthPage'
 import ProfilePage from './pages/ProfilePage'
 import AboutPage from './pages/AboutPage'
+import NotFoundPage from './pages/NotFoundPage'
 import ContactPage from './pages/ContactPage'
 
 // Legacy pages
@@ -60,6 +61,8 @@ export default function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          {/* 404 catch-all */}
+          <Route path="*" element={<NotFoundPage />} />
           {/* Legacy routes */}
           <Route path="/collection" element={<CollectionPage />} />
           <Route path="/lookbook" element={<LookbookPage />} />

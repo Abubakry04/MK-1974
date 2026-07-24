@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import Nav from '../components/Nav'
 import Footer from '../components/Footer'
+import usePageMeta from '../hooks/usePageMeta'
 
 const NIGERIAN_STATES = ['Lagos'
 ]
@@ -10,7 +11,8 @@ const NIGERIAN_STATES = ['Lagos'
 const STEPS = ['Details', 'Payment', 'Confirm']
 
 export default function CheckoutPage() {
-  const { cart, cartTotal, placeOrder, user, products } = useApp()
+  const { cart, cartTotal, placeOrder, user, products, showToast } = useApp()
+  usePageMeta('Secure Checkout', 'Complete your MK 1974 purchase securely.')
   const navigate = useNavigate()
   const [step, setStep] = useState(0)
   const [receipt, setReceipt] = useState(null)
@@ -41,11 +43,20 @@ export default function CheckoutPage() {
     if (file) setReceipt(file.name)
   }
 
-  const handlePlaceOrder = () => {
-    const order = placeOrder({ ...form, shipping })
-    navigate(`/order-tracking/${order.id}`)
+  const handlePlaceOrder = async () => {
+    try {
+      const order = await placeOrder({ ...form, shipping })
+      navigate(`/order-tracking/${order.id}`)
+    } catch (e) {
+      showToast('Order failed: ' + e.message, 'error')
+    }
   }
 
+  useEffect(() => {
+    if (!user) {
+      navigate('/auth?mode=register&redirect=/checkout')
+    }
+  }, [user, navigate])
   if (cart.length === 0) {
     return (
       <>

@@ -1,13 +1,20 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import Nav from '../components/Nav'
 import Footer from '../components/Footer'
+import usePageMeta from '../hooks/usePageMeta'
 
 export default function AuthPage() {
   const { login, register, showToast } = useApp()
+  usePageMeta('Sign In / Register', 'Sign in to your MK 1974 account or create a new one.')
   const navigate = useNavigate()
-  const [mode, setMode] = useState('login') // login | register | forgot
+  const [searchParams] = useSearchParams()
+  
+  const initialMode = searchParams.get('mode') || 'login'
+  const redirectUrl = searchParams.get('redirect') || '/profile'
+
+  const [mode, setMode] = useState(initialMode) // login | register | forgot
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phoneNumber: '', password: '', confirmPassword: '' })
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({})
@@ -40,7 +47,7 @@ export default function AuthPage() {
     if (mode === 'login') {
       const result = await login({ email: form.email, password: form.password })
       if (result.success) {
-        navigate('/profile')
+        navigate(redirectUrl)
       } else {
         setErrors({ general: result.error })
       }
@@ -53,7 +60,7 @@ export default function AuthPage() {
         password: form.password
       })
       if (result.success) {
-        navigate('/profile')
+        navigate(redirectUrl)
       } else {
         setErrors({ general: result.error })
       }

@@ -160,7 +160,8 @@ export function AppProvider({ children }) {
           material: 'Premium Blend',
           fit: 'Standard Fit',
           care: 'Machine wash 30°C'
-        }
+        },
+        rawVariants: p.variants || []
       }
     })
 
@@ -290,7 +291,7 @@ export function AppProvider({ children }) {
         email: userData.email,
         phoneNumber: userData.phoneNumber,
         password: userData.password,
-        role: 2, // Role 2 in payload for customer
+        role: "Customer",
       })
       
       // Auto login
@@ -309,20 +310,48 @@ export function AppProvider({ children }) {
     try { return JSON.parse(localStorage.getItem('mk1974_orders') || '[]') } catch { return [] }
   })
 
-  const placeOrder = useCallback((orderData) => {
+  const placeOrder = useCallback(async (orderData) => {
+    let createdFromApi = null
+    try {
+      const itemsPayload = cart.map(item => {
+        // Attempt to find the matching variant
+        const variant = item.product.rawVariants.find(v => {
+          const vColorName = v.color?.name || apiColors.find(c => (c.colorId ?? c.id) === v.colorId)?.name
+          const vSizeName = v.size?.name || apiSizes.find(s => (s.sizeId ?? s.id) === v.sizeId)?.name
+          return vColorName?.toLowerCase() === item.color.toLowerCase() && vSizeName?.toLowerCase() === item.size.toLowerCase()
+        })
+        return {
+          productVariantId: variant ? (variant.productVariantId ?? variant.id) : (item.product.rawVariants[0]?.productVariantId ?? item.product.rawVariants[0]?.id ?? 1),
+          quantity: item.qty,
+          price: item.price,
+          orderDate: new Date().toISOString()
+        }
+      })
+      
+      const payload = {
+        userId: parseInt(user?.id) || 1,
+        items: itemsPayload
+      }
+      
+      createdFromApi = await api.orders.create(payload)
+    } catch (e) {
+      console.error('Failed to create order on backend:', e)
+    }
+
+    const createdData = createdFromApi?.data || createdFromApi;
     const newOrder = {
-      id: `MK${Date.now().toString().slice(-6)}`,
+      id: String(createdData?.orderId ?? createdData?.id ?? `MK${Date.now().toString().slice(-6)}`),
       ...orderData,
       items: [...cart],
       total: cartTotal,
-      status: 'awaiting_payment',
+      status: 'pending',
       createdAt: new Date().toISOString(),
       timeline: [
-        { status: 'awaiting_payment', label: 'Awaiting Payment', date: new Date().toISOString(), done: true },
-        { status: 'payment_confirmed', label: 'Payment Confirmed', date: null, done: false },
-        { status: 'processing', label: 'Processing', date: null, done: false },
-        { status: 'ready_for_delivery', label: 'Ready for Delivery', date: null, done: false },
-        { status: 'delivered', label: 'Delivered', date: null, done: false },
+        { status: 'pending', label: 'Pending', date: new Date().toISOString(), done: true },
+        { status: 'paid', label: 'Paid', date: null, done: false },
+        { status: 'cancelled', label: 'Cancelled', date: null, done: false },
+        { status: 'failed', label: 'Failed', date: null, done: false },
+        { status: 'refunded', label: 'Refunded', date: null, done: false },
       ],
     }
     setOrders(prev => {
@@ -332,8 +361,24 @@ export function AppProvider({ children }) {
     })
     clearCart()
     return newOrder
-  }, [cart, cartTotal, clearCart])
+  }, [cart, cartTotal, clearCart, user, apiColors, apiSizes])
 
+
+  // ── Recently Viewed ──
+  const [recentlyViewed, setRecentlyViewed] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('mk1974_recently_viewed') || '[]') } catch { return [] }
+  })
+
+  useEffect(() => {
+    localStorage.setItem('mk1974_recently_viewed', JSON.stringify(recentlyViewed))
+  }, [recentlyViewed])
+
+  const addToRecentlyViewed = useCallback((product) => {
+    setRecentlyViewed(prev => {
+      const filtered = prev.filter(p => p.id !== product.id)
+      return [product, ...filtered].slice(0, 6)
+    })
+  }, [])
 
   // ── Search ──
   const [searchOpen, setSearchOpen] = useState(false)
@@ -359,6 +404,8 @@ export function AppProvider({ children }) {
     toast, showToast,
     // Search
     searchOpen, setSearchOpen,
+    // Recently viewed
+    recentlyViewed, addToRecentlyViewed,
     // UI
     mobileMenuOpen, setMobileMenuOpen,
   }
