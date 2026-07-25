@@ -11,9 +11,15 @@ export default function Nav() {
   const prevY = useRef(0);
   const [hidden, setHidden] = useState(false);
 
+  const [scrollProgress, setScrollProgress] = useState(0);
+
   useEffect(() => {
     const handler = () => {
       const y = window.scrollY;
+      const docH = document.documentElement.scrollHeight - window.innerHeight;
+      if (docH > 0) {
+        setScrollProgress(Math.min(100, Math.max(0, (y / docH) * 100)));
+      }
       // Hide on scroll down past 120px, show on scroll up
       if (y > 120 && y > prevY.current + 4) setHidden(true);
       else if (y < prevY.current - 4) setHidden(false);
@@ -42,13 +48,11 @@ export default function Nav() {
     { label: "Shop",  to: "/shop" },
   ];
   const rightLinks = [
-    // { label: "Collections", to: "/shop?sort=newest" },
     { label: "About",       to: "/about" },
     { label: "Contact",     to: "/contact" },
   ];
 
   const linkClass = (to) => {
-    const active = location.pathname === to || location.search && (to.includes("?") && location.search === to.split("?")[1] ? `?${location.search}` : "") === to;
     const isActive = location.pathname === to.split("?")[0] && (to.includes("?") ? location.search === `?${to.split("?")[1]}` : true);
     return `text-[0.62rem] font-medium tracking-[0.28em] uppercase transition-all duration-200 ${
       isActive
@@ -71,6 +75,12 @@ export default function Nav() {
             : "bg-dark/80 backdrop-blur-md border-b border-white/[0.04] shadow-sm"
         }`}
       >
+        {/* ── Scroll progress top bar ── */}
+        <div
+          className="h-[2px] bg-gradient-to-r from-lime via-cream to-lime transition-all duration-150 ease-out"
+          style={{ width: `${scrollProgress}%`, opacity: scrolled ? 1 : 0 }}
+        />
+
         {/* ── Top bar ── */}
         <div className="relative flex items-center justify-between h-[70px] px-6 md:px-12 max-w-[1440px] mx-auto">
 
@@ -137,7 +147,7 @@ export default function Nav() {
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
               </svg>
               {wishlist.length > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-lime text-white text-[0.44rem] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center">
+                <span className="absolute -top-1.5 -right-1.5 bg-lime text-white text-[0.44rem] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center animate-bounce">
                   {wishlist.length}
                 </span>
               )}
@@ -171,7 +181,7 @@ export default function Nav() {
                 Bag
               </span>
               {cartCount > 0 && (
-                <span className="absolute -top-1.5 left-3 bg-lime text-white text-[0.44rem] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center">
+                <span className="absolute -top-1.5 left-3 bg-lime text-white text-[0.44rem] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center animate-pulse">
                   {cartCount}
                 </span>
               )}
@@ -182,7 +192,7 @@ export default function Nav() {
           <div className="flex md:hidden items-center gap-5">
             <button
               onClick={() => setSearchOpen(true)}
-              className="text-cream/70 hover:text-cream transition-colors"
+              className="text-cream/70 hover:text-cream transition-colors active:scale-90"
               aria-label="Search"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -193,7 +203,7 @@ export default function Nav() {
             <button
               aria-label="Cart"
               onClick={() => setCartOpen(true)}
-              className="relative text-cream/70 hover:text-cream transition-colors"
+              className="relative text-cream/70 hover:text-cream transition-colors active:scale-90"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
@@ -212,7 +222,7 @@ export default function Nav() {
               id="hamburger"
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               onClick={() => setMobileOpen((v) => !v)}
-              className="flex flex-col justify-center gap-[5px] w-6 h-6"
+              className="flex flex-col justify-center gap-[5px] w-6 h-6 active:scale-90 transition-transform"
             >
               <span className={`block w-full h-[1px] bg-cream transition-all duration-300 origin-center ${mobileOpen ? "rotate-45 translate-y-[6px]" : ""}`} />
               <span className={`block w-full h-[1px] bg-cream transition-all duration-200 ${mobileOpen ? "opacity-0 scale-x-0" : ""}`} />
@@ -240,18 +250,22 @@ export default function Nav() {
         <div className="h-[70px] shrink-0" />
 
         <div className="flex-1 flex flex-col justify-between px-8 py-10 overflow-y-auto">
-          {/* Nav links */}
-          <ul className="flex flex-col gap-1">
+          {/* Nav links with cascading slide reveal */}
+          <ul className="flex flex-col gap-2">
             {[...leftLinks, ...rightLinks].map((l, i) => (
               <li key={l.to}>
                 <Link
                   to={l.to}
-                  className={`flex items-center justify-between py-4 border-b border-white/[0.06] text-[0.75rem] font-medium tracking-[0.3em] uppercase transition-colors ${
+                  className={`flex items-center justify-between py-4 border-b border-white/[0.06] text-[0.8rem] font-medium tracking-[0.3em] uppercase transition-all duration-500 ${
                     location.pathname === l.to.split("?")[0]
                       ? "text-lime"
-                      : "text-cream/60 hover:text-cream"
+                      : "text-cream/70 hover:text-cream"
                   }`}
-                  style={{ transitionDelay: mobileOpen ? `${i * 40}ms` : "0ms" }}
+                  style={{
+                    transform: mobileOpen ? "translateY(0)" : "translateY(24px)",
+                    opacity: mobileOpen ? 1 : 0,
+                    transitionDelay: mobileOpen ? `${i * 70 + 100}ms` : "0ms",
+                  }}
                 >
                   {l.label}
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -263,10 +277,17 @@ export default function Nav() {
           </ul>
 
           {/* Account + wishlist */}
-          <div className="pt-8 border-t border-white/[0.06] flex flex-col gap-4">
+          <div
+            className="pt-8 border-t border-white/[0.06] flex flex-col gap-4 transition-all duration-500"
+            style={{
+              transform: mobileOpen ? "translateY(0)" : "translateY(24px)",
+              opacity: mobileOpen ? 1 : 0,
+              transitionDelay: mobileOpen ? "400ms" : "0ms",
+            }}
+          >
             <Link
               to={user ? "/profile" : "/auth"}
-              className="flex items-center gap-3 text-cream/50 text-[0.7rem] tracking-[0.22em] uppercase hover:text-cream transition-colors"
+              className="flex items-center gap-3 text-cream/60 text-[0.72rem] tracking-[0.22em] uppercase hover:text-cream transition-colors py-2 active:scale-95"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
@@ -275,7 +296,7 @@ export default function Nav() {
             </Link>
             <Link
               to={user ? "/profile" : "/auth"}
-              className="flex items-center gap-3 text-cream/50 text-[0.7rem] tracking-[0.22em] uppercase hover:text-cream transition-colors"
+              className="flex items-center gap-3 text-cream/60 text-[0.72rem] tracking-[0.22em] uppercase hover:text-cream transition-colors py-2 active:scale-95"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>

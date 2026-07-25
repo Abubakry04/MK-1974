@@ -47,51 +47,59 @@ export default function NewArrivals() {
               ))}
             </div>
           </div>
+        ) : newProducts.length === 0 ? (
+          <div className="text-center py-12 text-muted text-sm uppercase tracking-widest">
+            No new arrivals found.
+          </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-10">
-            {newProducts.map(p => (
-              <article key={p.id} className="group cursor-pointer">
-                <TiltCard maxRotation={10} scale={1.03} className="mb-4">
-                  <div className="relative overflow-hidden aspect-[3/4] bg-surface2 rounded-md shadow-sm hover:shadow-xl transition-shadow duration-300">
-                    <Link to={`/product/${p.slug}`}>
-                      <img src={p.images[0]} alt={p.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                    </Link>
-                    {p.badge && (
-                      <div className="absolute top-3 left-3">
-                        <span className="text-[0.55rem] font-semibold tracking-[0.25em] uppercase text-white bg-lime px-2.5 py-1 rounded-sm shadow-sm">{p.badge}</span>
-                      </div>
-                    )}
-                    {/* Wishlist */}
-                    <button
-                      onClick={() => toggleWishlist(p.id)}
-                      className={`absolute top-3 right-3 w-8 h-8 flex items-center justify-center transition-all duration-200 z-10 ${isWishlisted(p.id) ? 'text-lime' : 'text-cream/40 hover:text-cream hover:scale-110'}`}
-                      aria-label="Wishlist"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill={isWishlisted(p.id) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                      </svg>
-                    </button>
-                    {/* Quick Add */}
-                    <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {newProducts.map(p => {
+              const mainImg = (p.images && p.images[0]) ? p.images[0] : '/product2.png'
+              const priceFormatted = Number(p.price || 0).toLocaleString()
+              return (
+                <article key={p.id} className="group cursor-pointer active:scale-95 transition-transform duration-200">
+                  <TiltCard maxRotation={10} scale={1.03} className="mb-4">
+                    <div className="relative overflow-hidden aspect-[3/4] bg-surface2 rounded-lg shadow-sm hover:shadow-xl transition-shadow duration-300 border border-black/5">
+                      <Link to={`/product/${p.slug}`}>
+                        <img src={mainImg} alt={p.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                      </Link>
+                      {p.badge && (
+                        <div className="absolute top-3 left-3">
+                          <span className="text-[0.55rem] font-black tracking-[0.22em] uppercase text-white bg-lime px-2.5 py-1 rounded-sm shadow-sm">{p.badge}</span>
+                        </div>
+                      )}
+                      {/* Wishlist */}
                       <button
-                        onClick={() => addToCart(p, p.sizes[2] || p.sizes[0], p.colors[0]?.name || 'Standard')}
-                        className="w-full bg-dark/90 backdrop-blur-sm text-cream text-[0.6rem] font-semibold tracking-[0.25em] uppercase py-4 hover:bg-lime hover:text-white transition-colors duration-200"
+                        onClick={() => toggleWishlist(p.id)}
+                        className={`absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full transition-all duration-200 z-10 active:scale-125 shadow-sm ${isWishlisted(p.id) ? 'text-lime' : 'text-black/50 hover:text-black'}`}
+                        aria-label="Wishlist"
                       >
-                        Quick Add — ₦{p.price.toLocaleString()}
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill={isWishlisted(p.id) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
+                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                        </svg>
                       </button>
+                      {/* Quick Add */}
+                      <div className="absolute inset-x-0 bottom-0 translate-y-0 md:translate-y-full md:group-hover:translate-y-0 transition-transform duration-300 z-10">
+                        <button
+                          onClick={() => addToCart(p, p.sizes?.[0] || 'M', p.colors?.[0]?.name || 'Standard')}
+                          className="w-full bg-dark/95 backdrop-blur-sm text-cream text-[0.6rem] font-bold tracking-[0.25em] uppercase py-3.5 hover:bg-lime hover:text-black active:bg-lime active:text-black transition-colors duration-200"
+                        >
+                          Quick Add — ₦{priceFormatted}
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </TiltCard>
-                <Link to={`/product/${p.slug}`}>
-                  <h3 className="text-[0.85rem] font-medium tracking-[0.04em] mb-1 group-hover:text-lime transition-colors" style={{ color: '#1A1A1A' }}>{p.name}</h3>
-                  <p className="text-muted text-[0.72rem] mb-2">{p.colors[0]?.name || 'Standard'}</p>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[0.85rem] font-medium" style={{ color: '#1A1A1A' }}>₦{p.price.toLocaleString()}</span>
-                    {p.originalPrice && <span className="text-muted text-[0.72rem] line-through">₦{p.originalPrice.toLocaleString()}</span>}
-                  </div>
-                </Link>
-              </article>
-            ))}
+                  </TiltCard>
+                  <Link to={`/product/${p.slug}`}>
+                    <h3 className="text-[0.88rem] font-medium tracking-[0.03em] mb-1 group-hover:text-lime transition-colors" style={{ color: '#1A1A1A' }}>{p.name}</h3>
+                    <p className="text-muted text-[0.72rem] mb-1.5">{p.colors?.[0]?.name || 'Standard'}</p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[0.88rem] font-bold" style={{ color: '#1A1A1A' }}>₦{priceFormatted}</span>
+                      {p.originalPrice && <span className="text-muted text-[0.72rem] line-through">₦{Number(p.originalPrice).toLocaleString()}</span>}
+                    </div>
+                  </Link>
+                </article>
+              )
+            })}
           </div>
         )}
       </div>

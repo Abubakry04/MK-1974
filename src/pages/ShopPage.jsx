@@ -27,8 +27,8 @@ function ProductCard({ product }) {
   const [hoveredSize, setHoveredSize] = useState(null)
 
   return (
-    <article id={product.id} className="group cursor-pointer">
-      <div className="relative overflow-hidden aspect-[3/4] bg-surface2 mb-4">
+    <article id={product.id} className="group cursor-pointer active:scale-95 transition-transform duration-200">
+      <div className="relative overflow-hidden aspect-[3/4] bg-surface2 mb-4 rounded-md">
         <Link to={`/product/${product.slug}`}>
           <img src={product.images[0]} alt={product.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
           {product.images[1] && (
@@ -51,7 +51,7 @@ function ProductCard({ product }) {
         {/* Wishlist */}
         <button
           onClick={() => toggleWishlist(product.id)}
-          className={`absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-surface/80 backdrop-blur-sm rounded-full transition-all duration-200 shadow-sm hover:scale-110 ${
+          className={`absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-surface/80 backdrop-blur-sm rounded-full transition-all duration-200 shadow-sm hover:scale-110 active:scale-125 ${
             isWishlisted(product.id) ? 'text-lime' : 'text-onlight/60 hover:text-onlight'
           }`}
           aria-label="Add to wishlist"
