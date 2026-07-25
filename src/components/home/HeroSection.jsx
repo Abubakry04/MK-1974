@@ -91,20 +91,29 @@ export default function HeroSection() {
 
         {/* Jersey image — top 55% of screen */}
         <div
-          className="relative flex-shrink-0"
+          className="relative flex-shrink-0 flex items-center justify-center"
           style={{ height: '55%' }}
         >
+          {/* Ambient dynamic color glow pulse behind jersey */}
+          <div
+            className="absolute w-48 h-48 rounded-full filter blur-3xl opacity-40 transition-all duration-700 pointer-events-none"
+            style={{
+              backgroundColor: v.accent,
+              boxShadow: `0 0 80px ${v.accent}`,
+            }}
+          />
+
           <img
             src="/hero_jersey.png"
             alt="Premium Jersey"
             loading="eager"
             fetchPriority="high"
-            className={`absolute inset-0 w-full h-full object-contain ${v.filter} transition-all duration-700`}
+            className={`absolute inset-0 w-full h-full object-contain ${v.filter} transition-all duration-700 relative z-10`}
             style={{ animation: 'float 6s ease-in-out infinite' }}
           />
           {/* Gradient so text below reads clearly */}
           <div
-            className="absolute inset-x-0 bottom-0 h-28 pointer-events-none"
+            className="absolute inset-x-0 bottom-0 h-28 pointer-events-none z-15"
             style={{ background: `linear-gradient(to bottom, transparent, ${v.bg})` }}
           />
         </div>
@@ -172,7 +181,7 @@ export default function HeroSection() {
                     onClick={() => setActiveVariant(variant.id)}
                     aria-label={`Select ${variant.name}`}
                     title={variant.name}
-                    className="flex-shrink-0 flex flex-col items-center gap-1.5"
+                    className="flex-shrink-0 flex flex-col items-center gap-1.5 active:scale-90 transition-transform"
                   >
                     {/* Swatch circle */}
                     <div

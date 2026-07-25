@@ -87,14 +87,18 @@ export function AppProvider({ children }) {
   const mappedProducts = useMemo(() => {
     const mappedApi = apiProducts.map(p => {
       // Map API categories
-      const categoriesArray = (p.categories || []).map(c => ({
-        ...c,
-        id: c.categoryId ?? c.id
-      }))
+      const categoriesArray = (p.categories || []).map(c => {
+        if (typeof c === 'string') return { id: c, name: c }
+        return { ...c, id: c.categoryId ?? c.id, name: c.name || String(c.id || '') }
+      })
       const mainCat = categoriesArray.length > 0 ? categoriesArray[0].name : ''
 
-      // Fetch images from localStorage if present
-      let productImages = p.images && p.images.length > 0 ? p.images : ['/product2.png', '/product1.png']
+      // Fetch images from API (imageUrls or images) or fallback
+      const apiImgs = (Array.isArray(p.imageUrls) && p.imageUrls.length > 0) 
+        ? p.imageUrls 
+        : ((Array.isArray(p.images) && p.images.length > 0) ? p.images : [])
+      
+      let productImages = apiImgs.length > 0 ? apiImgs : ['/product2.png', '/product1.png', '/product3.png']
       try {
         const storedImgs = localStorage.getItem(`mk_prod_images_${p.productId ?? p.id}`)
         if (storedImgs) {
