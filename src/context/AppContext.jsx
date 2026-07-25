@@ -15,6 +15,19 @@ export function AppProvider({ children }) {
   const [apiSizes, setApiSizes] = useState([])
   const [apiLoading, setApiLoading] = useState(false)
 
+  const extractArray = (res) => {
+    if (!res) return []
+    if (Array.isArray(res)) return res
+    if (Array.isArray(res.data?.results)) return res.data.results
+    if (Array.isArray(res.data?.items)) return res.data.items
+    if (Array.isArray(res.data?.$values)) return res.data.$values
+    if (Array.isArray(res.data)) return res.data
+    if (Array.isArray(res.results)) return res.results
+    if (Array.isArray(res.items)) return res.items
+    if (Array.isArray(res.$values)) return res.$values
+    return []
+  }
+
   const fetchStoreData = useCallback(async () => {
     setApiLoading(true)
     try {
@@ -47,13 +60,19 @@ export function AppProvider({ children }) {
         console.error('[Storefront API] Failed to load sizes:', e)
       }
 
-      setApiProducts(Array.isArray(prods) ? prods : [])
-      setApiCategories(Array.isArray(cats) ? cats.map(c => ({
+      const parsedProds = extractArray(prods)
+      const parsedCats = extractArray(cats)
+      const parsedCols = extractArray(cols)
+      const parsedSzs = extractArray(szs)
+
+      setApiProducts(parsedProds)
+      setApiCategories(parsedCats.map(c => ({
         ...c,
-        id: c.categoryId ?? c.id
-      })) : [])
-      setApiColors(Array.isArray(cols) ? cols : [])
-      setApiSizes(Array.isArray(szs) ? szs : [])
+        id: c.categoryId ?? c.id,
+        name: typeof c === 'string' ? c : (c.name || String(c.id))
+      })))
+      setApiColors(parsedCols)
+      setApiSizes(parsedSzs)
     } catch (err) {
       console.error('[Storefront API] Failed to load data:', err)
     } finally {
