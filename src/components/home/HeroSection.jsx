@@ -128,7 +128,7 @@ export default function HeroSection() {
               className="text-[0.58rem] font-bold tracking-[0.45em] uppercase mb-2"
               style={{ color: v.accent, transition: 'color 0.5s ease' }}
             >
-              SS 2025 — {v.name}
+              Launch Edition — {v.name}
             </p>
 
             <h1
@@ -143,7 +143,7 @@ export default function HeroSection() {
             </h1>
 
             <p className="text-white/40 text-[0.75rem] leading-[1.7] max-w-[280px] mb-5">
-              Engineered for the streets. Premium materials for the modern era.
+              New brand. No compromises. Built in Lagos, made to move.
             </p>
 
             {/* CTAs */}
@@ -227,7 +227,7 @@ export default function HeroSection() {
             className="text-[0.6rem] font-bold tracking-[0.45em] uppercase mb-4"
             style={{ color: v.accent, transition: 'color 0.5s ease' }}
           >
-            SS 2025 — {v.name}
+            Launch Edition — {v.name}
           </p>
           <h1
             className="font-bebas text-white tracking-wide leading-[0.88] mb-5 hover:scale-105 transition-transform duration-500"
@@ -240,7 +240,7 @@ export default function HeroSection() {
             PREMIUM<br />JERSEY
           </h1>
           <p className="text-gray-400 text-sm max-w-[320px] mb-8 leading-relaxed">
-            Engineered for the streets. Premium materials and modern urban aesthetics combine to create our most advanced jersey collection yet.
+            A new Lagos streetwear brand. No legacy to coast on — just the clothes. Premium build, deliberate design, built to move.
           </p>
           <div className="flex items-center gap-4">
             <Link

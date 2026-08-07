@@ -27,45 +27,45 @@ function ProductCard({ product }) {
   const [hoveredSize, setHoveredSize] = useState(null)
 
   return (
-    <article id={product.id} className="group cursor-pointer active:scale-95 transition-transform duration-200">
-      <div className="relative overflow-hidden aspect-[3/4] bg-surface2 mb-4 rounded-md">
+    <article id={product.id} className="group cursor-pointer">
+      <div className="relative overflow-hidden aspect-[3/4] bg-surface2 mb-3">
         <Link to={`/product/${product.slug}`}>
-          <img src={product.images[0]} alt={product.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+          <img src={product.images[0]} alt={product.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
           {product.images[1] && (
             <img src={product.images[1]} alt={product.name} loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100" />
           )}
         </Link>
 
         {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+        <div className="absolute top-3 left-3 flex flex-col gap-1">
           {product.badge && (
-            <span className={`text-[0.55rem] font-black tracking-[0.2em] uppercase px-2.5 py-1 ${
-              product.badge === 'Sale' ? 'bg-red-500 text-white' : 'bg-lime text-dark'
+            <span className={`text-xs font-semibold px-2.5 py-1 ${
+              product.badge === 'Sale' ? 'bg-red-500 text-white' : 'bg-dark text-cream'
             }`}>{product.badge}</span>
           )}
           {!product.inStock && (
-            <span className="text-[0.55rem] font-black tracking-[0.2em] uppercase px-2.5 py-1 bg-surface2 text-muted border border-white/10">Sold Out</span>
+            <span className="text-xs font-semibold px-2.5 py-1 bg-surface2 text-muted border border-black/10">Sold out</span>
           )}
         </div>
 
         {/* Wishlist */}
         <button
           onClick={() => toggleWishlist(product.id)}
-          className={`absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-surface/80 backdrop-blur-sm rounded-full transition-all duration-200 shadow-sm hover:scale-110 active:scale-125 ${
-            isWishlisted(product.id) ? 'text-lime' : 'text-onlight/60 hover:text-onlight'
+          className={`absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-sm transition-colors duration-200 ${
+            isWishlisted(product.id) ? 'text-red-500' : 'text-dark/40 hover:text-dark'
           }`}
-          aria-label="Add to wishlist"
+          aria-label="Save to wishlist"
         >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill={isWishlisted(product.id) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill={isWishlisted(product.id) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
           </svg>
         </button>
 
         {/* Quick Add overlay */}
         {product.inStock && (
-          <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out">
-            <div className="bg-dark/95 backdrop-blur-md p-3">
-              <p className="text-muted text-[0.55rem] tracking-[0.25em] uppercase mb-2">Select Size</p>
+          <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+            <div className="bg-dark/90 p-3">
+              <p className="text-muted text-xs uppercase tracking-wide mb-2">Select size</p>
               <div className="flex gap-1.5 mb-3">
                 {product.sizes.slice(0, 5).map(s => (
                   <button
@@ -73,17 +73,17 @@ function ProductCard({ product }) {
                     onMouseEnter={() => setHoveredSize(s)}
                     onMouseLeave={() => setHoveredSize(null)}
                     onClick={() => addToCart(product, s, product.colors[0].name)}
-                    className={`text-[0.55rem] font-medium w-8 h-8 border transition-all duration-150 ${
-                      hoveredSize === s ? 'border-lime text-lime' : 'border-white/20 text-cream/60 hover:border-white/40'
+                    className={`text-xs font-medium w-8 h-8 border transition-colors ${
+                      hoveredSize === s ? 'border-cream text-cream' : 'border-white/20 text-cream/50 hover:border-white/40'
                     }`}
                   >{s}</button>
                 ))}
               </div>
               <button
                 onClick={() => addToCart(product, product.sizes[2] || product.sizes[0], product.colors[0].name)}
-                className="w-full bg-lime text-dark text-[0.6rem] font-black tracking-[0.25em] uppercase py-2.5 hover:bg-lime-dim transition-colors"
+                className="w-full bg-cream text-dark text-xs font-semibold py-2.5 hover:bg-accent hover:text-white transition-colors"
               >
-                Add to Bag — ₦{product.price.toLocaleString()}
+                Add to bag — ₦{product.price.toLocaleString()}
               </button>
             </div>
           </div>
@@ -91,19 +91,16 @@ function ProductCard({ product }) {
       </div>
 
       <Link to={`/product/${product.slug}`}>
-        <div className="flex justify-between items-start mb-1.5 mt-4">
-          <h3 className="text-onlight text-[0.85rem] font-medium tracking-[0.03em] leading-tight group-hover:text-lime transition-colors">{product.name}</h3>
+        <div className="flex justify-between items-start mb-1">
+          <h3 className="text-dark text-sm font-medium leading-tight group-hover:text-accent transition-colors">{product.name}</h3>
           <div className="text-right shrink-0 ml-3">
-            <span className="text-onlight font-semibold text-[0.88rem]">₦{product.price.toLocaleString()}</span>
-            {product.originalPrice && <span className="block text-muted text-[0.7rem] line-through">₦{product.originalPrice.toLocaleString()}</span>}
+            <span className="text-dark font-semibold text-sm">₦{product.price.toLocaleString()}</span>
+            {product.originalPrice && <span className="block text-muted text-xs line-through">₦{product.originalPrice.toLocaleString()}</span>}
           </div>
         </div>
-        <div className="flex items-center gap-1.5 mt-2">
-          {product.colors.slice(0, 4).map(c => (
-            <div key={c.name} className="w-3.5 h-3.5 rounded-full border border-black/10 shadow-sm" style={{ background: c.hex }} title={c.name} />
-          ))}
-          {product.colors.length > 4 && <span className="text-muted text-[0.65rem]">+{product.colors.length - 4}</span>}
-        </div>
+        {product.colors?.length > 0 && (
+          <p className="text-muted text-xs mt-1">{product.colors.length} colour{product.colors.length > 1 ? 's' : ''}</p>
+        )}
       </Link>
     </article>
   )
@@ -261,9 +258,13 @@ export default function ShopPage() {
       products = products.filter(p => {
         const catClean = filters.category.toLowerCase()
         const matchMain = p.category?.toLowerCase() === catClean
+                       || p.category?.toLowerCase().includes(catClean)
         const matchSub = p.subcategory?.toLowerCase() === catClean
-        const matchTag = p.tags?.some(t => t.toLowerCase() === catClean)
-        const matchApi = p.categories?.some(c => c.name.toLowerCase() === catClean)
+        const matchTag = p.tags?.some(t => t.toLowerCase() === catClean || t.toLowerCase().includes(catClean))
+        const matchApi = p.categories?.some(c => {
+          const n = c.name?.toLowerCase() || ''
+          return n === catClean || n.includes(catClean)
+        })
         return matchMain || matchSub || matchTag || matchApi
       })
     }
@@ -279,7 +280,14 @@ export default function ShopPage() {
       case 'price-desc': products.sort((a, b) => b.price - a.price); break
       case 'best-selling': products.sort((a, b) => b.reviews - a.reviews); break
       case 'popularity': products.sort((a, b) => b.rating - a.rating); break
-      default: products.sort((a, b) => (b.newArrival ? 1 : 0) - (a.newArrival ? 1 : 0))
+      default:
+        products.sort((a, b) => {
+          // Prefer newArrival flag first, then fall back to higher ID = newer
+          const aNew = a.newArrival ? 1 : 0
+          const bNew = b.newArrival ? 1 : 0
+          if (bNew !== aNew) return bNew - aNew
+          return Number(b.id) - Number(a.id)
+        })
     }
 
     return products
@@ -293,15 +301,11 @@ export default function ShopPage() {
       <Nav />
       <main className="bg-surface2 min-h-screen pt-24">
         {/* Page header */}
-        <div className="bg-surface2 px-8 md:px-12 py-10 border-b border-black/[0.04]">
+        <div className="bg-surface px-8 md:px-12 pt-16 pb-8 border-b border-black/[0.06]">
           <div className="max-w-[1440px] mx-auto flex items-end justify-between">
             <div>
-              <p className="eyebrow mb-2">Browse</p>
-              <h1 className="font-playfair font-black italic text-4xl md:text-5xl" style={{ color: '#1A1A1A' }}>Shop All</h1>
-            </div>
-            <div className="hidden md:flex items-center gap-2 pb-1">
-              <div className="w-8 h-px bg-lime/40" />
-              <span className="text-muted text-[0.65rem] tracking-[0.25em] uppercase">{filtered.length} pieces</span>
+              <h1 className="text-3xl md:text-4xl font-bold text-dark">All products</h1>
+              <p className="text-muted text-sm mt-1">{filtered.length} items</p>
             </div>
           </div>
         </div>
@@ -365,21 +369,15 @@ export default function ShopPage() {
             {/* Grid */}
             <div className="flex-1">
               {apiLoading ? (
-                <div className="py-8 space-y-6">
-                  <div className="flex items-center justify-center py-6 gap-3">
-                    <div className="w-5 h-5 border-2 border-lime border-t-transparent rounded-full animate-spin" />
-                    <span className="text-[0.7rem] font-bold tracking-[0.25em] uppercase text-dark/50">Loading Collection...</span>
-                  </div>
-                  <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-5 gap-y-10">
+                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                     {[...Array(8)].map((_, i) => (
                       <div key={i} className="animate-pulse">
-                        <div className="aspect-[3/4] bg-dark/5 rounded-md mb-4 border border-dark/5" />
-                        <div className="h-4 bg-dark/10 rounded w-3/4 mb-2" />
-                        <div className="h-3 bg-dark/10 rounded w-1/2" />
+                        <div className="aspect-[3/4] bg-dark/5 rounded mb-3" />
+                        <div className="h-4 bg-dark/8 rounded w-3/4 mb-2" />
+                        <div className="h-3 bg-dark/6 rounded w-1/2" />
                       </div>
                     ))}
                   </div>
-                </div>
               ) : paginated.length === 0 ? (
                 <div className="text-center py-20 bg-surface border border-black/[0.04] rounded-md shadow-sm">
                   <p className="text-onlight/40 text-[0.85rem] tracking-[0.2em] uppercase">No products found</p>
