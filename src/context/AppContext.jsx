@@ -2,9 +2,77 @@ import { createContext, useContext, useState, useCallback, useEffect, useMemo } 
 import * as api from '../api/apiClient'
 
 // ─── Context ──────────────────────────────────────────────────────────────────
-//
 export const AppContext = createContext(null)
 export const useApp = () => useContext(AppContext)
+
+const API_BASE_URL = 'https://mk-brand-api.onrender.com'
+
+export function formatSingleImageUrl(url) {
+  if (!url) return null
+  if (typeof url !== 'string') {
+    if (typeof url === 'object' && url !== null) {
+      url = url.url || url.imageUrl || url.imagePath || url.path || url.src || null
+    }
+  }
+  if (!url || typeof url !== 'string') return null
+  const trimmed = url.trim()
+  if (!trimmed) return null
+  if (trimmed.startsWith('data:') || trimmed.startsWith('blob:') || trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return trimmed
+  }
+  const cleanPath = trimmed.startsWith('/') ? trimmed : `/${trimmed}`
+  return `${API_BASE_URL}${cleanPath}`
+}
+
+export function formatProductImages(p) {
+  if (!p) return []
+  const list = []
+
+  const singleProps = [
+    p.imageUrl, p.image, p.primaryImageUrl, p.thumbnail, p.coverImage, p.photoUrl,
+    p.ImageUrl, p.Image, p.PrimaryImageUrl
+  ]
+  for (const item of singleProps) {
+    const formatted = formatSingleImageUrl(item)
+    if (formatted && !list.includes(formatted)) {
+      list.push(formatted)
+    }
+  }
+
+  const arrayProps = [p.images, p.imageUrls, p.Images, p.ImageUrls]
+  for (const arr of arrayProps) {
+    if (Array.isArray(arr) && arr.length > 0) {
+      for (const item of arr) {
+        const formatted = formatSingleImageUrl(item)
+        if (formatted && !list.includes(formatted)) {
+          list.push(formatted)
+        }
+      }
+    }
+  }
+
+  try {
+    const pId = p.productId ?? p.id
+    if (pId) {
+      const storedImgs = localStorage.getItem(`mk_prod_images_${pId}`)
+      if (storedImgs) {
+        const parsed = JSON.parse(storedImgs)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          for (const item of parsed) {
+            const formatted = formatSingleImageUrl(item)
+            if (formatted && !list.includes(formatted)) {
+              list.push(formatted)
+            }
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.error(e)
+  }
+
+  return list
+}
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
 export function AppProvider({ children }) {
@@ -31,35 +99,12 @@ export function AppProvider({ children }) {
   const fetchStoreData = useCallback(async () => {
     setApiLoading(true)
     try {
-      let prods = []
-      let cats = []
-      let cols = []
-      let szs = []
-      
-      try {
-        prods = await api.products.getAll()
-      } catch (e) {
-        console.error('[Storefront API] Failed to load products:', e)
-      }
-      
-      try {
-        cats = await api.categories.getAll()
-      } catch (e) {
-        console.error('[Storefront API] Failed to load categories:', e)
-      }
-
-      try {
-        cols = await api.colors.getAll()
-      } catch (e) {
-        console.error('[Storefront API] Failed to load colors:', e)
-      }
-
-      try {
-        szs = await api.sizes.getAll()
-      } catch (e) {
-        console.error('[Storefront API] Failed to load sizes:', e)
-      }
-
+      const [prods, cats, cols, szs] = await Promise.all([
+        api.products.getAll().catch(err => { console.error("Failed to fetch products", err); return []; }),
+        api.categories.getAll().catch(err => { console.error("Failed to fetch categories", err); return []; }),
+        api.colors.getAll().catch(err => { console.error("Failed to fetch colors", err); return []; }),
+        api.sizes.getAll().catch(err => { console.error("Failed to fetch sizes", err); return []; }),
+      ])
       const parsedProds = extractArray(prods)
       const parsedCats = extractArray(cats)
       const parsedCols = extractArray(cols)
@@ -93,23 +138,9 @@ export function AppProvider({ children }) {
       })
       const mainCat = categoriesArray.length > 0 ? categoriesArray[0].name : ''
 
-      // Fetch images from API (imageUrls or images) or fallback
-      const apiImgs = (Array.isArray(p.imageUrls) && p.imageUrls.length > 0) 
-        ? p.imageUrls 
-        : ((Array.isArray(p.images) && p.images.length > 0) ? p.images : [])
-      
-      let productImages = apiImgs.length > 0 ? apiImgs : ['/product2.png', '/product1.png', '/product3.png']
-      try {
-        const storedImgs = localStorage.getItem(`mk_prod_images_${p.productId ?? p.id}`)
-        if (storedImgs) {
-          const parsed = JSON.parse(storedImgs)
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            productImages = parsed
-          }
-        }
-      } catch (e) {
-        console.error(e)
-      }
+      // Format all images from API (direct fields, imageUrls, images) or fallback
+      const formattedImgs = formatProductImages(p)
+      const productImages = formattedImgs.length > 0 ? formattedImgs : ['/product2.png', '/product1.png', '/product3.png']
 
       // Map variants & product fields to colors
       const productColors = []
