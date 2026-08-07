@@ -11,16 +11,9 @@ export default function Nav() {
   const prevY = useRef(0);
   const [hidden, setHidden] = useState(false);
 
-  const [scrollProgress, setScrollProgress] = useState(0);
-
   useEffect(() => {
     const handler = () => {
       const y = window.scrollY;
-      const docH = document.documentElement.scrollHeight - window.innerHeight;
-      if (docH > 0) {
-        setScrollProgress(Math.min(100, Math.max(0, (y / docH) * 100)));
-      }
-      // Hide on scroll down past 120px, show on scroll up
       if (y > 120 && y > prevY.current + 4) setHidden(true);
       else if (y < prevY.current - 4) setHidden(false);
       prevY.current = y;
@@ -54,12 +47,12 @@ export default function Nav() {
 
   const linkClass = (to) => {
     const isActive = location.pathname === to.split("?")[0] && (to.includes("?") ? location.search === `?${to.split("?")[1]}` : true);
-    return `text-[0.62rem] font-medium tracking-[0.28em] uppercase transition-all duration-200 ${
+    return `text-sm font-medium transition-colors duration-200 ${
       isActive
-        ? "text-lime"
+        ? "text-white"
         : transparent
-          ? "text-cream/70 hover:text-cream"
-          : "text-cream/60 hover:text-cream"
+          ? "text-cream/70 hover:text-white"
+          : "text-cream/60 hover:text-white"
     }`;
   };
 
@@ -75,12 +68,6 @@ export default function Nav() {
             : "bg-dark/80 backdrop-blur-md border-b border-white/[0.04] shadow-sm"
         }`}
       >
-        {/* ── Scroll progress top bar ── */}
-        <div
-          className="h-[2px] bg-gradient-to-r from-lime via-cream to-lime transition-all duration-150 ease-out"
-          style={{ width: `${scrollProgress}%`, opacity: scrolled ? 1 : 0 }}
-        />
-
         {/* ── Top bar ── */}
         <div className="relative flex items-center justify-between h-[70px] px-6 md:px-12 max-w-[1440px] mx-auto">
 
@@ -177,9 +164,7 @@ export default function Nav() {
                 <line x1="3" y1="6" x2="21" y2="6" />
                 <path d="M16 10a4 4 0 01-8 0" />
               </svg>
-              <span className="text-[0.62rem] tracking-[0.22em] uppercase font-medium">
-                Bag
-              </span>
+
               {cartCount > 0 && (
                 <span className="absolute -top-1.5 left-3 bg-lime text-white text-[0.44rem] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center animate-pulse">
                   {cartCount}
@@ -231,13 +216,6 @@ export default function Nav() {
           </div>
         </div>
 
-        {/* Thin accent line under nav when scrolled */}
-        <div
-          className="h-px w-full transition-opacity duration-500 bg-gradient-to-r from-transparent via-lime to-transparent"
-          style={{
-            opacity: scrolled && !transparent ? 0.35 : 0,
-          }}
-        />
       </nav>
 
       {/* ── Full-screen mobile menu ── */}
@@ -256,16 +234,11 @@ export default function Nav() {
               <li key={l.to}>
                 <Link
                   to={l.to}
-                  className={`flex items-center justify-between py-4 border-b border-white/[0.06] text-[0.8rem] font-medium tracking-[0.3em] uppercase transition-all duration-500 ${
+                  className={`flex items-center justify-between py-4 border-b border-white/[0.06] text-base font-medium uppercase transition-colors duration-200 ${
                     location.pathname === l.to.split("?")[0]
-                      ? "text-lime"
-                      : "text-cream/70 hover:text-cream"
+                      ? "text-white"
+                      : "text-cream/60 hover:text-white"
                   }`}
-                  style={{
-                    transform: mobileOpen ? "translateY(0)" : "translateY(24px)",
-                    opacity: mobileOpen ? 1 : 0,
-                    transitionDelay: mobileOpen ? `${i * 70 + 100}ms` : "0ms",
-                  }}
                 >
                   {l.label}
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">

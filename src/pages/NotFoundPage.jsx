@@ -18,43 +18,19 @@ export default function NotFoundPage() {
             404
           </p>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-6 h-px bg-lime" />
-              <p className="text-lime text-[0.6rem] font-semibold tracking-[0.4em] uppercase">
-                Page Not Found
-              </p>
-              <div className="w-6 h-px bg-lime" />
-            </div>
-            <h1
-              className="font-playfair font-black italic text-cream leading-tight"
-              style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}
-            >
-              Lost in the Streets.
+            <h1 className="text-cream text-3xl md:text-4xl font-bold">
+              Page not found
             </h1>
           </div>
         </div>
 
-        <p className="text-cream/40 text-[0.85rem] font-light max-w-[320px] leading-[1.8] mb-10">
-          The page you're looking for has moved, or never existed. Let's get you back to something good.
+        <p className="text-cream/40 text-sm max-w-[300px] leading-relaxed mb-8">
+          The page you're looking for doesn't exist.
         </p>
 
         <div className="flex items-center gap-4">
-          <Link to="/" className="btn-primary">
-            Go Home
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </Link>
-          <Link to="/shop" className="btn-ghost">
-            Shop Now
-          </Link>
-        </div>
-
-        {/* Decorative accent */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-2 opacity-20">
-          <div className="w-12 h-px bg-cream/40" />
-          <div className="w-1.5 h-1.5 rounded-full bg-lime" />
-          <div className="w-12 h-px bg-cream/40" />
+          <Link to="/" className="btn-primary">Go home</Link>
+          <Link to="/shop" className="btn-ghost">Shop</Link>
         </div>
       </main>
     </>

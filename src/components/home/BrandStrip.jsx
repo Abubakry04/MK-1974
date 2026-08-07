@@ -1,12 +1,18 @@
 export default function BrandStrip() {
-  const items = ['Free delivery Over ₦75', 'Premium Quality Since 1974', 'Easy Returns Within 30 Days', 'Sustainably Sourced Materials', 'Free delivery Over ₦75', 'Premium Quality Since 1974']
+  const stats = [
+    { value: 'Premium', label: 'Fabric quality' },
+    { value: '30 days', label: 'Easy returns' },
+    { value: 'Express', label: 'Doorstep dispatch' },
+    { value: 'Nigeria-wide', label: 'Delivery available' },
+  ]
   return (
-    <div className="bg-surface border-y border-black/[0.07] overflow-hidden py-4">
-      <div className="flex animate-marquee whitespace-nowrap w-max">
-        {items.concat(items).map((item, i) => (
-          <span key={i} className="text-[0.62rem] font-medium tracking-[0.3em] uppercase mx-10" style={{ color: 'rgba(26,26,26,0.45)' }}>
-            {item} <span className="text-lime mx-4 animate-pulse">✦</span>
-          </span>
+    <div className="bg-surface border-y border-black/[0.07] py-8 px-8 md:px-12">
+      <div className="max-w-[1440px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        {stats.map(s => (
+          <div key={s.value}>
+            <p className="text-lg font-bold text-dark">{s.value}</p>
+            <p className="text-sm text-muted mt-0.5">{s.label}</p>
+          </div>
         ))}
       </div>
     </div>

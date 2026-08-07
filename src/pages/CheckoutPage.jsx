@@ -5,68 +5,178 @@ import Nav from '../components/Nav'
 import Footer from '../components/Footer'
 import usePageMeta from '../hooks/usePageMeta'
 
-const NIGERIAN_STATES = ['Lagos'
+const NIGERIAN_STATES = [
+  'Lagos', 'Abuja (FCT)', 'Rivers', 'Ogun', 'Oyo', 'Kano', 'Kaduna', 'Enugu', 
+  'Delta', 'Anambra', 'Edo', 'Kwara', 'Ondo', 'Imo', 'Abia', 'Akwa Ibom', 
+  'Cross River', 'Osun', 'Benue', 'Plateau', 'Borno', 'Bauchi', 'Katsina', 'Sokoto'
 ]
 
-const STEPS = ['Details', 'Payment', 'Confirm']
+const STEPS = [
+  { id: 0, title: 'Shipping Details', short: 'Details' },
+  { id: 1, title: 'Payment & Receipt', short: 'Payment' },
+  { id: 2, title: 'Review & Confirm', short: 'Confirm' }
+]
 
 export default function CheckoutPage() {
-  const { cart, cartTotal, placeOrder, user, products, showToast } = useApp()
-  usePageMeta('Secure Checkout', 'Complete your MK 1974 purchase securely.')
+  const { cart, cartTotal, placeOrder, createOrder, submitOrderPayment, user, products, showToast } = useApp()
+  usePageMeta('Secure Checkout — MK 1974', 'Complete your MK 1974 order with secure delivery and bank payment.')
   const navigate = useNavigate()
+  
   const [step, setStep] = useState(0)
+  const [createdOrderNumber, setCreatedOrderNumber] = useState(null)
   const [receipt, setReceipt] = useState(null)
+  const [receiptFile, setReceiptFile] = useState(null)
+  const [promoCode, setPromoCode] = useState('')
+  const [discountAmount, setDiscountAmount] = useState(0)
+  const [isCreatingOrder, setIsCreatingOrder] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [copiedAccount, setCopiedAccount] = useState(false)
+
   const [form, setForm] = useState({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
     email: user?.email || '',
-    phone: '',
+    phone: user?.phoneNumber || '',
     address: '',
     city: '',
-    state: '',
+    state: 'Lagos',
     lga: '',
     delivery: 'standard',
   })
 
-  const shipping = cartTotal >= 75 ? 0 : form.delivery === 'express' ? 5.99 : 3.99
-  const total = cartTotal + shipping
+  useEffect(() => {
+    if (user) {
+      setForm(f => ({
+        ...f,
+        firstName: f.firstName || user.firstName || '',
+        lastName: f.lastName || user.lastName || '',
+        email: f.email || user.email || '',
+        phone: f.phone || user.phoneNumber || '',
+      }))
+    }
+  }, [user])
+
+  const SHIPPING_FEES = { standard: 3000, express: 5000, 'next-day': 8000 }
+  const shippingFee = SHIPPING_FEES[form.delivery] ?? 3000
+  const subtotalAfterDiscount = Math.max(0, cartTotal - discountAmount)
+  const total = subtotalAfterDiscount + shippingFee
 
   const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }))
 
-  const handleStep1 = e => {
+  const handleStep1 = async (e) => {
     e.preventDefault()
-    setStep(1)
+    if (!form.firstName || !form.lastName || !form.email || !form.phone || !form.address || !form.city || !form.state) {
+      showToast('Please fill in all required shipping fields', 'error')
+      return
+    }
+
+    setIsCreatingOrder(true)
+    try {
+      const orderData = {
+        ...form,
+        shipping: shippingFee,
+        discount: discountAmount,
+        paymentMethod: 'Direct Bank Transfer',
+        totalAmount: total,
+      }
+      // Call POST /api/Order right here on Step 1!
+      const { orderNumber } = await createOrder(orderData)
+      setCreatedOrderNumber(orderNumber)
+      showToast(`Order created! Reference Order #${orderNumber}`, 'success')
+      setStep(1)
+    } catch (err) {
+      showToast('Order creation failed: ' + (err.message || 'Server error'), 'error')
+    } finally {
+      setIsCreatingOrder(false)
+    }
   }
 
   const handleReceiptUpload = e => {
-    const file = e.target.files[0]
-    if (file) setReceipt(file.name)
+    const file = e.target.files?.[0]
+    if (file) {
+      setReceiptFile(file)
+      setReceipt(file.name)
+      showToast('Payment receipt attached successfully!')
+    }
+  }
+
+  const handleApplyPromo = (e) => {
+    e.preventDefault()
+    const cleanCode = promoCode.trim().toUpperCase()
+    if (cleanCode === 'MK10' || cleanCode === 'LAUNCH10') {
+      const disc = Math.round(cartTotal * 0.1)
+      setDiscountAmount(disc)
+      showToast('Promo code applied: 10% Off!')
+    } else if (cleanCode === 'VOLT20' || cleanCode === 'MK20') {
+      const disc = Math.round(cartTotal * 0.2)
+      setDiscountAmount(disc)
+      showToast('Promo code applied: 20% Off!')
+    } else if (cleanCode) {
+      showToast('Invalid promo code. Try MK10 or VOLT20', 'error')
+    }
+  }
+
+  const handleCopyAccount = () => {
+    navigator.clipboard.writeText('0123456789')
+    setCopiedAccount(true)
+    showToast('Account number copied!')
+    setTimeout(() => setCopiedAccount(false), 3000)
   }
 
   const handlePlaceOrder = async () => {
+    setIsSubmitting(true)
     try {
-      const order = await placeOrder({ ...form, shipping })
-      navigate(`/order-tracking/${order.id}`)
+      const orderData = {
+        ...form,
+        shipping: shippingFee,
+        discount: discountAmount,
+        paymentMethod: 'Direct Bank Transfer',
+        receiptName: receipt || null,
+        receiptFile: receiptFile || null,
+        totalAmount: total,
+      }
+
+      let activeOrderNumber = createdOrderNumber
+      if (!activeOrderNumber) {
+        const { orderNumber } = await createOrder(orderData)
+        activeOrderNumber = orderNumber
+        setCreatedOrderNumber(orderNumber)
+      }
+
+      // Submit payment receipt to POST /api/Payment/submit with valid OrderNumber
+      const order = await submitOrderPayment(activeOrderNumber, receiptFile, orderData)
+      showToast('Order and payment submitted successfully!', 'success')
+      navigate(`/order-tracking/${order?.id || activeOrderNumber}`)
     } catch (e) {
-      showToast('Order failed: ' + e.message, 'error')
+      showToast('Payment submission failed: ' + (e.message || 'Server error'), 'error')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
   useEffect(() => {
     if (!user) {
-      navigate('/auth?mode=register&redirect=/checkout')
+      navigate('/auth?mode=login&redirect=/checkout')
     }
   }, [user, navigate])
+
   if (cart.length === 0) {
     return (
       <>
         <Nav />
-        <div className="min-h-screen bg-dark flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-cream/40 mb-6">Your bag is empty.</p>
-            <button onClick={() => navigate('/shop')} className="btn-primary">Shop Now</button>
+        <div className="min-h-screen bg-dark flex items-center justify-center px-6">
+          <div className="text-center max-w-md py-20">
+            <div className="w-16 h-16 border border-white/10 flex items-center justify-center mx-auto mb-6 rounded-full bg-white/5 shadow-inner">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-cream/50">
+                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
+              </svg>
+            </div>
+            <h2 className="text-xl font-bold text-cream mb-2">Your shopping bag is empty</h2>
+            <p className="text-cream/40 text-sm mb-8">Add items to your bag before proceeding to checkout.</p>
+            <button onClick={() => navigate('/shop')} className="btn-primary">Explore Collection</button>
           </div>
         </div>
+        <Footer />
       </>
     )
   }
@@ -74,260 +184,485 @@ export default function CheckoutPage() {
   return (
     <>
       <Nav />
-      <main className="bg-dark min-h-screen pt-24 px-8 md:px-12">
-        <div className="max-w-[1100px] mx-auto py-12">
+      <main className="bg-dark text-cream min-h-screen pt-24 sm:pt-28 pb-24 px-4 sm:px-8 md:px-12">
+        <div className="max-w-[1180px] mx-auto">
           {/* Header */}
-          <div className="mb-10">
-            <p className="eyebrow mb-2">Secure Checkout</p>
-            <h1 className="font-playfair font-black italic text-cream text-4xl">Checkout</h1>
+          <div className="mb-8 sm:mb-10 border-b border-white/10 pb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+              <span className="eyebrow block mb-1">MK 1974 Official Checkout</span>
+              <h1 className="font-playfair italic font-black text-cream text-3xl sm:text-4xl">Checkout</h1>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-cream/50 bg-white/5 px-3.5 py-2 rounded-full border border-white/10 w-fit">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-lime">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0110 0v4"/>
+              </svg>
+              <span>256-Bit SSL Encrypted Checkout</span>
+            </div>
           </div>
 
-          {/* Steps */}
-          <div className="flex items-center gap-0 mb-12">
-            {STEPS.map((s, i) => (
-              <div key={s} className="flex items-center">
-                <div className={`flex items-center gap-3 ${i <= step ? 'text-lime' : 'text-muted'}`}>
-                  <div className={`w-8 h-8 flex items-center justify-center text-[0.7rem] font-bold border transition-all ${
-                    i < step ? 'border-lime bg-lime text-dark' : i === step ? 'border-lime text-lime' : 'border-white/20 text-muted'
-                  }`}>
-                    {i < step ? '✓' : i + 1}
+          {/* Responsive Stepper */}
+          <div className="max-w-2xl mx-auto mb-10">
+            <div className="flex items-center justify-between">
+              {STEPS.map((s, i) => (
+                <div key={s.id} className="flex items-center flex-1 last:flex-initial">
+                  <div
+                    className={`flex items-center gap-2 sm:gap-3 cursor-pointer ${i <= step ? 'text-cream' : 'text-cream/30'}`}
+                    onClick={() => i < step && setStep(i)}
+                  >
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all shrink-0 ${
+                      i < step
+                        ? 'bg-lime text-dark font-bold'
+                        : i === step
+                        ? 'border-2 border-lime text-lime bg-lime/10'
+                        : 'border border-white/20 text-cream/40 bg-white/5'
+                    }`}>
+                      {i < step ? '✓' : i + 1}
+                    </div>
+                    <span className={`text-[0.72rem] tracking-wider uppercase hidden xs:inline sm:block ${i === step ? 'text-cream font-bold' : 'font-medium'}`}>
+                      {s.short}
+                    </span>
                   </div>
-                  <span className="text-[0.7rem] font-semibold tracking-[0.2em] uppercase hidden sm:block">{s}</span>
+                  {i < STEPS.length - 1 && (
+                    <div className={`flex-1 h-[1px] mx-2 sm:mx-4 transition-colors ${i < step ? 'bg-lime' : 'bg-white/10'}`} />
+                  )}
                 </div>
-                {i < STEPS.length - 1 && <div className={`w-12 md:w-24 h-[1px] mx-3 ${i < step ? 'bg-lime' : 'bg-white/10'}`} />}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            {/* Form area */}
-            <div className="lg:col-span-2">
-              {/* Step 0: Customer Details */}
+          {/* Main Checkout Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
+            {/* Left Content Area (Steps 0, 1, 2) */}
+            <div className="lg:col-span-7 space-y-8">
+              
+              {/* STEP 0: Shipping Information */}
               {step === 0 && (
-                <form onSubmit={handleStep1} className="space-y-6">
+                <form onSubmit={handleStep1} className="bg-white/5 border border-white/10 p-5 sm:p-8 rounded-lg space-y-8 shadow-2xl backdrop-blur-sm">
                   <div>
-                    <h2 className="text-cream font-semibold text-[0.82rem] tracking-[0.25em] uppercase mb-5">Personal Information</h2>
+                    <h2 className="text-lime font-bold text-xs tracking-[0.25em] uppercase mb-6 flex items-center gap-2">
+                      <span>01</span>
+                      <span className="w-4 h-[1px] bg-lime/40" />
+                      <span>Contact Information</span>
+                    </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {[
-                        { name: 'firstName', label: 'First Name', type: 'text' },
-                        { name: 'lastName', label: 'Last Name', type: 'text' },
-                        { name: 'email', label: 'Email Address', type: 'email' },
-                        { name: 'phone', label: 'Phone Number', type: 'tel' },
-                      ].map(f => (
-                        <div key={f.name}>
-                          <label className="block text-[0.65rem] tracking-[0.2em] uppercase text-muted mb-2">{f.label}</label>
-                          <input
-                            type={f.type}
-                            name={f.name}
-                            value={form[f.name]}
-                            onChange={handleChange}
-                            required
-                            className="w-full bg-surface border border-black/10 text-onlight text-[0.85rem] px-4 py-3 focus:outline-none focus:border-lime/40 transition-colors"
-                          />
-                        </div>
-                      ))}
+                      <div>
+                        <label className="block text-[0.68rem] tracking-[0.15em] uppercase text-cream/60 mb-2">First Name *</label>
+                        <input
+                          type="text"
+                          name="firstName"
+                          value={form.firstName}
+                          onChange={handleChange}
+                          required
+                          className="w-full bg-white/5 border border-white/15 text-cream text-sm px-4 py-3 rounded focus:outline-none focus:border-lime transition-colors"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[0.68rem] tracking-[0.15em] uppercase text-cream/60 mb-2">Last Name *</label>
+                        <input
+                          type="text"
+                          name="lastName"
+                          value={form.lastName}
+                          onChange={handleChange}
+                          required
+                          className="w-full bg-white/5 border border-white/15 text-cream text-sm px-4 py-3 rounded focus:outline-none focus:border-lime transition-colors"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[0.68rem] tracking-[0.15em] uppercase text-cream/60 mb-2">Email Address *</label>
+                        <input
+                          type="email"
+                          name="email"
+                          value={form.email}
+                          onChange={handleChange}
+                          required
+                          className="w-full bg-white/5 border border-white/15 text-cream text-sm px-4 py-3 rounded focus:outline-none focus:border-lime transition-colors"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[0.68rem] tracking-[0.15em] uppercase text-cream/60 mb-2">Phone Number *</label>
+                        <input
+                          type="tel"
+                          name="phone"
+                          placeholder="+234 800 000 0000"
+                          value={form.phone}
+                          onChange={handleChange}
+                          required
+                          className="w-full bg-white/5 border border-white/15 text-cream text-sm px-4 py-3 rounded focus:outline-none focus:border-lime transition-colors"
+                        />
+                      </div>
                     </div>
                   </div>
 
                   <div>
-                    <h2 className="text-cream font-semibold text-[0.82rem] tracking-[0.25em] uppercase mb-5">Delivery Address</h2>
+                    <h2 className="text-lime font-bold text-xs tracking-[0.25em] uppercase mb-6 flex items-center gap-2">
+                      <span>02</span>
+                      <span className="w-4 h-[1px] bg-lime/40" />
+                      <span>Shipping Address</span>
+                    </h2>
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-[0.65rem] tracking-[0.2em] uppercase text-muted mb-2">Street Address</label>
-                        <input name="address" value={form.address} onChange={handleChange} required className="w-full bg-surface border border-black/10 text-onlight text-[0.85rem] px-4 py-3 focus:outline-none focus:border-lime/40" />
+                        <label className="block text-[0.68rem] tracking-[0.15em] uppercase text-cream/60 mb-2">Street Address *</label>
+                        <input
+                          name="address"
+                          placeholder="e.g. 12 Victoria Island Avenue"
+                          value={form.address}
+                          onChange={handleChange}
+                          required
+                          className="w-full bg-white/5 border border-white/15 text-cream text-sm px-4 py-3 rounded focus:outline-none focus:border-lime transition-colors"
+                        />
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
-                          <label className="block text-[0.65rem] tracking-[0.2em] uppercase text-muted mb-2">City</label>
-                          <input name="city" value={form.city} onChange={handleChange} required className="w-full bg-surface border border-black/10 text-onlight text-[0.85rem] px-4 py-3 focus:outline-none focus:border-lime/40" />
+                          <label className="block text-[0.68rem] tracking-[0.15em] uppercase text-cream/60 mb-2">City *</label>
+                          <input
+                            name="city"
+                            placeholder="e.g. Ikeja"
+                            value={form.city}
+                            onChange={handleChange}
+                            required
+                            className="w-full bg-white/5 border border-white/15 text-cream text-sm px-4 py-3 rounded focus:outline-none focus:border-lime transition-colors"
+                          />
                         </div>
                         <div>
-                          <label className="block text-[0.65rem] tracking-[0.2em] uppercase text-muted mb-2">LGA</label>
-                          <input name="lga" value={form.lga} onChange={handleChange} className="w-full bg-surface border border-black/10 text-onlight text-[0.85rem] px-4 py-3 focus:outline-none focus:border-lime/40" />
+                          <label className="block text-[0.68rem] tracking-[0.15em] uppercase text-cream/60 mb-2">LGA</label>
+                          <input
+                            name="lga"
+                            placeholder="e.g. Eti-Osa"
+                            value={form.lga}
+                            onChange={handleChange}
+                            className="w-full bg-white/5 border border-white/15 text-cream text-sm px-4 py-3 rounded focus:outline-none focus:border-lime transition-colors"
+                          />
                         </div>
-                      </div>
-                      <div>
-                        <label className="block text-[0.65rem] tracking-[0.2em] uppercase text-muted mb-2">State</label>
-                        <select name="state" value={form.state} onChange={handleChange} required className="w-full bg-surface border border-black/10 text-onlight text-[0.85rem] px-4 py-3 focus:outline-none focus:border-lime/40 appearance-none">
-                          <option value="">Select State</option>
-                          {NIGERIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
-                        </select>
+                        <div>
+                          <label className="block text-[0.68rem] tracking-[0.15em] uppercase text-cream/60 mb-2">State *</label>
+                          <select
+                            name="state"
+                            value={form.state}
+                            onChange={handleChange}
+                            required
+                            className="w-full bg-surface border border-white/15 text-onlight text-sm px-4 py-3 rounded focus:outline-none focus:border-lime transition-colors"
+                          >
+                            {NIGERIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
+                          </select>
+                        </div>
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <h2 className="text-cream font-semibold text-[0.82rem] tracking-[0.25em] uppercase mb-5">Delivery Option</h2>
+                    <h2 className="text-lime font-bold text-xs tracking-[0.25em] uppercase mb-4 flex items-center gap-2">
+                      <span>03</span>
+                      <span className="w-4 h-[1px] bg-lime/40" />
+                      <span>Delivery Method</span>
+                    </h2>
                     <div className="space-y-3">
                       {[
-                        { value: 'standard', label: 'Standard Delivery', desc: '3-5 business days', price: cartTotal >= 75 ? 'FREE' : '₦3.99' },
-                        { value: 'express', label: 'Express Delivery', desc: '1-2 business days', price: '₦5.99' },
-                        { value: 'next-day', label: 'Next Day Delivery', desc: 'Order before 2pm', price: '₦8.99' },
+                        { value: 'standard', label: 'Standard Delivery', desc: '3–5 business days across Nigeria', price: '₦3,000' },
+                        { value: 'express', label: 'Express Delivery', desc: '1–2 business days (Major cities)', price: '₦5,000' },
+                        { value: 'next-day', label: 'Same-Day / Next Day Lagos Dispatch', desc: 'Orders confirmed before 1pm in Lagos', price: '₦8,000' },
                       ].map(opt => (
-                        <label key={opt.value} className={`flex items-center justify-between p-4 border cursor-pointer transition-all rounded-sm ${form.delivery === opt.value ? 'border-lime bg-lime/10' : 'border-white/10 hover:border-white/30'}`}>
-                          <div className="flex items-center gap-4">
-                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${form.delivery === opt.value ? 'border-lime' : 'border-white/30'}`}>
+                        <label key={opt.value} className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-all ${form.delivery === opt.value ? 'border-lime bg-lime/10' : 'border-white/10 bg-white/5 hover:border-white/20'}`}>
+                          <div className="flex items-center gap-3.5">
+                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${form.delivery === opt.value ? 'border-lime' : 'border-white/30'}`}>
                               {form.delivery === opt.value && <div className="w-2 h-2 rounded-full bg-lime" />}
                             </div>
                             <div>
-                              <p className="text-cream text-[0.85rem] font-medium">{opt.label}</p>
-                              <p className="text-muted text-[0.72rem]">{opt.desc}</p>
+                              <p className="text-cream text-sm font-medium">{opt.label}</p>
+                              <p className="text-cream/40 text-xs">{opt.desc}</p>
                             </div>
                           </div>
                           <input type="radio" name="delivery" value={opt.value} checked={form.delivery === opt.value} onChange={handleChange} className="hidden" />
-                          <span className={`text-[0.85rem] font-semibold ${opt.price === 'FREE' ? 'text-lime' : 'text-cream'}`}>{opt.price}</span>
+                          <span className="text-sm font-bold text-cream shrink-0">{opt.price}</span>
                         </label>
                       ))}
                     </div>
                   </div>
 
-                  <button type="submit" className="btn-primary">
-                    Continue to Payment
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                  </button>
+                  <div className="pt-4 flex justify-end">
+                    <button type="submit" disabled={isCreatingOrder} className="w-full sm:w-auto px-8 py-3.5 bg-lime text-dark font-semibold text-xs tracking-[0.15em] uppercase rounded hover:bg-lime-dim hover:text-white transition-all flex items-center justify-center gap-3 disabled:opacity-50">
+                      {isCreatingOrder ? (
+                        <span>Creating Order...</span>
+                      ) : (
+                        <>
+                          <span>Proceed to Payment</span>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </form>
               )}
 
-              {/* Step 1: Payment */}
+              {/* STEP 1: Bank Payment & Receipt Upload */}
               {step === 1 && (
-                <div className="space-y-8">
-                  <div className="bg-surface2 border border-black/[0.08] p-6">
-                    <h2 className="font-semibold text-[0.82rem] tracking-[0.25em] uppercase mb-5" style={{ color: '#1A1A1A' }}>Bank Transfer Details</h2>
-                    <div className="space-y-4">
-                      {[
-                        { label: 'Bank Name', value: 'Guaranty Trust Bank (GTBank)' },
-                        { label: 'Account Name', value: 'MK 1974 Limited' },
-                        { label: 'Account Number', value: '0123456789' },
-                        { label: 'Amount to Pay', value: `₦${total.toFixed(2)}` },
-                        { label: 'Reference', value: `MK${Date.now().toString().slice(-6)}` },
-                      ].map(row => (
-                        <div key={row.label} className="flex items-center justify-between py-3 border-b border-black/[0.08]">
-                          <span className="text-muted text-[0.75rem] tracking-[0.15em] uppercase">{row.label}</span>
-                          <span className="text-[0.9rem] font-semibold" style={row.label === 'Amount to Pay' ? { color: '#968574' } : { color: '#1A1A1A' }}>{row.value}</span>
+                <div className="bg-white/5 border border-white/10 p-5 sm:p-8 rounded-lg space-y-8 shadow-2xl backdrop-blur-sm">
+                  <div>
+                    <h2 className="text-lime font-bold text-xs tracking-[0.25em] uppercase mb-6 flex items-center gap-2">
+                      <span>Payment Method</span>
+                    </h2>
+
+                    {/* Direct Bank Transfer Card */}
+                    <div className="space-y-6">
+                      <div className="bg-white/5 border border-white/10 rounded-lg p-6">
+                        <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+                          <span className="text-xs font-semibold tracking-[0.2em] uppercase text-cream/60">Official Bank Account</span>
+                          <span className="text-[0.7rem] bg-lime/20 text-lime px-2.5 py-1 rounded font-semibold">Direct Transfer</span>
                         </div>
-                      ))}
+
+                        <div className="space-y-3 text.sm">
+                          {createdOrderNumber && (
+                            <div className="flex justify-between items-center py-2 border-b border-white/10 bg-lime/10 px-3 rounded">
+                              <span className="text-lime text-xs font-bold uppercase tracking-wider">Order Reference #</span>
+                              <span className="font-mono text-sm text-lime font-bold">{createdOrderNumber}</span>
+                            </div>
+                          )}
+                          <div className="flex justify-between items-center py-2 border-b border-white/5">
+                            <span className="text-cream/50 text-xs">Bank Name</span>
+                            <span className="font-medium text-cream">Guaranty Trust Bank (GTBank)</span>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-white/5">
+                            <span className="text-cream/50 text-xs">Account Name</span>
+                            <span className="font-medium text-cream">MK 1974 Apparel Ltd</span>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-white/5">
+                            <span className="text-cream/50 text-xs">Account Number</span>
+                            <div className="flex items-center gap-3">
+                              <span className="font-mono text-base text-lime font-bold">0123456789</span>
+                              <button
+                                type="button"
+                                onClick={handleCopyAccount}
+                                className="text-xs px-2.5 py-1 bg-white/10 hover:bg-white/20 text-cream rounded transition-colors"
+                              >
+                                {copiedAccount ? 'Copied!' : 'Copy'}
+                              </button>
+                            </div>
+                          </div>
+                          <div className="flex justify-between items-center py-2">
+                            <span className="text-cream/50 text-xs">Exact Amount to Pay</span>
+                            <span className="font-bold text-xl text-cream">₦{total.toLocaleString()}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Upload Receipt */}
+                      <div className="bg-white/5 border border-white/10 rounded-lg p-6">
+                        <label className="block text-xs font-semibold tracking-[0.2em] uppercase text-cream/80 mb-1">
+                          Upload Payment Proof (Optional)
+                        </label>
+                        <p className="text-xs text-cream/40 mb-4">Attach your transfer receipt screenshot/PDF to expedite order processing.</p>
+
+                        <label className={`flex flex-col items-center justify-center h-32 border-2 border-dashed rounded-lg cursor-pointer transition-all ${receipt ? 'border-lime bg-lime/10' : 'border-white/20 bg-white/5 hover:border-white/40'}`}>
+                          <input type="file" accept="image/*,.pdf" onChange={handleReceiptUpload} className="hidden" />
+                          {receipt ? (
+                            <div className="text-center px-4">
+                              <svg className="text-lime mx-auto mb-2" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>
+                              <p className="text-lime text-xs font-semibold truncate max-w-xs">{receipt}</p>
+                              <p className="text-cream/40 text-[0.68rem] mt-1">Click to replace file</p>
+                            </div>
+                          ) : (
+                            <div className="text-center px-4">
+                              <svg className="text-cream/40 mx-auto mb-2" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                              <p className="text-cream/80 text-xs font-medium">Click or drag receipt file here</p>
+                              <p className="text-cream/40 text-[0.65rem] mt-1">Supports JPG, PNG, PDF up to 10MB</p>
+                            </div>
+                          )}
+                        </label>
+                      </div>
                     </div>
-                    <p className="text-muted text-[0.72rem] mt-4 leading-[1.7]">
-                      Please use your order reference as the payment narration/description when making the transfer.
-                    </p>
                   </div>
 
-                  {/* Upload receipt */}
-                  <div className="bg-surface2 border border-black/[0.08] p-6">
-                    <h2 className="font-semibold text-[0.82rem] tracking-[0.25em] uppercase mb-4" style={{ color: '#1A1A1A' }}>I've Made Payment — Upload Receipt</h2>
-                    <label className={`flex flex-col items-center justify-center h-36 border-2 border-dashed cursor-pointer transition-all ${receipt ? 'border-lime/50 bg-lime/5' : 'border-black/10 hover:border-black/20'}`}>
-                      <input type="file" accept="image/*,.pdf" onChange={handleReceiptUpload} className="hidden" />
-                      {receipt ? (
-                        <div className="text-center">
-                          <svg className="text-lime mx-auto mb-2" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="20 6 9 17 4 12"/></svg>
-                          <p className="text-lime text-[0.78rem] font-medium">{receipt}</p>
-                          <p className="text-muted text-[0.65rem] mt-1">Click to change</p>
-                        </div>
-                      ) : (
-                        <div className="text-center">
-                          <svg className="text-muted mx-auto mb-2" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                          <p className="text-muted text-[0.78rem]">Upload payment receipt</p>
-                          <p className="text-muted text-[0.65rem] mt-1">JPG, PNG or PDF</p>
-                        </div>
-                      )}
-                    </label>
-                  </div>
-
-                  <div className="flex gap-4">
-                    <button onClick={() => setStep(0)} className="btn-ghost">← Back</button>
-                    <button onClick={() => setStep(2)} className="btn-primary flex-1 justify-center">
+                  <div className="flex items-center justify-between pt-4 gap-4">
+                    <button
+                      type="button"
+                      onClick={() => setStep(0)}
+                      className="px-5 py-3 border border-white/20 hover:bg-white/10 text-cream text-xs font-semibold uppercase tracking-wider rounded transition-colors"
+                    >
+                      ← Back
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setStep(2)}
+                      className="px-8 py-3.5 bg-lime text-dark font-semibold text-xs tracking-[0.15em] uppercase rounded hover:bg-lime-dim hover:text-white transition-all"
+                    >
                       Review Order →
                     </button>
                   </div>
                 </div>
               )}
 
-              {/* Step 2: Confirm */}
+              {/* STEP 2: Review & Complete Order */}
               {step === 2 && (
-                <div className="space-y-6">
-                  <div className="bg-surface2 border border-black/[0.08] p-6">
-                    <h2 className="font-semibold text-[0.82rem] tracking-[0.25em] uppercase mb-5" style={{ color: '#1A1A1A' }}>Confirm Your Order</h2>
-                    <div className="space-y-3 text-[0.85rem]">
-                      {[
-                        { label: 'Name', value: `${form.firstName} ${form.lastName}` },
-                        { label: 'Email', value: form.email },
-                        { label: 'Phone', value: form.phone },
-                        { label: 'Address', value: `${form.address}, ${form.city}, ${form.lga}, ${form.state}` },
-                        { label: 'Delivery', value: form.delivery.charAt(0).toUpperCase() + form.delivery.slice(1) },
-                      ].map(row => (
-                        <div key={row.label} className="flex justify-between py-2 border-b border-black/[0.08]">
-                          <span className="text-muted text-[0.72rem] tracking-[0.15em] uppercase">{row.label}</span>
-                          <span className="text-right max-w-[250px]" style={{ color: '#1A1A1A' }}>{row.value}</span>
-                        </div>
-                      ))}
+                <div className="bg-white/5 border border-white/10 p-5 sm:p-8 rounded-lg space-y-8 shadow-2xl backdrop-blur-sm">
+                  <div>
+                    <div className="flex items-center justify-between mb-6 pb-2 border-b border-white/10">
+                      <h2 className="text-lime font-bold text-xs tracking-[0.25em] uppercase">
+                        Order & Delivery Review
+                      </h2>
+                      <button onClick={() => setStep(0)} className="text-xs text-lime underline hover:text-cream">
+                        Edit Info
+                      </button>
+                    </div>
+
+                    <div className="bg-white/5 border border-white/10 rounded-lg p-5 space-y-3 text-xs text-cream/80">
+                      <div className="flex justify-between py-1 border-b border-white/5">
+                        <span className="text-cream/40">Customer</span>
+                        <span className="font-medium text-cream">{form.firstName} {form.lastName} ({form.phone})</span>
+                      </div>
+                      <div className="flex justify-between py-1 border-b border-white/5">
+                        <span className="text-cream/40">Email</span>
+                        <span className="font-medium text-cream">{form.email}</span>
+                      </div>
+                      <div className="flex justify-between py-1 border-b border-white/5">
+                        <span className="text-cream/40">Delivery Address</span>
+                        <span className="font-medium text-cream text-right max-w-xs">{form.address}, {form.city}, {form.state}</span>
+                      </div>
+                      <div className="flex justify-between py-1 border-b border-white/5">
+                        <span className="text-cream/40">Delivery Option</span>
+                        <span className="font-medium text-cream capitalize">{form.delivery} Delivery (₦{shippingFee.toLocaleString()})</span>
+                      </div>
+                      <div className="flex justify-between py-1">
+                        <span className="text-cream/40">Payment Option</span>
+                        <span className="font-medium text-cream">
+                          Direct Bank Transfer{receipt ? ' (Receipt Attached)' : ''}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="bg-surface2 border border-black/[0.08] p-6">
-                    <h3 className="font-semibold text-[0.82rem] tracking-[0.25em] uppercase mb-4" style={{ color: '#1A1A1A' }}>Order Items</h3>
-                    {cart.map(item => {
-                      const freshProduct = products.find(p => p.id === item.product.id) || item.product
-                      return (
-                        <div key={item.key} className="flex justify-between items-center py-3 border-b border-black/[0.08] text-[0.85rem]">
-                          <span style={{ color: 'rgba(26,26,26,0.8)' }}>{freshProduct.name} × {item.qty} <span className="text-muted">({item.size})</span></span>
-                          <span className="font-medium" style={{ color: '#1A1A1A' }}>₦{(item.price * item.qty).toFixed(2)}</span>
-                        </div>
-                      )
-                    })}
-                    <div className="flex justify-between pt-4">
-                      <span className="font-semibold text-[0.9rem]" style={{ color: '#1A1A1A' }}>Total</span>
-                      <span className="font-bold text-[1rem]" style={{ color: '#968574' }}>₦{total.toFixed(2)}</span>
+                  {/* Promo Code Input */}
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-5">
+                    <label className="block text-[0.68rem] tracking-[0.15em] uppercase text-cream/60 mb-3">Voucher / Discount Code</label>
+                    <form onSubmit={handleApplyPromo} className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Try MK10 or VOLT20"
+                        value={promoCode}
+                        onChange={(e) => setPromoCode(e.target.value)}
+                        className="flex-1 bg-white/5 border border-white/15 text-cream text-xs px-4 py-2.5 rounded focus:outline-none focus:border-lime"
+                      />
+                      <button type="submit" className="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-cream text-xs font-semibold uppercase tracking-wider rounded transition-colors">
+                        Apply
+                      </button>
+                    </form>
+                    {discountAmount > 0 && (
+                      <p className="text-xs text-lime mt-2 font-medium">Discount applied: -₦{discountAmount.toLocaleString()}</p>
+                    )}
+                  </div>
+
+                  {/* Line items list */}
+                  <div>
+                    <h3 className="text-xs font-semibold tracking-[0.2em] uppercase text-cream/70 mb-4">Selected Items ({cart.length})</h3>
+                    <div className="divide-y divide-white/5 border-t border-b border-white/10">
+                      {cart.map(item => {
+                        const freshProduct = products.find(p => p.id === item.product.id) || item.product
+                        return (
+                          <div key={item.key} className="flex items-center justify-between py-3">
+                            <div className="flex items-center gap-3">
+                              <img src={freshProduct.images?.[0] || '/product2.png'} alt={freshProduct.name} className="w-12 h-16 object-cover bg-surface2 rounded" />
+                              <div>
+                                <p className="text-xs font-medium text-cream">{freshProduct.name}</p>
+                                <p className="text-[0.68rem] text-cream/40">Size: {item.size} · Color: {item.color} · Qty: {item.qty}</p>
+                              </div>
+                            </div>
+                            <span className="text-xs font-bold text-cream">₦{(item.price * item.qty).toLocaleString()}</span>
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
 
-                  <div className="flex gap-4">
-                    <button onClick={() => setStep(1)} className="btn-ghost">← Back</button>
-                    <button onClick={handlePlaceOrder} id="place-order-btn" className="btn-primary flex-1 justify-center">
-                      Place Order
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  {/* Submit CTAs */}
+                  <div className="flex items-center justify-between pt-4 gap-4">
+                    <button
+                      type="button"
+                      onClick={() => setStep(1)}
+                      className="px-5 py-3 border border-white/20 hover:bg-white/10 text-cream text-xs font-semibold uppercase tracking-wider rounded transition-colors"
+                    >
+                      ← Back
+                    </button>
+                    <button
+                      type="button"
+                      id="place-order-btn"
+                      disabled={isSubmitting}
+                      onClick={handlePlaceOrder}
+                      className="px-8 sm:px-10 py-4 bg-lime hover:bg-lime-dim text-dark hover:text-white font-bold text-xs tracking-[0.2em] uppercase rounded transition-all shadow-xl flex items-center justify-center gap-3 disabled:opacity-50"
+                    >
+                      {isSubmitting ? (
+                        <span>Processing Order...</span>
+                      ) : (
+                        <>
+                          <span>Complete & Place Order</span>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Order summary sidebar */}
-            <div className="lg:col-span-1">
-              <div className="bg-surface2 border border-black/[0.08] p-6 sticky top-28">
-                <h3 className="font-semibold text-[0.8rem] tracking-[0.25em] uppercase mb-5" style={{ color: '#1A1A1A' }}>Your Bag ({cart.length})</h3>
-                <div className="space-y-4 mb-6">
+            {/* Right Summary Sidebar (Sticky) */}
+            <div className="lg:col-span-5">
+              <div className="bg-white/5 border border-white/10 p-6 rounded-lg sticky top-28 space-y-6 shadow-2xl backdrop-blur-sm">
+                <h3 className="font-playfair font-bold text-lg text-cream pb-3 border-b border-white/10 flex items-center justify-between">
+                  <span>Order Summary</span>
+                  <span className="text-xs font-sans text-lime font-bold">{cart.length} Item{cart.length > 1 ? 's' : ''}</span>
+                </h3>
+
+                <div className="space-y-4 max-h-72 overflow-y-auto pr-1">
                   {cart.map(item => {
                     const freshProduct = products.find(p => p.id === item.product.id) || item.product
                     return (
-                      <div key={item.key} className="flex gap-3">
-                        <div className="w-14 h-18 aspect-[3/4] overflow-hidden bg-surface shrink-0">
-                          <img src={freshProduct.images?.[0] || '/product2.png'} alt={freshProduct.name} className="w-full h-full object-cover" />
+                      <div key={item.key} className="flex items-center justify-between text-xs py-1">
+                        <div className="flex items-center gap-3">
+                          <img src={freshProduct.images?.[0] || '/product2.png'} alt={freshProduct.name} className="w-10 h-12 object-cover bg-surface2 rounded" />
+                          <div>
+                            <p className="font-medium text-cream line-clamp-1">{freshProduct.name}</p>
+                            <p className="text-cream/40 text-[0.65rem]">{item.size} / {item.color} (×{item.qty})</p>
+                          </div>
                         </div>
-                        <div className="flex-1">
-                          <p className="text-[0.78rem] font-medium leading-tight mb-1" style={{ color: '#1A1A1A' }}>{freshProduct.name}</p>
-                          <p className="text-muted text-[0.65rem]">{item.size} · {item.color}</p>
-                          <p className="text-[0.78rem] mt-1" style={{ color: 'rgba(26,26,26,0.8)' }}>₦{item.price} × {item.qty}</p>
-                        </div>
+                        <span className="font-semibold text-cream">₦{(item.price * item.qty).toLocaleString()}</span>
                       </div>
                     )
                   })}
                 </div>
-                <div className="border-t border-black/[0.08] pt-4 space-y-2">
-                  <div className="flex justify-between text-[0.8rem]">
-                    <span className="text-muted">Subtotal</span>
-                    <span className="font-medium" style={{ color: '#1A1A1A' }}>₦{cartTotal.toFixed(2)}</span>
+
+                <div className="border-t border-white/10 pt-4 space-y-2.5 text-xs">
+                  <div className="flex justify-between text-cream/60">
+                    <span>Subtotal</span>
+                    <span className="text-cream font-medium">₦{cartTotal.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-[0.8rem]">
-                    <span className="text-muted">Shipping</span>
-                    <span className={shipping === 0 ? 'text-lime' : 'font-medium'} style={shipping > 0 ? { color: '#1A1A1A' } : undefined}>{shipping === 0 ? 'FREE' : `₦${shipping.toFixed(2)}`}</span>
+                  {discountAmount > 0 && (
+                    <div className="flex justify-between text-lime">
+                      <span>Discount</span>
+                      <span className="font-medium">-₦{discountAmount.toLocaleString()}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between text-cream/60">
+                    <span>Shipping ({form.delivery})</span>
+                    <span className="text-cream font-medium">₦{shippingFee.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between pt-3 border-t border-black/[0.08]">
-                    <span className="font-semibold" style={{ color: '#1A1A1A' }}>Total</span>
-                    <span className="font-bold" style={{ color: '#968574' }}>₦{total.toFixed(2)}</span>
+
+                  <div className="border-t border-white/10 pt-4 flex justify-between items-baseline">
+                    <span className="font-bold text-base text-cream uppercase">Grand Total</span>
+                    <div className="text-right">
+                      <span className="font-bold text-2xl text-cream">₦{total.toLocaleString()}</span>
+                      <p className="text-[0.65rem] text-cream/40 uppercase tracking-wider mt-0.5">Includes taxes & duties</p>
+                    </div>
                   </div>
+                </div>
+
+                <div className="bg-white/5 p-4 rounded-lg text-xs space-y-2 text-cream/50 border border-white/5">
+                  <div className="flex items-center gap-2 text-cream">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-lime"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <span className="font-semibold text-[0.72rem]">Buyer Protection Guaranteed</span>
+                  </div>
+                  <p className="text-[0.68rem] leading-relaxed">Free exchange within 7 days. Need assistance? Contact customercare@mk1974.com</p>
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </main>

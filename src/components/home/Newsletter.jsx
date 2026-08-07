@@ -4,43 +4,42 @@ import useScrollReveal from '../../hooks/useScrollReveal'
 export default function Newsletter() {
   const { showToast } = useApp()
   const { ref, isVisible } = useScrollReveal()
+
   const handleSubmit = (e) => {
     e.preventDefault()
     e.target.reset()
-    showToast('You\'re on the list! Welcome to MK 1974.')
+    showToast("You're on the list.")
   }
 
   return (
     <section
       id="newsletter"
       ref={ref}
-      className="bg-surface2 border-t border-black/[0.05] py-20 px-8 md:px-12"
+      className="py-14 px-8 md:px-12 bg-dark"
       style={{
         opacity: isVisible ? 1 : 0,
-        transform: isVisible ? 'translateY(0)' : 'translateY(32px)',
-        transition: 'opacity 0.8s cubic-bezier(.16,1,.3,1) 0.15s, transform 0.8s cubic-bezier(.16,1,.3,1) 0.15s',
+        transform: isVisible ? 'none' : 'translateY(20px)',
+        transition: 'opacity 0.5s ease, transform 0.5s ease',
       }}
     >
       <div className="max-w-[700px] mx-auto text-center">
-        <p className="eyebrow mb-4">Stay in the Loop</p>
-        <h2 className="font-playfair font-black italic text-black mb-4" style={{ fontSize: 'clamp(2rem,4vw,3rem)' }}>
-          Join the MK 1974 Family
+        <h2 className="text-2xl md:text-3xl font-bold text-cream mb-2">
+          Be the first to know
         </h2>
-        <p className="text-black/50 text-[0.88rem] font-light leading-[1.8] mb-10">
-          Be first to know about new drops, exclusive sales, and members-only offers.
+        <p className="text-cream/50 text-sm mb-8">
+          New drops, restocks and early access. MK 1974 just launched — don't miss what's next.
         </p>
-        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-[480px] mx-auto">
+        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 max-w-[440px] mx-auto">
           <input
             type="email"
             required
-            placeholder="Enter your email address"
-            className="flex-1 bg-surface border border-black/10 text-onlight placeholder-muted text-[0.82rem] px-5 py-3.5 focus:outline-none focus:border-lime/40 focus:ring-1 focus:ring-lime/40 transition-all rounded-sm shadow-sm"
+            placeholder="Your email address"
+            className="flex-1 bg-white/5 border border-white/15 text-cream placeholder-cream/30 text-sm px-4 py-3 focus:outline-none focus:border-white/40 transition-colors"
           />
-          <button type="submit" className="btn-primary whitespace-nowrap rounded-sm shadow-md hover:shadow-lg">
+          <button type="submit" className="bg-cream text-dark text-sm font-semibold px-6 py-3 hover:bg-accent hover:text-white transition-colors whitespace-nowrap">
             Subscribe
           </button>
         </form>
-        <p className="text-muted text-[0.65rem] mt-4 tracking-[0.1em]">No spam. Unsubscribe anytime.</p>
       </div>
     </section>
   )
