@@ -515,8 +515,24 @@ function extractOrderNumber(res) {
       }
     })
     
+    const shippingAmount = orderData?.shipping ?? orderData?.shippingFee ?? 3000
+    const discountVal = orderData?.discount ?? orderData?.discountAmount ?? 0
+    const finalTotal = orderData?.totalAmount ?? (cartTotal + shippingAmount - discountVal)
+
     const payload = {
       userId: parseInt(user?.id) || 1,
+      shipping: shippingAmount,
+      shippingFee: shippingAmount,
+      shippingCost: shippingAmount,
+      deliveryFee: shippingAmount,
+      discount: discountVal,
+      discountAmount: discountVal,
+      totalAmount: finalTotal,
+      total: finalTotal,
+      address: orderData?.address || '',
+      city: orderData?.city || '',
+      state: orderData?.state || 'Lagos',
+      phone: orderData?.phone || '',
       items: itemsPayload
     }
 
@@ -540,7 +556,7 @@ function extractOrderNumber(res) {
     }
 
     return { orderNumber, createdData: createdFromApi }
-  }, [cart, user, apiColors, apiSizes, logout])
+  }, [cart, cartTotal, user, apiColors, apiSizes, logout])
 
   const submitOrderPayment = useCallback(async (orderNumber, receiptFile, orderData) => {
     if (user?.token) {
@@ -550,6 +566,10 @@ function extractOrderNumber(res) {
     if (!orderNumber) {
       throw new Error('No valid Order Number provided for payment submission.')
     }
+
+    const shippingAmount = orderData?.shipping ?? orderData?.shippingFee ?? 3000
+    const discountVal = orderData?.discount ?? orderData?.discountAmount ?? 0
+    const finalTotal = orderData?.totalAmount ?? (cartTotal + shippingAmount - discountVal)
 
     // Call Payment endpoint POST /api/Payment/submit with the parsed OrderNumber
     try {
@@ -566,7 +586,12 @@ function extractOrderNumber(res) {
       userEmail: user?.email || orderData.email || null,
       ...orderData,
       items: [...cart],
-      total: cartTotal,
+      subtotal: cartTotal,
+      shipping: shippingAmount,
+      shippingFee: shippingAmount,
+      discount: discountVal,
+      total: finalTotal,
+      totalAmount: finalTotal,
       status: 'pending',
       createdAt: new Date().toISOString(),
       timeline: [
