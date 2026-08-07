@@ -75,9 +75,11 @@ export default function CheckoutPage() {
       const orderData = {
         ...form,
         shipping: shippingFee,
+        shippingFee: shippingFee,
         discount: discountAmount,
         paymentMethod: 'Direct Bank Transfer',
         totalAmount: total,
+        total: total,
       }
       // Call POST /api/Order right here on Step 1!
       const { orderNumber } = await createOrder(orderData)
@@ -129,11 +131,13 @@ export default function CheckoutPage() {
       const orderData = {
         ...form,
         shipping: shippingFee,
+        shippingFee: shippingFee,
         discount: discountAmount,
         paymentMethod: 'Direct Bank Transfer',
         receiptName: receipt || null,
         receiptFile: receiptFile || null,
         totalAmount: total,
+        total: total,
       }
 
       let activeOrderNumber = createdOrderNumber
