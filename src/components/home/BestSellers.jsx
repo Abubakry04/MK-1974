@@ -41,18 +41,24 @@ export default function BestSellers() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 md:gap-8">
             {bestSellers.map((p, i) => {
-              const mainImg = (p.images && p.images[0]) ? p.images[0] : '/product1.png'
+              const mainImg = (p.images && p.images[0]) ? p.images[0] : null
               const priceFormatted = Number(p.price || 0).toLocaleString()
               return (
                 <article key={p.id} className={`group ${i === 1 ? 'md:-mt-8' : ''}`}>
                   <div className="relative overflow-hidden aspect-[3/4] bg-surface rounded mb-3">
-                    <Link to={`/product/${p.slug}`}>
-                      <img
-                        src={mainImg}
-                        alt={p.name}
-                        loading="lazy"
-                        className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500"
-                      />
+                    <Link to={`/product/${p.slug}`} className="block w-full h-full">
+                      {mainImg ? (
+                        <img
+                          src={mainImg}
+                          alt={p.name}
+                          loading="lazy"
+                          className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-surface2 flex items-center justify-center p-4">
+                          <span className="text-muted/40 font-bold text-xs uppercase tracking-wider">{p.name}</span>
+                        </div>
+                      )}
                     </Link>
 
                     {p.badge && (

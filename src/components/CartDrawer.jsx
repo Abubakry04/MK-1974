@@ -6,7 +6,7 @@ function UpsellCard({ product }) {
   return (
     <div className="flex gap-3 items-center py-3">
       <Link to={`/product/${product.slug}`} className="shrink-0 w-14 aspect-[3/4] overflow-hidden bg-surface2">
-        <img src={product.images?.[0] || '/product2.png'} alt={product.name} className="w-full h-full object-cover" />
+        <img src={product.images?.[0] || ''} alt={product.name} className="w-full h-full object-cover" />
       </Link>
       <div className="flex-1 min-w-0">
         <p className="text-cream text-sm font-medium leading-tight truncate">{product.name}</p>
@@ -83,7 +83,7 @@ export default function CartDrawer() {
                   return (
                     <div key={item.key} className="flex gap-4 py-5">
                       <Link to={`/product/${freshProduct.slug}`} onClick={() => setCartOpen(false)} className="shrink-0 w-20 aspect-[3/4] rounded overflow-hidden bg-surface2">
-                        <img src={freshProduct.images?.[0] || '/product2.png'} alt={freshProduct.name} className="w-full h-full object-cover" />
+                        <img src={freshProduct.images?.[0] || ''} alt={freshProduct.name} className="w-full h-full object-cover" />
                       </Link>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2 mb-1">

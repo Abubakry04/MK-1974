@@ -118,7 +118,7 @@ function OrdersTab({ orders }) {
             <div className="flex gap-2 mb-4">
               {order.items.slice(0, 4).map((item, i) => (
                 <div key={i} className="w-12 aspect-[3/4] overflow-hidden bg-surface2">
-                  <img src={item.product?.images?.[0] || '/product1.png'} alt={item.product?.name} className="w-full h-full object-cover" />
+                  <img src={item.product?.images?.[0] || ''} alt={item.product?.name} className="w-full h-full object-cover" />
                 </div>
               ))}
               {order.items.length > 4 && (

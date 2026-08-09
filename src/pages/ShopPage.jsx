@@ -36,12 +36,18 @@ function ProductCard({ product }) {
       {/* Image Showcase */}
       <div className="relative aspect-[3/4] overflow-hidden bg-[#F4F4F2]">
         <Link to={`/product/${product.slug}`} className="block w-full h-full">
-          <img
-            src={product.images?.[0] || '/product2.png'}
-            alt={product.name}
-            loading="lazy"
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-          />
+          {product.images?.[0] ? (
+            <img
+              src={product.images[0]}
+              alt={product.name}
+              loading="lazy"
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+          ) : (
+            <div className="w-full h-full bg-[#EAEAE8] flex items-center justify-center p-4 text-center">
+              <span className="text-black/30 font-bold text-xs uppercase tracking-wider">{product.name}</span>
+            </div>
+          )}
           {product.images?.[1] && (
             <img
               src={product.images[1]}

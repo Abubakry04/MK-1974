@@ -138,9 +138,9 @@ export function AppProvider({ children }) {
       })
       const mainCat = categoriesArray.length > 0 ? categoriesArray[0].name : ''
 
-      // Format all images from API (direct fields, imageUrls, images) or fallback
+      // Format all images from API (direct fields, imageUrls, images)
       const formattedImgs = formatProductImages(p)
-      const productImages = formattedImgs.length > 0 ? formattedImgs : ['/product2.png', '/product1.png', '/product3.png']
+      const productImages = formattedImgs
 
       // Map variants & product fields to colors
       const productColors = []
@@ -269,13 +269,11 @@ export function AppProvider({ children }) {
         originalPrice: p.originalPrice || null,
         badge: p.badge || null,
         images: productImages,
-        description: p.description || 'Premium athletic streetwear engineered for comfort and style.',
-        sizes: productSizes.length > 0 ? productSizes : ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
-        colors: productColors.length > 0 ? productColors : [
-          { name: 'Black / Volt', hex: '#0c0c0c', accent: '#c8f542' }
-        ],
+        description: p.description || '',
+        sizes: productSizes,
+        colors: productColors,
         inStock: p.stockQuantity > 0,
-        rating: p.rating || 5.0,
+        rating: p.rating || 0,
         reviews: p.reviews || 0,
         tags: p.tags || [p.name?.toLowerCase() || ''],
         categories: categoriesArray,

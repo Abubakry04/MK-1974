@@ -93,7 +93,7 @@ export default function SearchOverlay() {
                       className="w-full flex items-center gap-4 p-3 hover:bg-white/5 transition-colors text-left group"
                     >
                       <div className="w-10 aspect-[3/4] overflow-hidden bg-surface2 shrink-0">
-                        <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover" />
+                        <img src={p.images?.[0] || ''} alt={p.name} className="w-full h-full object-cover" />
                       </div>
                       <div className="flex-1">
                         <p className="text-cream text-sm group-hover:text-accent transition-colors">{p.name}</p>
@@ -135,7 +135,7 @@ export default function SearchOverlay() {
                   className="w-full flex items-center gap-5 p-4 hover:bg-white/5 transition-colors text-left group"
                 >
                   <div className="w-12 aspect-[3/4] overflow-hidden bg-surface2 shrink-0">
-                    <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover" />
+                    <img src={p.images?.[0] || ''} alt={p.name} className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1">
                     <p className="text-cream text-sm font-medium group-hover:text-accent transition-colors">{p.name}</p>

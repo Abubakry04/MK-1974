@@ -3,17 +3,21 @@ import { Link } from 'react-router-dom'
 import useScrollReveal from '../../hooks/useScrollReveal'
 
 export default function FeaturedCategories() {
-  const { categories, apiLoading } = useApp()
+  const { products, categories, apiLoading } = useApp()
   const { ref, isVisible } = useScrollReveal()
 
   const cats = categories
     .map(c => typeof c === 'string' ? c : (c?.name || String(c?.id || '')))
     .filter(name => name && name.toLowerCase() !== 'all')
-    .map((name, i) => {
-      const images = ['/product2.png', '/product1.png', '/lifestyle.png', '/product3.png']
+    .map(name => {
+      const catProd = products.find(p => 
+        (p.category || '').toLowerCase() === name.toLowerCase() || 
+        (p.categories || []).some(cat => (cat.name || '').toLowerCase() === name.toLowerCase())
+      )
+      const catImage = catProd?.images?.[0] || null
       return {
         label: name,
-        image: images[i % images.length],
+        image: catImage,
         to: `/shop?category=${encodeURIComponent(name.toLowerCase())}`
       }
     })
@@ -54,11 +58,17 @@ export default function FeaturedCategories() {
                 id={`cat-${cats[0].label.toLowerCase()}`}
                 className="group relative overflow-hidden bg-dark rounded col-span-1 md:col-span-2 md:row-span-2 aspect-[3/4] md:aspect-auto"
               >
-                <img
-                  src={cats[0].image}
-                  alt={cats[0].label}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
+                {cats[0].image ? (
+                  <img
+                    src={cats[0].image}
+                    alt={cats[0].label}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-dark via-dark/90 to-black flex items-center justify-center p-6 text-center">
+                    <span className="text-cream/20 font-playfair italic text-3xl font-black">{cats[0].label}</span>
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                 <div className="absolute bottom-5 left-5">
                   <p className="text-white font-bold text-xl">{cats[0].label}</p>
@@ -75,11 +85,17 @@ export default function FeaturedCategories() {
                 id={`cat-${cat.label.toLowerCase()}`}
                 className="group relative overflow-hidden bg-dark rounded aspect-square"
               >
-                <img
-                  src={cat.image}
-                  alt={cat.label}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
+                {cat.image ? (
+                  <img
+                    src={cat.image}
+                    alt={cat.label}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-dark via-dark/90 to-black flex items-center justify-center p-4 text-center">
+                    <span className="text-cream/20 font-playfair italic text-xl font-black">{cat.label}</span>
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/65 to-transparent" />
                 <div className="absolute bottom-4 left-4">
                   <p className="text-white font-semibold text-base">{cat.label}</p>

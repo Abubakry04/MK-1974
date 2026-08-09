@@ -121,7 +121,7 @@ export default function CartPage() {
                 <div className="divide-y divide-white/[0.08] border-t border-b border-white/[0.08]">
                   {cart.map(item => {
                     const freshProduct = products.find(p => p.id === item.product.id) || item.product
-                    const mainImage = freshProduct.images?.[0] || '/product2.png'
+                    const mainImage = freshProduct.images?.[0] || ''
                     const wishlisted = isWishlisted(freshProduct.id)
 
                     return (
@@ -362,7 +362,7 @@ export default function CartPage() {
                   <div key={p.id} className="group flex flex-col justify-between bg-white/5 border border-white/5 p-3 rounded hover:border-white/20 transition-all">
                     <div>
                       <Link to={`/product/${p.slug}`} className="block aspect-[3/4] bg-surface2 rounded overflow-hidden mb-3">
-                        <img src={p.images?.[0] || '/product1.png'} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <img src={p.images?.[0] || ''} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       </Link>
                       <Link to={`/product/${p.slug}`}>
                         <h3 className="text-cream text-xs sm:text-sm font-medium hover:text-lime transition-colors leading-tight line-clamp-1 mb-1">{p.name}</h3>
