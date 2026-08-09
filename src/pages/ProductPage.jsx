@@ -17,11 +17,7 @@ function StarRating({ rating, size = 14 }) {
   )
 }
 
-const MOCK_REVIEWS = [
-  { id: 1, name: 'James L.', rating: 5, date: 'Apr 2026', title: 'Absolute quality', body: 'Couldn\'t be happier with this purchase. The material is incredibly premium and the fit is spot on. MK 1974 delivers top tier quality.', verified: true },
-  { id: 2, name: 'Sarah M.', rating: 4, date: 'Mar 2026', title: 'Great product, clean silhouette', body: 'Really happy with the quality. Premium heavy cotton feel. Recommend true to size for an athletic relaxed look.', verified: true },
-  { id: 3, name: 'Chris T.', rating: 5, date: 'Feb 2026', title: 'My new staple piece', body: 'I own multiple pieces from MK 1974 and this drop is exceptional. Fast nationwide delivery to Lagos too.', verified: false },
-]
+
 
 export default function ProductPage() {
   const { slug } = useParams()
@@ -43,8 +39,40 @@ export default function ProductPage() {
   const [showSizeGuide, setShowSizeGuide] = useState(false)
   const [reviewText, setReviewText] = useState('')
   const [reviewRating, setReviewRating] = useState(5)
+  const [productReviews, setProductReviews] = useState(() => {
+    try {
+      const stored = localStorage.getItem(`mk_reviews_${product?.id}`)
+      return stored ? JSON.parse(stored) : []
+    } catch { return [] }
+  })
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(0)
+
+  useEffect(() => {
+    if (product?.id) {
+      try {
+        const stored = localStorage.getItem(`mk_reviews_${product.id}`)
+        setProductReviews(stored ? JSON.parse(stored) : [])
+      } catch { setProductReviews([]) }
+    }
+  }, [product?.id])
+
+  const handleAddReview = () => {
+    if (!reviewText.trim()) { showToast('Please write a review before submitting.', 'error'); return; }
+    const newRev = {
+      id: Date.now(),
+      name: user ? `${user.firstName} ${user.lastName}` : 'Customer',
+      rating: reviewRating,
+      date: new Date().toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }),
+      body: reviewText.trim(),
+      verified: true
+    }
+    const updated = [newRev, ...productReviews]
+    setProductReviews(updated)
+    try { localStorage.setItem(`mk_reviews_${product.id}`, JSON.stringify(updated)) } catch {}
+    setReviewText('')
+    showToast('Thank you! Your review has been submitted.')
+  }
 
   useEffect(() => {
     if (product) {
@@ -135,7 +163,7 @@ export default function ProductPage() {
               {/* Main Image Container */}
               <div className="flex-1 relative aspect-[3/4] rounded-xl overflow-hidden bg-white/5 border border-white/10 shadow-2xl group cursor-zoom-in">
                 <img
-                  src={product.images?.[selectedImage] || product.images?.[0] || '/product2.png'}
+                  src={product.images?.[selectedImage] || product.images?.[0] || ''}
                   alt={product.name}
                   onClick={() => { setLightboxIndex(selectedImage); setLightboxOpen(true) }}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
@@ -408,24 +436,30 @@ export default function ProductPage() {
                   </div>
 
                   {/* Review items */}
-                  <div className="divide-y divide-white/5">
-                    {MOCK_REVIEWS.map(r => (
-                      <div key={r.id} className="py-5">
-                        <div className="flex items-center justify-between mb-2">
-                          <div>
-                            <p className="text-cream text-sm font-semibold">{r.name}</p>
-                            <div className="flex items-center gap-2 mt-0.5">
-                              <StarRating rating={r.rating} size={12} />
-                              <span className="text-cream/40 text-xs">{r.date}</span>
-                              {r.verified && <span className="text-lime text-[0.65rem] tracking-wider uppercase font-bold">✓ Verified Purchase</span>}
+                  {productReviews.length > 0 ? (
+                    <div className="divide-y divide-white/5">
+                      {productReviews.map(r => (
+                        <div key={r.id} className="py-5">
+                          <div className="flex items-center justify-between mb-2">
+                            <div>
+                              <p className="text-cream text-sm font-semibold">{r.name}</p>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <StarRating rating={r.rating} size={12} />
+                                <span className="text-cream/40 text-xs">{r.date}</span>
+                                {r.verified && <span className="text-lime text-[0.65rem] tracking-wider uppercase font-bold">✓ Verified Purchase</span>}
+                              </div>
                             </div>
                           </div>
+                          <p className="text-cream/80 text-xs leading-relaxed">{r.body}</p>
                         </div>
-                        <p className="text-cream/90 text-xs font-semibold mb-1">{r.title}</p>
-                        <p className="text-cream/60 text-xs leading-relaxed">{r.body}</p>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="py-8 text-center border border-white/5 rounded-lg bg-white/[0.02]">
+                      <p className="text-cream/40 text-xs tracking-widest uppercase mb-1">No reviews yet</p>
+                      <p className="text-cream/60 text-xs">Be the first to review this product!</p>
+                    </div>
+                  )}
 
                   {/* Write a review form */}
                   <div className="p-6 bg-white/5 border border-white/10 rounded-lg space-y-4">
@@ -446,7 +480,7 @@ export default function ProductPage() {
                       rows={4}
                       className="w-full bg-white/5 border border-white/15 text-cream text-xs p-4 rounded-lg focus:outline-none focus:border-lime resize-none placeholder:text-cream/30"
                     />
-                    <button onClick={() => { showToast('Thank you! Your review has been submitted.'); setReviewText('') }} className="px-6 py-3 bg-lime text-dark font-bold text-xs uppercase tracking-wider rounded hover:bg-lime-dim hover:text-white transition-colors">
+                    <button onClick={handleAddReview} className="px-6 py-3 bg-lime text-dark font-bold text-xs uppercase tracking-wider rounded hover:bg-lime-dim hover:text-white transition-colors">
                       Submit Review
                     </button>
                   </div>

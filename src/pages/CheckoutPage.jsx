@@ -563,7 +563,7 @@ export default function CheckoutPage() {
                         return (
                           <div key={item.key} className="flex items-center justify-between py-3">
                             <div className="flex items-center gap-3">
-                              <img src={freshProduct.images?.[0] || '/product2.png'} alt={freshProduct.name} className="w-12 h-16 object-cover bg-surface2 rounded" />
+                              <img src={freshProduct.images?.[0] || ''} alt={freshProduct.name} className="w-12 h-16 object-cover bg-surface2 rounded" />
                               <div>
                                 <p className="text-xs font-medium text-cream">{freshProduct.name}</p>
                                 <p className="text-[0.68rem] text-cream/40">Size: {item.size} · Color: {item.color} · Qty: {item.qty}</p>
@@ -620,7 +620,7 @@ export default function CheckoutPage() {
                     return (
                       <div key={item.key} className="flex items-center justify-between text-xs py-1">
                         <div className="flex items-center gap-3">
-                          <img src={freshProduct.images?.[0] || '/product2.png'} alt={freshProduct.name} className="w-10 h-12 object-cover bg-surface2 rounded" />
+                          <img src={freshProduct.images?.[0] || ''} alt={freshProduct.name} className="w-10 h-12 object-cover bg-surface2 rounded" />
                           <div>
                             <p className="font-medium text-cream line-clamp-1">{freshProduct.name}</p>
                             <p className="text-cream/40 text-[0.65rem]">{item.size} / {item.color} (×{item.qty})</p>

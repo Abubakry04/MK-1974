@@ -45,18 +45,24 @@ export default function NewArrivals() {
           /* Horizontal scroll on mobile, 4-col grid on desktop */
           <div className="flex gap-4 overflow-x-auto hide-scrollbar md:grid md:grid-cols-4 md:gap-6 md:overflow-visible pb-2 md:pb-0">
             {newProducts.map(p => {
-              const mainImg = (p.images && p.images[0]) ? p.images[0] : '/product2.png'
+              const mainImg = (p.images && p.images[0]) ? p.images[0] : null
               const priceFormatted = Number(p.price || 0).toLocaleString()
               return (
                 <article key={p.id} className="group shrink-0 w-[60vw] sm:w-[40vw] md:w-auto">
                   <div className="relative overflow-hidden aspect-[3/4] bg-surface2 rounded mb-3">
-                    <Link to={`/product/${p.slug}`}>
-                      <img
-                        src={mainImg}
-                        alt={p.name}
-                        loading="lazy"
-                        className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500"
-                      />
+                    <Link to={`/product/${p.slug}`} className="block w-full h-full">
+                      {mainImg ? (
+                        <img
+                          src={mainImg}
+                          alt={p.name}
+                          loading="lazy"
+                          className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-surface flex items-center justify-center p-4">
+                          <span className="text-muted/40 font-bold text-xs uppercase tracking-wider">{p.name}</span>
+                        </div>
+                      )}
                     </Link>
 
                     {p.badge && (

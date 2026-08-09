@@ -1,37 +1,11 @@
 import useScrollReveal from '../../hooks/useScrollReveal'
 
-const REVIEWS = [
-  {
-    id: 1,
-    name: 'Tunde A.',
-    location: 'Lagos',
-    rating: 5,
-    text: "First brand I've seen from Lagos that actually looks and feels international. The tracksuit quality is no joke — worth every naira.",
-    product: 'MK 1974 Tracksuit',
-    date: 'Aug 2026',
-  },
-  {
-    id: 2,
-    name: 'Amaka O.',
-    location: 'Abuja',
-    rating: 5,
-    text: "Saw it online, ordered the next day. The fit is clean, the fabric is heavy in a good way — this is not your average Lagos streetwear.",
-    product: 'Launch Collection',
-    date: 'Aug 2026',
-  },
-  {
-    id: 3,
-    name: 'Chukwuemeka D.',
-    location: 'Port Harcourt',
-    rating: 5,
-    text: "I've been watching MK 1974 since before they launched. Finally got my hands on a piece and it didn't disappoint. Already ordered again.",
-    product: 'MK 1974 Jersey',
-    date: 'Aug 2026',
-  },
-]
+const REVIEWS = []
 
 export default function Testimonials() {
   const { ref, isVisible } = useScrollReveal()
+
+  if (REVIEWS.length === 0) return null
 
   return (
     <section
