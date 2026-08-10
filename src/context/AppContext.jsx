@@ -96,7 +96,7 @@ export function AppProvider({ children }) {
     return []
   }
 
-  const fetchStoreData = useCallback(async (isRetry = false) => {
+  const fetchStoreData = useCallback(async () => {
     setApiLoading(true)
     try {
       const [prods, cats, cols, szs] = await Promise.all([
@@ -118,16 +118,8 @@ export function AppProvider({ children }) {
       })))
       setApiColors(parsedCols)
       setApiSizes(parsedSzs)
-
-      // If backend was sleeping on Render and returned 0 items, retry after 4s
-      if (parsedProds.length === 0 && !isRetry) {
-        setTimeout(() => fetchStoreData(true), 4000)
-      }
     } catch (err) {
       console.error('[Storefront API] Failed to load data:', err)
-      if (!isRetry) {
-        setTimeout(() => fetchStoreData(true), 4000)
-      }
     } finally {
       setApiLoading(false)
     }
