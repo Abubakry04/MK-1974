@@ -1,5 +1,5 @@
 // ─── MK Brand API Client ───────────────────────────────────────────────────────
-const BASE_URL = ''
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://mk-brand-api.onrender.com'
 
 const TOKEN_KEY = 'mk1974_store_token'
 
