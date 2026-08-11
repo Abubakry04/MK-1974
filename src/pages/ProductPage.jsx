@@ -583,6 +583,26 @@ export default function ProductPage() {
         </div>
       )}
 
+      {/* ── Mobile Quick Add to Bag Bar ── */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-black/10 px-4 py-3 shadow-2xl flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[0.65rem] font-bold tracking-wider uppercase text-dark/50 truncate">
+            {selectedSize ? `Size: ${selectedSize}` : 'Select Size'}
+          </p>
+          <p className="text-sm font-black text-dark">
+            ₦{Number(product.price).toLocaleString()}
+          </p>
+        </div>
+        <button
+          onClick={handleAddToCart}
+          disabled={!product.inStock}
+          className="flex-1 max-w-[210px] py-3 bg-dark hover:bg-black text-cream text-xs font-bold uppercase tracking-wider rounded-full shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-40"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          <span>{product.inStock ? 'Add to Bag' : 'Sold Out'}</span>
+        </button>
+      </div>
+
       <Footer />
     </>
   )

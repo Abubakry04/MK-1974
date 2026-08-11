@@ -4,14 +4,14 @@ import useScrollReveal from '../../hooks/useScrollReveal'
 
 export default function BestSellers() {
   const { products, addToCart, toggleWishlist, isWishlisted, apiLoading } = useApp()
-  const bestSellers = products.slice(0, 3)
+  const bestSellers = products.slice(0, 4)
   const { ref, isVisible } = useScrollReveal()
 
   return (
     <section
       id="best-sellers"
       ref={ref}
-      className="py-14 px-8 md:px-12 bg-surface2"
+      className="py-10 sm:py-14 px-4 sm:px-8 md:px-12 bg-surface2"
       style={{
         opacity: isVisible ? 1 : 0,
         transform: isVisible ? 'none' : 'translateY(20px)',
@@ -19,16 +19,16 @@ export default function BestSellers() {
       }}
     >
       <div className="max-w-[1440px] mx-auto">
-        <div className="flex items-baseline justify-between mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-dark">Bestsellers</h2>
-          <Link to="/shop?sort=best-selling" className="text-sm text-muted hover:text-dark transition-colors">
+        <div className="flex items-baseline justify-between mb-6 sm:mb-8">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-dark">Bestsellers</h2>
+          <Link to="/shop?sort=best-selling" className="text-xs sm:text-sm text-muted hover:text-dark transition-colors font-medium">
             View all →
           </Link>
         </div>
 
         {apiLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[...Array(3)].map((_, i) => (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
+            {[...Array(4)].map((_, i) => (
               <div key={i} className="animate-pulse">
                 <div className="aspect-[3/4] bg-dark/5 rounded mb-3" />
                 <div className="h-4 bg-dark/8 rounded w-3/4 mb-2" />
@@ -39,12 +39,12 @@ export default function BestSellers() {
         ) : bestSellers.length === 0 ? (
           <p className="text-muted text-sm text-center py-10">No best sellers found.</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 md:gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-5 md:gap-6">
             {bestSellers.map((p, i) => {
               const mainImg = (p.images && p.images[0]) ? p.images[0] : null
               const priceFormatted = Number(p.price || 0).toLocaleString()
               return (
-                <article key={p.id} className={`group ${i === 1 ? 'md:-mt-8' : ''}`}>
+                <article key={p.id} className="group">
                   <div className="relative overflow-hidden aspect-[3/4] bg-surface rounded mb-3">
                     <Link to={`/product/${p.slug}`} className="block w-full h-full">
                       {mainImg ? (

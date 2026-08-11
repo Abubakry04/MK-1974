@@ -5,7 +5,7 @@ export default function Toast() {
 
   return (
     <div
-      className={`fixed bottom-8 left-1/2 z-[300] transition-all duration-300 ${
+      className={`fixed bottom-20 md:bottom-8 left-1/2 z-[300] transition-all duration-300 ${
         toast.visible ? "opacity-100 animate-toast-in" : "opacity-0 pointer-events-none"
       }`}
       style={{ transform: "translateX(-50%)" }}

@@ -11,7 +11,7 @@ export default function NewArrivals() {
     <section
       id="new-arrivals"
       ref={ref}
-      className="py-14 px-8 md:px-12 bg-surface"
+      className="py-10 sm:py-14 px-4 sm:px-8 md:px-12 bg-surface"
       style={{
         opacity: isVisible ? 1 : 0,
         transform: isVisible ? 'none' : 'translateY(20px)',
@@ -19,18 +19,18 @@ export default function NewArrivals() {
       }}
     >
       <div className="max-w-[1440px] mx-auto">
-        <div className="flex items-baseline justify-between mb-8">
+        <div className="flex items-baseline justify-between mb-6 sm:mb-8">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-dark">New arrivals</h2>
-            <p className="text-sm text-muted mt-1">Launch collection</p>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-dark">New arrivals</h2>
+            <p className="text-xs sm:text-sm text-muted mt-0.5">Launch collection</p>
           </div>
-          <Link to="/shop?sort=newest" className="text-sm text-muted hover:text-dark transition-colors">
+          <Link to="/shop?sort=newest" className="text-xs sm:text-sm text-muted hover:text-dark transition-colors font-medium">
             View all →
           </Link>
         </div>
 
         {apiLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="animate-pulse">
                 <div className="aspect-[3/4] bg-dark/5 rounded mb-3" />
@@ -42,13 +42,12 @@ export default function NewArrivals() {
         ) : newProducts.length === 0 ? (
           <p className="text-muted text-sm text-center py-10">No new arrivals found.</p>
         ) : (
-          /* Horizontal scroll on mobile, 4-col grid on desktop */
-          <div className="flex gap-4 overflow-x-auto hide-scrollbar md:grid md:grid-cols-4 md:gap-6 md:overflow-visible pb-2 md:pb-0">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
             {newProducts.map(p => {
               const mainImg = (p.images && p.images[0]) ? p.images[0] : null
               const priceFormatted = Number(p.price || 0).toLocaleString()
               return (
-                <article key={p.id} className="group shrink-0 w-[60vw] sm:w-[40vw] md:w-auto">
+                <article key={p.id} className="group w-full">
                   <div className="relative overflow-hidden aspect-[3/4] bg-surface2 rounded mb-3">
                     <Link to={`/product/${p.slug}`} className="block w-full h-full">
                       {mainImg ? (

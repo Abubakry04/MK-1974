@@ -22,16 +22,19 @@ export default function CategoryDropdown({
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  // Format category list
+  // Format category list uniquely
   const categoryOptions = [
     { value: 'all', name: 'All Products' },
-    ...categories.map(cat => {
-      const name = typeof cat === 'string' ? cat : (cat.name || String(cat.id || ''))
-      return {
-        value: name.toLowerCase().trim(),
-        name: name.trim()
-      }
-    })
+    ...categories
+      .map(cat => {
+        const name = typeof cat === 'string' ? cat : (cat?.name || String(cat?.id || ''))
+        return {
+          value: name.toLowerCase().trim(),
+          name: name.trim()
+        }
+      })
+      .filter(c => c.value && c.value !== 'all' && c.value !== 'all products')
+      .filter((c, idx, arr) => arr.findIndex(x => x.value === c.value) === idx)
   ]
 
   // Filter categories by search if typed
