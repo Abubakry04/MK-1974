@@ -37,7 +37,7 @@ export default function Footer() {
   return (
     <footer className="bg-surface2 border-t border-black/10 text-dark">
       {/* Main grid */}
-      <div className="max-w-[1440px] mx-auto px-8 md:px-12 py-16 grid grid-cols-2 md:grid-cols-4 gap-10">
+      <div className="max-w-[1440px] mx-auto px-5 sm:px-8 md:px-12 py-10 sm:py-16 grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10">
         {/* Brand */}
         <div className="col-span-2 md:col-span-1">
           <Link to="/" className="block mb-4">
@@ -48,7 +48,7 @@ export default function Footer() {
             />
           </Link>
           <p className="text-dark/60 text-sm font-normal leading-relaxed mb-6 max-w-[200px]">
-            New Lagos streetwear.<br />Launched August 11, 2026.
+            New Lagos sportwear.<br />Launched August 11, 2026.
           </p>
           <div className="flex gap-3">
             {SocialLinks.map((s) => (
@@ -73,10 +73,10 @@ export default function Footer() {
             {[
               { label: "New Arrivals", to: "/shop?sort=newest" },
               { label: "Best Sellers", to: "/shop?sort=best-selling" },
-              { label: "Tracksuits", to: "/shop?category=tracksuits" },
-              { label: "Joggers", to: "/shop?category=joggers" },
-              { label: "Hoodies", to: "/shop?category=hoodies" },
-              { label: "Accessories", to: "/shop?category=accessories" },
+              // { label: "Tracksuits", to: "/shop?category=tracksuits" },
+              // { label: "Joggers", to: "/shop?category=joggers" },
+              // { label: "Hoodies", to: "/shop?category=hoodies" },
+              // { label: "Accessories", to: "/shop?category=accessories" },
             ].map((item) => (
               <li key={item.label}>
                 <Link to={item.to} className="text-dark/60 hover:text-dark text-sm font-medium transition-colors duration-200">
@@ -112,7 +112,7 @@ export default function Footer() {
           <ul className="flex flex-col gap-3">
             {[
               { label: "FAQ", to: "/contact" },
-              { label: "Returns & Exchanges", to: "/contact" },
+              // { label: "Returns & Exchanges", to: "/contact" },
               { label: "Shipping Info", to: "/contact" },
             ].map((item) => (
               <li key={item.label}>
@@ -133,11 +133,11 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className="border-t border-black/10 px-8 md:px-12 py-5 max-w-[1440px] mx-auto flex flex-col sm:flex-row justify-between items-center gap-3 text-dark/60 text-xs font-medium">
         <p>© 2026 MK 1974. All rights reserved.</p>
-        <div className="flex items-center gap-5">
+        {/* <div className="flex items-center gap-5">
           <Link to="/contact" className="hover:text-dark transition-colors">Privacy</Link>
           <Link to="/contact" className="hover:text-dark transition-colors">Terms</Link>
           <Link to="/contact" className="hover:text-dark transition-colors">Return Policy</Link>
-        </div>
+        </div> */}
       </div>
     </footer>
   );

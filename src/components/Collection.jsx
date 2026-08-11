@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 
+import CategoryDropdown from './CategoryDropdown'
+
 function ProductCard({ product }) {
   const { addToCart } = useApp()
   const firstColor = product.colors[0]?.name || 'Standard'
@@ -83,22 +85,13 @@ export default function Collection() {
             </h2>
           </div>
 
-          {/* Filters */}
-          <div className="flex gap-1 flex-wrap">
-            {filters.map(f => (
-              <button
-                key={f.value}
-                id={`filter-${f.value}`}
-                onClick={() => setActiveFilter(f.value)}
-                className={`px-4 py-2 text-[0.62rem] font-bold tracking-[0.25em] uppercase transition-all duration-200 rounded
-                  ${activeFilter === f.value
-                    ? 'bg-dark text-cream'
-                    : 'text-dark/60 hover:text-dark border border-black/15 hover:border-black'}`}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
+          {/* Category Dropdown Selector */}
+          <CategoryDropdown
+            categories={appCats}
+            selectedCategory={activeFilter}
+            onSelect={(catVal) => setActiveFilter(catVal)}
+            label="Category"
+          />
         </div>
 
         {/* Product grid */}

@@ -87,10 +87,13 @@ export default function HeroSection() {
       {/* ════════════════════════════════
           MOBILE LAYOUT  (hidden on lg+)
       ════════════════════════════════ */}
-      <div className="lg:hidden relative h-full flex flex-col justify-between z-10 pt-20 pb-8 px-6">
+      <div className="lg:hidden relative h-full flex flex-col z-10">
 
-        {/* Jersey image container */}
-        <div className="relative flex-1 min-h-0 flex items-center justify-center my-2">
+        {/* Jersey image — top 55% of screen */}
+        <div
+          className="relative flex-shrink-0 flex items-center justify-center"
+          style={{ height: '55%' }}
+        >
           {/* Ambient dynamic color glow pulse behind jersey */}
           <div
             className="absolute w-48 h-48 rounded-full filter blur-3xl opacity-40 transition-all duration-700 pointer-events-none"
@@ -104,58 +107,110 @@ export default function HeroSection() {
             src="/hero_jersey.png"
             alt="Premium Jersey"
             loading="eager"
-            fetchpriority="high"
-            className={`w-full h-full max-h-[360px] object-contain ${v.filter} transition-all duration-700 relative z-10`}
+            fetchPriority="high"
+            className={`absolute inset-0 w-full h-full object-contain ${v.filter} transition-all duration-700 relative z-10`}
             style={{ animation: 'float 6s ease-in-out infinite' }}
+          />
+          {/* Gradient so text below reads clearly */}
+          <div
+            className="absolute inset-x-0 bottom-0 h-28 pointer-events-none z-15"
+            style={{ background: `linear-gradient(to bottom, transparent, ${v.bg})` }}
           />
         </div>
 
         {/* Text block — bottom portion */}
-        <div className="flex-shrink-0 hero-fade-up pt-2" style={{ zIndex: 2 }}>
+        <div className="flex-1 flex flex-col justify-between px-6 pb-6" style={{ zIndex: 2 }}>
 
-          {/* Eyebrow */}
-          <p
-            className="text-[0.58rem] font-bold tracking-[0.45em] uppercase mb-2"
-            style={{ color: v.accent, transition: 'color 0.5s ease' }}
-          >
-            Launch Edition — {v.name}
-          </p>
+          {/* Headline + subtitle */}
+          <div className="hero-fade-up">
+            {/* Eyebrow */}
+            <p
+              className="text-[0.58rem] font-bold tracking-[0.45em] uppercase mb-2"
+              style={{ color: v.accent, transition: 'color 0.5s ease' }}
+            >
+              Launch Edition — {v.name}
+            </p>
 
-          <h1
-            className="font-bebas text-white leading-[0.85] mb-2"
-            style={{
-              fontSize: 'clamp(3rem, 15vw, 5rem)',
-              textShadow: `2px 2px 0px ${v.shadow}, 5px 5px 12px rgba(0,0,0,0.5)`,
-              transition: 'text-shadow 0.7s cubic-bezier(.16,1,.3,1)',
-            }}
-          >
-            PREMIUM<br />JERSEY
-          </h1>
-
-          <p className="text-white/40 text-[0.72rem] leading-[1.6] max-w-[280px] mb-4">
-            New brand. No compromises. Built in Lagos, made to move.
-          </p>
-
-          {/* CTAs */}
-          <div className="flex items-center gap-3">
-            <Link
-              to="/shop"
-              className="px-6 py-2.5 rounded-full text-black font-bold text-[0.78rem] tracking-wide transition-all duration-500 active:scale-95"
+            <h1
+              className="font-bebas text-white leading-[0.85] mb-3"
               style={{
-                backgroundColor: v.accent,
-                boxShadow: `0 4px 20px ${v.accent}55`,
-                transition: 'background-color 0.6s ease, box-shadow 0.6s ease',
+                fontSize: 'clamp(3.2rem, 16vw, 5.5rem)',
+                textShadow: `2px 2px 0px ${v.shadow}, 5px 5px 12px rgba(0,0,0,0.5)`,
+                transition: 'text-shadow 0.7s cubic-bezier(.16,1,.3,1)',
               }}
             >
-              Shop Now
-            </Link>
-            <Link
-              to="/about"
-              className="px-6 py-2.5 rounded-full text-white font-semibold text-[0.78rem] border transition-all duration-300 active:scale-95"
-              style={{ borderColor: `${v.accent}50` }}
-            >
-              Our Story
-            </Link>
+              PREMIUM<br />JERSEY
+            </h1>
+
+            <p className="text-white/40 text-[0.75rem] leading-[1.7] max-w-[280px] mb-5">
+              New brand. No compromises. Built in Lagos, made to move.
+            </p>
+
+            {/* CTAs */}
+            <div className="flex items-center gap-3 mb-6">
+              <Link
+                to="/shop"
+                className="px-6 py-2.5 rounded-full text-black font-bold text-[0.78rem] tracking-wide transition-all duration-500 active:scale-95"
+                style={{
+                  backgroundColor: v.accent,
+                  boxShadow: `0 4px 20px ${v.accent}55`,
+                  transition: 'background-color 0.6s ease, box-shadow 0.6s ease',
+                }}
+              >
+                Shop Now
+              </Link>
+              <Link
+                to="/about"
+                className="px-6 py-2.5 rounded-full text-white font-semibold text-[0.78rem] border transition-all duration-300 active:scale-95"
+                style={{ borderColor: `${v.accent}50` }}
+              >
+                Our Story
+              </Link>
+            </div>
+          </div>
+
+          {/* ── Colour swatch strip ── */}
+          <div>
+            <p className="text-white/30 text-[0.55rem] tracking-[0.35em] uppercase mb-3">Select Colour</p>
+            <div className="swatch-scroll flex gap-3 overflow-x-auto pb-1">
+              {VARIANTS.map((variant) => {
+                const isActive = activeVariant === variant.id
+                return (
+                  <button
+                    key={variant.id}
+                    onClick={() => setActiveVariant(variant.id)}
+                    aria-label={`Select ${variant.name}`}
+                    title={variant.name}
+                    className="flex-shrink-0 flex flex-col items-center gap-1.5 active:scale-90 transition-transform"
+                  >
+                    {/* Swatch circle */}
+                    <div
+                      className="rounded-full overflow-hidden transition-all duration-300"
+                      style={{
+                        width: isActive ? 52 : 44,
+                        height: isActive ? 52 : 44,
+                        border: `2px solid ${isActive ? variant.accent : 'rgba(255,255,255,0.12)'}`,
+                        boxShadow: isActive ? `0 0 16px ${variant.accent}66` : 'none',
+                        transition: 'all 0.35s cubic-bezier(.16,1,.3,1)',
+                      }}
+                    >
+                      <img
+                        src="/hero_jersey.png"
+                        alt={variant.name}
+                        className={`w-[160%] h-[160%] object-cover object-center -translate-x-[18%] -translate-y-[10%] ${variant.filter}`}
+                      />
+                    </div>
+                    {/* Label */}
+                    <span
+                      className="text-[0.5rem] font-semibold tracking-[0.2em] uppercase transition-all duration-300"
+                      style={{ color: isActive ? variant.accent : 'rgba(255,255,255,0.3)' }}
+                    >
+                      {variant.name}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
           </div>
 
         </div>
@@ -214,7 +269,7 @@ export default function HeroSection() {
               src="/hero_jersey.png"
               alt="Premium Jersey"
               loading="eager"
-              fetchpriority="high"
+              fetchPriority="high"
               className={`w-full h-full object-contain ${v.filter} transition-all duration-700 ease-in-out`}
               style={{ animation: 'float 6s ease-in-out infinite' }}
             />
