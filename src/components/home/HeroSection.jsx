@@ -144,7 +144,7 @@ export default function HeroSection() {
             </h1>
 
             <p className="text-white/40 text-[0.7rem] leading-[1.5] max-w-[280px] mb-3">
-              New brand. No compromises. Built in Lagos, made to move.
+              A new Lagos streetwear brand. No legacy to coast on — just the clothes. Premium build, deliberate design, built to move.
             </p>
 
             {/* CTAs */}
