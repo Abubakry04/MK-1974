@@ -1,5 +1,6 @@
 // ─── MK Brand API Client ───────────────────────────────────────────────────────
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? '' : 'https://mk-brand-api.onrender.com')
+const DIRECT_BACKEND = 'https://mk-brand-api.onrender.com'
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
 const TOKEN_KEY = 'mk1974_store_token'
 
@@ -73,11 +74,26 @@ async function request(method, path, body) {
   const headers = { 'Content-Type': 'application/json' }
   if (_token) headers['Authorization'] = `Bearer ${_token}`
 
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : undefined,
-  })
+  const primaryUrl = BASE_URL ? `${BASE_URL}${path}` : path
+  let res
+
+  try {
+    res = await fetch(primaryUrl, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+    })
+  } catch (netErr) {
+    if (!primaryUrl.startsWith('http')) {
+      res = await fetch(`${DIRECT_BACKEND}${path}`, {
+        method,
+        headers,
+        body: body ? JSON.stringify(body) : undefined,
+      })
+    } else {
+      throw netErr
+    }
+  }
 
   if (!res.ok) {
     let msg = `HTTP ${res.status}`
@@ -121,12 +137,18 @@ async function requestFormData(method, path, formData) {
   const headers = {}
   if (_token) headers['Authorization'] = `Bearer ${_token}`
 
-  console.log(`[requestFormData] ${method} ${BASE_URL}${path}`)
-  for (const [key, val] of formData.entries()) {
-    console.log(`  field: ${key} =`, val instanceof File ? `File(${val.name}, ${val.size}b, ${val.type})` : val)
-  }
+  const primaryUrl = BASE_URL ? `${BASE_URL}${path}` : path
+  let res
 
-  const res = await fetch(`${BASE_URL}${path}`, { method, headers, body: formData })
+  try {
+    res = await fetch(primaryUrl, { method, headers, body: formData })
+  } catch (netErr) {
+    if (!primaryUrl.startsWith('http')) {
+      res = await fetch(`${DIRECT_BACKEND}${path}`, { method, headers, body: formData })
+    } else {
+      throw netErr
+    }
+  }
 
   if (!res.ok) {
     if (res.status === 401) {
@@ -148,57 +170,45 @@ async function requestFormData(method, path, formData) {
   return safeParseJson(text)
 }
 
-// ─── Auth ─────────────────────────────────────────────────────────────────────
+// ─── API Endpoints ─────────────────────────────────────────────────────────────
+
 export const auth = {
-  login:    (body) => request('POST', '/api/Auth/login', body),
-  register: (body) => request('POST', '/api/Auth/register', body),
+  login: (credentials) => request('POST', '/api/Auth/login', credentials),
+  register: (userData) => request('POST', '/api/Auth/register', userData),
 }
 
-// ─── Products ─────────────────────────────────────────────────────────────────
 export const products = {
-  getAll:   (categoryId) => request('GET', `/api/Product${categoryId ? `?categoryId=${categoryId}` : ''}`),
-  getOne:   (id)         => request('GET', `/api/Product/${id}`),
-  create:   (body)       => request('POST', '/api/Product', body),
-  update:   (id, body)   => request('PUT', `/api/Product/${id}`, body),
-  remove:   (id)         => request('DELETE', `/api/Product/${id}`),
+  getAll: () => request('GET', '/api/Product'),
+  getById: (id) => request('GET', `/api/Product/${id}`),
 }
 
-// ─── Categories ───────────────────────────────────────────────────────────────
 export const categories = {
   getAll: () => request('GET', '/api/Category'),
-  create: (body) => request('POST', '/api/Category', body),
-  remove: (id)   => request('DELETE', `/api/Category/${id}`),
 }
 
-// ─── Colors ───────────────────────────────────────────────────────────────────
 export const colors = {
   getAll: () => request('GET', '/api/Color'),
-  create: (body) => request('POST', '/api/Color', body),
-  remove: (id)   => request('DELETE', `/api/Color/${id}`),
-}
-
-// ─── Orders ───────────────────────────────────────────────────────────────────
-export const orders = {
-  create: (body) => request('POST', '/api/Order', body),
-  getOne: (orderNumber) => request('GET', `/api/Order/${orderNumber}`),
-}
-
-// ─── Payments ─────────────────────────────────────────────────────────────────
-export const payments = {
-  submit: (orderNumber, receiptFile) => {
-    const fd = new FormData()
-    if (orderNumber) {
-      fd.append('OrderNumber', String(orderNumber))
-    }
-    if (receiptFile && (receiptFile instanceof File || receiptFile instanceof Blob)) {
-      fd.append('Receipt', receiptFile)
-    }
-    return requestFormData('POST', '/api/Payment/submit', fd)
-  },
 }
 
 export const sizes = {
   getAll: () => request('GET', '/api/Size'),
-  create: (body) => request('POST', '/api/Size', body),
-  remove: (id)   => request('DELETE', `/api/Size/${id}`),
+}
+
+export const orders = {
+  getAll: () => request('GET', '/api/Order'),
+  getById: (id) => request('GET', `/api/Order/${id}`),
+  create: (orderData) => request('POST', '/api/Order', orderData),
+}
+
+export const payments = {
+  submit: (orderNumber, file) => {
+    const fd = new FormData()
+    fd.append('OrderNumber', orderNumber)
+    if (file) {
+      fd.append('file', file)
+      fd.append('ReceiptFile', file)
+      fd.append('Receipt', file)
+    }
+    return requestFormData('POST', '/api/Payment/submit', fd)
+  },
 }
