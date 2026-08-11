@@ -61,23 +61,32 @@ function safeParseJson(text) {
   try { return JSON.parse(trimmed) } catch { return null }
 }
 
-async function request(method, path, body) {
+async function request(method, path, body, isPublic = false) {
   const isAuthPath = path.toLowerCase().includes('/auth/')
+  const isGetMethod = method.toUpperCase() === 'GET'
+  const isPublicRequest = isPublic || isGetMethod
 
-  if (!isAuthPath && _token && isTokenExpired(_token)) {
+  // If token is expired, clear session
+  if (_token && isTokenExpired(_token)) {
     handleSessionExpiration()
-    const err = new Error('Your session has expired. Please sign in again.')
-    err.status = 401
-    throw err
+    if (!isPublicRequest && !isAuthPath) {
+      const err = new Error('Your session has expired. Please sign in again.')
+      err.status = 401
+      throw err
+    }
   }
 
   const headers = { 'Content-Type': 'application/json' }
-  if (_token) headers['Authorization'] = `Bearer ${_token}`
+  const activeToken = getToken()
+  if (activeToken && !isTokenExpired(activeToken)) {
+    headers['Authorization'] = `Bearer ${activeToken}`
+  }
 
   const primaryUrl = BASE_URL ? `${BASE_URL}${path}` : path
   let res
 
   try {
+    console.log(`[Storefront API] ${method} ${primaryUrl}`)
     res = await fetch(primaryUrl, {
       method,
       headers,
@@ -85,6 +94,7 @@ async function request(method, path, body) {
     })
   } catch (netErr) {
     if (!primaryUrl.startsWith('http')) {
+      console.log(`[Storefront API Proxy Fallback] ${method} ${DIRECT_BACKEND}${path}`)
       res = await fetch(`${DIRECT_BACKEND}${path}`, {
         method,
         headers,
@@ -109,7 +119,7 @@ async function request(method, path, body) {
         const err = new Error(msg && !msg.startsWith('HTTP') ? msg : 'Invalid email or password. Please check your credentials.')
         err.status = 401
         throw err
-      } else {
+      } else if (!isPublicRequest) {
         handleSessionExpiration()
         const err = new Error('Your session has expired. Please sign in again.')
         err.status = 401
@@ -129,13 +139,13 @@ async function request(method, path, body) {
 async function requestFormData(method, path, formData) {
   if (_token && isTokenExpired(_token)) {
     handleSessionExpiration()
-    const err = new Error('Your session has expired. Please sign in again.')
-    err.status = 401
-    throw err
   }
 
   const headers = {}
-  if (_token) headers['Authorization'] = `Bearer ${_token}`
+  const activeToken = getToken()
+  if (activeToken && !isTokenExpired(activeToken)) {
+    headers['Authorization'] = `Bearer ${activeToken}`
+  }
 
   const primaryUrl = BASE_URL ? `${BASE_URL}${path}` : path
   let res
@@ -161,7 +171,7 @@ async function requestFormData(method, path, formData) {
       if (d) msg = d.message || d.title || d.error || (Array.isArray(d.errors) ? d.errors.join(', ') : msg)
       else if (text && !text.trim().startsWith('<')) msg = text
     } catch {}
-    const err = new Error(res.status === 401 ? 'Your session has expired. Please sign in again.' : msg)
+    const err = new Error(msg)
     err.status = res.status
     throw err
   }
@@ -178,20 +188,38 @@ export const auth = {
 }
 
 export const products = {
-  getAll: () => request('GET', '/api/Product'),
-  getById: (id) => request('GET', `/api/Product/${id}`),
+  getAll: async () => {
+    try {
+      return await request('GET', '/api/Product', undefined, true)
+    } catch (e) {
+      if (e.status === 404 || e.message?.includes('404')) {
+        return await request('GET', '/api/Products', undefined, true)
+      }
+      throw e
+    }
+  },
+  getById: async (id) => {
+    try {
+      return await request('GET', `/api/Product/${id}`, undefined, true)
+    } catch (e) {
+      if (e.status === 404 || e.message?.includes('404')) {
+        return await request('GET', `/api/Products/${id}`, undefined, true)
+      }
+      throw e
+    }
+  },
 }
 
 export const categories = {
-  getAll: () => request('GET', '/api/Category'),
+  getAll: () => request('GET', '/api/Category', undefined, true),
 }
 
 export const colors = {
-  getAll: () => request('GET', '/api/Color'),
+  getAll: () => request('GET', '/api/Color', undefined, true),
 }
 
 export const sizes = {
-  getAll: () => request('GET', '/api/Size'),
+  getAll: () => request('GET', '/api/Size', undefined, true),
 }
 
 export const orders = {
