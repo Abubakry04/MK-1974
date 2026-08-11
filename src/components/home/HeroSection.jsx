@@ -104,7 +104,7 @@ export default function HeroSection() {
             src="/hero_jersey.png"
             alt="Premium Jersey"
             loading="eager"
-            fetchPriority="high"
+            fetchpriority="high"
             className={`w-full h-full max-h-[360px] object-contain ${v.filter} transition-all duration-700 relative z-10`}
             style={{ animation: 'float 6s ease-in-out infinite' }}
           />
@@ -214,7 +214,7 @@ export default function HeroSection() {
               src="/hero_jersey.png"
               alt="Premium Jersey"
               loading="eager"
-              fetchPriority="high"
+              fetchpriority="high"
               className={`w-full h-full object-contain ${v.filter} transition-all duration-700 ease-in-out`}
               style={{ animation: 'float 6s ease-in-out infinite' }}
             />

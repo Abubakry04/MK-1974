@@ -20,7 +20,7 @@ export default function Signup() {
           alt="MK 1974 exclusive drop"
           className="w-full h-full object-cover object-top"
         />
-        <div className="absolute inset-0 bg-dark/60" />
+        <div className="absolute inset-0 bg-black/60" />
         {/* Centered text */}
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
           <p className="eyebrow mb-4">Exclusive Access</p>
@@ -30,7 +30,7 @@ export default function Signup() {
           >
             Drop before the drop.
           </h2>
-          <p className="text-cream/45 text-[0.85rem] font-light tracking-[0.06em] max-w-[380px]">
+          <p className="text-cream/70 text-[0.85rem] font-medium tracking-[0.06em] max-w-[380px]">
             First access to new collections, limited releases &amp; members-only
             discounts.
           </p>
@@ -38,7 +38,7 @@ export default function Signup() {
       </div>
 
       {/* Form strip */}
-      <div className="bg-surface border-t border-white/[0.06] px-8 md:px-12 py-10">
+      <div className="bg-surface border-t border-black/10 px-8 md:px-12 py-10">
         <form
           id="signupForm"
           onSubmit={handleSubmit}
@@ -47,7 +47,7 @@ export default function Signup() {
           <input
             type="email"
             id="emailInput"
-            className="flex-1 w-full bg-transparent border border-white/15 border-b-0 sm:border-b sm:border-white/15 sm:border-r-0 text-cream placeholder-muted text-[0.8rem] font-light tracking-[0.08em] px-6 py-4 outline-none focus:border-lime/50 transition-colors duration-200"
+            className="flex-1 w-full bg-white border border-black/15 border-b-0 sm:border-b sm:border-black/15 sm:border-r-0 text-dark placeholder-dark/40 text-[0.8rem] font-medium tracking-[0.08em] px-6 py-4 outline-none focus:border-dark transition-colors duration-200"
             placeholder="Enter your email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -55,12 +55,12 @@ export default function Signup() {
           />
           <button
             type="submit"
-            className="bg-lime text-dark text-[0.65rem] font-semibold tracking-[0.25em] uppercase px-10 py-4 hover:bg-lime-dim transition-colors duration-200 shrink-0 w-full sm:w-auto"
+            className="bg-dark text-cream text-[0.65rem] font-bold tracking-[0.25em] uppercase px-10 py-4 hover:bg-accent transition-colors duration-200 shrink-0 w-full sm:w-auto"
           >
             Join the List
           </button>
         </form>
-        <p className="text-muted text-[0.65rem] tracking-[0.15em] uppercase mt-5 text-center max-w-[1440px] mx-auto">
+        <p className="text-dark/50 text-[0.65rem] font-bold tracking-[0.15em] uppercase mt-5 text-center max-w-[1440px] mx-auto">
           No spam. Unsubscribe anytime.
         </p>
       </div>

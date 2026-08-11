@@ -15,7 +15,7 @@ export default function Newsletter() {
     <section
       id="newsletter"
       ref={ref}
-      className="py-14 px-8 md:px-12 bg-dark"
+      className="py-14 px-8 md:px-12 bg-surface2 border-t border-b border-black/10"
       style={{
         opacity: isVisible ? 1 : 0,
         transform: isVisible ? 'none' : 'translateY(20px)',
@@ -23,10 +23,10 @@ export default function Newsletter() {
       }}
     >
       <div className="max-w-[700px] mx-auto text-center">
-        <h2 className="text-2xl md:text-3xl font-bold text-cream mb-2">
+        <h2 className="text-2xl md:text-3xl font-bold text-dark mb-2">
           Be the first to know
         </h2>
-        <p className="text-cream/50 text-sm mb-8">
+        <p className="text-dark/60 text-sm mb-8 font-medium">
           New drops, restocks and early access. MK 1974 just launched — don't miss what's next.
         </p>
         <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 max-w-[440px] mx-auto">
@@ -34,9 +34,9 @@ export default function Newsletter() {
             type="email"
             required
             placeholder="Your email address"
-            className="flex-1 bg-white/5 border border-white/15 text-cream placeholder-cream/30 text-sm px-4 py-3 focus:outline-none focus:border-white/40 transition-colors"
+            className="flex-1 bg-white border border-black/15 text-dark placeholder-dark/40 text-sm px-4 py-3 rounded focus:outline-none focus:border-dark transition-colors"
           />
-          <button type="submit" className="bg-cream text-dark text-sm font-semibold px-6 py-3 hover:bg-accent hover:text-white transition-colors whitespace-nowrap">
+          <button type="submit" className="bg-dark text-cream text-sm font-semibold px-6 py-3 rounded hover:bg-accent hover:text-white transition-colors whitespace-nowrap">
             Subscribe
           </button>
         </form>

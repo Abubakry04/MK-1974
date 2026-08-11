@@ -5,6 +5,8 @@ import CartDrawer from './components/CartDrawer'
 import Toast from './components/Toast'
 import SearchOverlay from './components/SearchOverlay'
 
+import BackToTop from './components/BackToTop'
+
 // Pages
 import HomePage from './pages/HomePage'
 import ShopPage from './pages/ShopPage'
@@ -72,6 +74,7 @@ export default function App() {
         <CartDrawer />
         <Toast />
         <SearchOverlay />
+        <BackToTop />
       </BrowserRouter>
     </AppProvider>
   )

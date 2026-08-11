@@ -69,56 +69,49 @@ export default function Nav() {
         }`}
       >
         {/* ── Top bar ── */}
-        <div className="relative flex items-center justify-between h-[70px] px-6 md:px-12 max-w-[1440px] mx-auto">
+        <div className="flex items-center justify-between h-[70px] px-6 md:px-12 max-w-[1440px] mx-auto">
 
-          {/* LEFT links */}
-          <ul className="hidden md:flex items-center gap-8">
-            {leftLinks.map((l) => (
-              <li key={l.to}>
-                <Link to={l.to} className={linkClass(l.to)}>
-                  {l.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          {/* LEFT — Logo + Navigation Links */}
+          <div className="flex items-center gap-8 md:gap-10">
+            <Link
+              to="/"
+              id="nav-logo"
+              className={`transition-all duration-300 select-none flex items-center justify-center ${
+                transparent
+                  ? "opacity-90 hover:opacity-100"
+                  : "opacity-100 hover:opacity-70"
+              }`}
+            >
+              <img 
+                src={logo} 
+                alt="MK 1974" 
+                className="h-10 md:h-12 w-auto object-contain filter invert brightness-0 contrast-200 sepia-0 hue-rotate-0 saturate-0" 
+                style={{ filter: "invert(1) brightness(100)" }}
+              />
+            </Link>
 
-          {/* CENTER — brand wordmark / logo */}
-          <Link
-            to="/"
-            id="nav-logo"
-            className={`absolute left-1/2 -translate-x-1/2 transition-all duration-300 select-none flex items-center justify-center ${
-              transparent
-                ? "opacity-90 hover:opacity-100"
-                : "opacity-100 hover:opacity-70"
-            }`}
-          >
-            <img 
-              src={logo} 
-              alt="MK 1974" 
-              className="h-12 w-auto object-contain filter invert brightness-0 contrast-200 sepia-0 hue-rotate-0 saturate-0" 
-              style={{ filter: "invert(1) brightness(100)" }}
-            />
-          </Link>
+            {/* Desktop Nav Links */}
+            <ul className="hidden md:flex items-center gap-8">
+              {[...leftLinks, ...rightLinks].map((l) => (
+                <li key={l.to}>
+                  <Link to={l.to} className={linkClass(l.to)}>
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-          {/* RIGHT links + icons */}
-          <div className="hidden md:flex items-center gap-7">
-            {rightLinks.map((l) => (
-              <Link key={l.to} to={l.to} className={linkClass(l.to)}>
-                {l.label}
-              </Link>
-            ))}
-
-            {/* Divider */}
-            <div className="w-px h-4 bg-cream/15" />
-
+          {/* RIGHT — Search, Wishlist, Account, Cart & Hamburger */}
+          <div className="flex items-center gap-5 md:gap-7">
             {/* Search */}
             <button
               id="searchBtn"
               aria-label="Search"
               onClick={() => setSearchOpen(true)}
-              className={`transition-colors duration-200 ${transparent ? "text-cream/60 hover:text-cream" : "text-cream/50 hover:text-cream"}`}
+              className={`transition-colors duration-200 ${transparent ? "text-cream/70 hover:text-cream" : "text-cream/60 hover:text-cream"}`}
             >
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
               </svg>
             </button>
@@ -128,9 +121,9 @@ export default function Nav() {
               to={user ? "/profile" : "/auth"}
               id="wishlistBtn"
               aria-label="Wishlist"
-              className={`relative transition-colors duration-200 ${transparent ? "text-cream/60 hover:text-cream" : "text-cream/50 hover:text-cream"}`}
+              className={`relative transition-colors duration-200 ${transparent ? "text-cream/70 hover:text-cream" : "text-cream/60 hover:text-cream"}`}
             >
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
               </svg>
               {wishlist.length > 0 && (
@@ -145,9 +138,9 @@ export default function Nav() {
               to={user ? "/profile" : "/auth"}
               id="profileBtn"
               aria-label="Account"
-              className={`transition-colors duration-200 ${transparent ? "text-cream/60 hover:text-cream" : "text-cream/50 hover:text-cream"}`}
+              className={`hidden sm:block transition-colors duration-200 ${transparent ? "text-cream/70 hover:text-cream" : "text-cream/60 hover:text-cream"}`}
             >
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
               </svg>
             </Link>
@@ -157,57 +150,27 @@ export default function Nav() {
               id="cartBtn"
               aria-label="Cart"
               onClick={() => setCartOpen(true)}
-              className={`relative flex items-center gap-2 transition-colors duration-200 ${transparent ? "text-cream/60 hover:text-cream" : "text-cream/50 hover:text-cream"}`}
+              className={`relative flex items-center gap-2 transition-colors duration-200 ${transparent ? "text-cream/70 hover:text-cream" : "text-cream/60 hover:text-cream"}`}
             >
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
                 <line x1="3" y1="6" x2="21" y2="6" />
                 <path d="M16 10a4 4 0 01-8 0" />
               </svg>
 
               {cartCount > 0 && (
-                <span className="absolute -top-1.5 left-3 bg-lime text-white text-[0.44rem] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center animate-pulse">
-                  {cartCount}
-                </span>
-              )}
-            </button>
-          </div>
-
-          {/* ── Mobile right controls ── */}
-          <div className="flex md:hidden items-center gap-5">
-            <button
-              onClick={() => setSearchOpen(true)}
-              className="text-cream/70 hover:text-cream transition-colors active:scale-90"
-              aria-label="Search"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-              </svg>
-            </button>
-
-            <button
-              aria-label="Cart"
-              onClick={() => setCartOpen(true)}
-              className="relative text-cream/70 hover:text-cream transition-colors active:scale-90"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <path d="M16 10a4 4 0 01-8 0" />
-              </svg>
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-lime text-white text-[0.44rem] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center">
+                <span className="absolute -top-1.5 -right-1.5 bg-lime text-white text-[0.44rem] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center animate-pulse">
                   {cartCount}
                 </span>
               )}
             </button>
 
-            {/* Hamburger */}
+            {/* Mobile Hamburger */}
             <button
               id="hamburger"
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               onClick={() => setMobileOpen((v) => !v)}
-              className="flex flex-col justify-center gap-[5px] w-6 h-6 active:scale-90 transition-transform"
+              className="flex md:hidden flex-col justify-center gap-[5px] w-6 h-6 active:scale-90 transition-transform ml-1"
             >
               <span className={`block w-full h-[1px] bg-cream transition-all duration-300 origin-center ${mobileOpen ? "rotate-45 translate-y-[6px]" : ""}`} />
               <span className={`block w-full h-[1px] bg-cream transition-all duration-200 ${mobileOpen ? "opacity-0 scale-x-0" : ""}`} />

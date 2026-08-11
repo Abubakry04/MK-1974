@@ -25,10 +25,10 @@ export default function AboutPage() {
               alt="About MK 1974"
               className="absolute inset-0 w-full h-full object-cover brightness-75"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-dark/80 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 px-8 md:px-12 pb-12 max-w-[1440px] mx-auto">
-              <p className="text-xs text-cream/50 uppercase tracking-widest mb-2">Lagos, Nigeria · 2026</p>
-              <h1 className="font-playfair italic font-black text-cream text-4xl md:text-6xl">Our Story</h1>
+              <p className="text-xs text-white/70 uppercase tracking-widest mb-2 font-bold">Lagos, Nigeria · 2026</p>
+              <h1 className="font-playfair italic font-black text-white text-4xl md:text-6xl">Our Story</h1>
             </div>
           </div>
         </div>
@@ -40,33 +40,33 @@ export default function AboutPage() {
               <h2 className="text-2xl md:text-3xl font-bold text-dark mb-5">
                 Built for movement, made for life.
               </h2>
-              <div className="space-y-4 text-dark/70 text-[0.95rem] leading-relaxed">
+              <div className="space-y-4 text-dark/70 text-[0.95rem] leading-relaxed font-medium">
                 <p>MK 1974 is a new Lagos streetwear brand built on one simple belief — that how you dress should never slow you down. The name is ours. The number is part of the identity, not a date.</p>
                 <p>We built this brand from scratch, with no shortcuts. Every silhouette, every fabric choice, every detail was deliberate. We wanted to create pieces that feel premium from the first wear and still hold up months later.</p>
                 <p>We officially launched on August 11, 2026 — and everything from here is intentional. MK 1974 is for people who move through the city with purpose and dress like it.</p>
               </div>
               <Link to="/shop" className="btn-primary mt-8 inline-flex">Shop the collection</Link>
             </div>
-            <div className="aspect-[4/5] overflow-hidden rounded">
+            <div className="aspect-[4/5] overflow-hidden rounded-xl shadow-md border border-black/10">
               <img src="/product2.png" alt="MK 1974" className="w-full h-full object-cover" />
             </div>
           </div>
         </section>
 
         {/* Mission + Vision */}
-        <section className="bg-dark px-8 md:px-12 py-16">
+        <section className="bg-surface2 border-t border-b border-black/10 px-8 md:px-12 py-16 text-dark">
           <div className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="border border-white/10 p-10">
-              <p className="text-xs uppercase tracking-widest text-accent mb-4">Mission</p>
-              <h3 className="font-playfair italic font-bold text-cream text-2xl mb-4">Dress to move.</h3>
-              <p className="text-cream/50 text-sm leading-relaxed">
+            <div className="border border-black/10 bg-white p-10 rounded-xl shadow-sm">
+              <p className="text-xs uppercase tracking-widest text-dark font-extrabold mb-4">Mission</p>
+              <h3 className="font-playfair italic font-black text-dark text-2xl mb-4">Dress to move.</h3>
+              <p className="text-dark/70 text-sm leading-relaxed font-medium">
                 To design and deliver premium streetwear that fits the pace of real life — on the street, in the gym, or wherever you carry yourself. Clothing that works as hard as you do.
               </p>
             </div>
-            <div className="border border-white/10 p-10">
-              <p className="text-xs uppercase tracking-widest text-accent mb-4">Vision</p>
-              <h3 className="font-playfair italic font-bold text-cream text-2xl mb-4">Build something that lasts.</h3>
-              <p className="text-cream/50 text-sm leading-relaxed">
+            <div className="border border-black/10 bg-white p-10 rounded-xl shadow-sm">
+              <p className="text-xs uppercase tracking-widest text-dark font-extrabold mb-4">Vision</p>
+              <h3 className="font-playfair italic font-black text-dark text-2xl mb-4">Build something that lasts.</h3>
+              <p className="text-dark/70 text-sm leading-relaxed font-medium">
                 To become the defining Lagos streetwear brand — known not for hype, but for quality, consistency, and a clear identity. We are just getting started.
               </p>
             </div>
@@ -74,15 +74,15 @@ export default function AboutPage() {
         </section>
 
         {/* Values */}
-        <section className="px-8 md:px-12 py-16 bg-surface2">
+        <section className="px-8 md:px-12 py-16 bg-surface">
           <div className="max-w-[1440px] mx-auto">
             <h2 className="text-2xl md:text-3xl font-bold text-dark mb-10">What we stand for</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
               {values.map((v, i) => (
-                <div key={v.title} className="border-t-2 border-accent pt-5">
-                  <p className="text-xs text-muted mb-2">0{i + 1}</p>
+                <div key={v.title} className="border-t-2 border-dark pt-5">
+                  <p className="text-xs text-dark/40 font-bold mb-2">0{i + 1}</p>
                   <h3 className="font-bold text-dark text-lg mb-2">{v.title}</h3>
-                  <p className="text-muted text-sm leading-relaxed">{v.desc}</p>
+                  <p className="text-dark/60 text-sm leading-relaxed font-medium">{v.desc}</p>
                 </div>
               ))}
             </div>
