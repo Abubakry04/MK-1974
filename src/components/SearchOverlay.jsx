@@ -37,10 +37,10 @@ export default function SearchOverlay() {
   if (!searchOpen) return null
 
   return (
-    <div className="fixed inset-0 z-[200] bg-dark/95 flex flex-col">
+    <div className="fixed inset-0 z-[200] bg-white/95 backdrop-blur-md flex flex-col text-dark">
       {/* Search input bar */}
-      <div className="flex items-center gap-4 px-8 md:px-12 py-5 border-b border-white/[0.06]">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-muted shrink-0">
+      <div className="flex items-center gap-4 px-8 md:px-12 py-5 border-b border-black/10">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-dark/50 shrink-0">
           <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
         </svg>
         <input
@@ -53,11 +53,11 @@ export default function SearchOverlay() {
             if (e.key === 'Enter' && results[0]) handleSelect(results[0].slug)
           }}
           placeholder="Search products, categories..."
-          className="flex-1 bg-transparent text-cream text-lg font-light placeholder-muted/50 focus:outline-none"
+          className="flex-1 bg-transparent text-dark text-lg font-medium placeholder-dark/40 focus:outline-none"
         />
         <button
           onClick={() => { setSearchOpen(false); setQuery('') }}
-          className="text-muted hover:text-cream transition-colors text-sm"
+          className="text-dark/60 hover:text-dark transition-colors text-sm font-semibold uppercase tracking-wider px-2 py-1"
         >
           Close
         </button>
@@ -68,13 +68,13 @@ export default function SearchOverlay() {
         {query.length <= 1 ? (
           /* Show real categories as hints */
           <div>
-            <p className="text-xs uppercase tracking-widest text-muted mb-4">Shop by category</p>
+            <p className="text-xs uppercase tracking-widest text-dark/50 font-bold mb-4">Shop by category</p>
             <div className="flex flex-wrap gap-2">
               {categorySuggestions.map(cat => (
                 <button
                   key={cat}
                   onClick={() => handleCategoryClick(cat)}
-                  className="px-4 py-2 border border-white/10 text-cream/60 text-sm hover:border-white/30 hover:text-cream hover:bg-white/5 transition-colors"
+                  className="px-4 py-2 border border-black/15 text-dark/70 text-sm font-medium hover:border-black hover:text-dark hover:bg-stone-100 rounded transition-colors"
                 >
                   {cat}
                 </button>
@@ -84,22 +84,22 @@ export default function SearchOverlay() {
             {/* Recent / popular products while idle */}
             {products.length > 0 && (
               <div className="mt-8">
-                <p className="text-xs uppercase tracking-widest text-muted mb-4">Popular right now</p>
+                <p className="text-xs uppercase tracking-widest text-dark/50 font-bold mb-4">Popular right now</p>
                 <div className="space-y-1">
                   {products.slice(0, 3).map(p => (
                     <button
                       key={p.id}
                       onClick={() => handleSelect(p.slug)}
-                      className="w-full flex items-center gap-4 p-3 hover:bg-white/5 transition-colors text-left group"
+                      className="w-full flex items-center gap-4 p-3 rounded-lg hover:bg-stone-100 transition-colors text-left group"
                     >
-                      <div className="w-10 aspect-[3/4] overflow-hidden bg-surface2 shrink-0">
+                      <div className="w-10 aspect-[3/4] overflow-hidden bg-surface2 shrink-0 rounded">
                         <img src={p.images?.[0] || ''} alt={p.name} className="w-full h-full object-cover" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-cream text-sm group-hover:text-accent transition-colors">{p.name}</p>
-                        <p className="text-muted text-xs">{p.category}</p>
+                        <p className="text-dark text-sm font-semibold group-hover:text-accent transition-colors">{p.name}</p>
+                        <p className="text-dark/50 text-xs">{p.category}</p>
                       </div>
-                      <span className="text-cream/60 text-sm">₦{Number(p.price).toLocaleString()}</span>
+                      <span className="text-dark font-bold text-sm">₦{Number(p.price).toLocaleString()}</span>
                     </button>
                   ))}
                 </div>
@@ -108,14 +108,14 @@ export default function SearchOverlay() {
           </div>
         ) : results.length === 0 ? (
           <div>
-            <p className="text-cream/30 text-sm mb-6">No results for "<span className="text-cream">{query}</span>"</p>
-            <p className="text-xs uppercase tracking-widest text-muted mb-3">Try a category instead</p>
+            <p className="text-dark/60 text-sm mb-6">No results for "<span className="text-dark font-bold">{query}</span>"</p>
+            <p className="text-xs uppercase tracking-widest text-dark/50 font-bold mb-3">Try a category instead</p>
             <div className="flex flex-wrap gap-2">
               {categorySuggestions.map(cat => (
                 <button
                   key={cat}
                   onClick={() => handleCategoryClick(cat)}
-                  className="px-4 py-2 border border-white/10 text-cream/60 text-sm hover:border-white/30 hover:text-cream transition-colors"
+                  className="px-4 py-2 border border-black/15 text-dark/70 text-sm font-medium hover:border-black hover:text-dark transition-colors rounded"
                 >
                   {cat}
                 </button>
@@ -124,7 +124,7 @@ export default function SearchOverlay() {
           </div>
         ) : (
           <div>
-            <p className="text-xs uppercase tracking-widest text-muted mb-4">
+            <p className="text-xs uppercase tracking-widest text-dark/50 font-bold mb-4">
               {results.length} result{results.length !== 1 ? 's' : ''} for "{query}"
             </p>
             <div className="space-y-1">
@@ -132,16 +132,16 @@ export default function SearchOverlay() {
                 <button
                   key={p.id}
                   onClick={() => handleSelect(p.slug)}
-                  className="w-full flex items-center gap-5 p-4 hover:bg-white/5 transition-colors text-left group"
+                  className="w-full flex items-center gap-5 p-4 rounded-lg hover:bg-stone-100 transition-colors text-left group"
                 >
-                  <div className="w-12 aspect-[3/4] overflow-hidden bg-surface2 shrink-0">
+                  <div className="w-12 aspect-[3/4] overflow-hidden bg-surface2 shrink-0 rounded">
                     <img src={p.images?.[0] || ''} alt={p.name} className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-cream text-sm font-medium group-hover:text-accent transition-colors">{p.name}</p>
-                    <p className="text-muted text-xs mt-0.5">{p.category}</p>
+                    <p className="text-dark text-sm font-semibold group-hover:text-accent transition-colors">{p.name}</p>
+                    <p className="text-dark/50 text-xs mt-0.5">{p.category}</p>
                   </div>
-                  <span className="text-cream text-sm">₦{Number(p.price).toLocaleString()}</span>
+                  <span className="text-dark text-sm font-bold">₦{Number(p.price).toLocaleString()}</span>
                 </button>
               ))}
             </div>

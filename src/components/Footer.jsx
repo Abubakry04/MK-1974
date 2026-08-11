@@ -35,7 +35,7 @@ const SocialLinks = [
 
 export default function Footer() {
   return (
-    <footer className="bg-dark border-t border-white/[0.06]">
+    <footer className="bg-surface2 border-t border-black/10 text-dark">
       {/* Main grid */}
       <div className="max-w-[1440px] mx-auto px-8 md:px-12 py-16 grid grid-cols-2 md:grid-cols-4 gap-10">
         {/* Brand */}
@@ -45,10 +45,9 @@ export default function Footer() {
               src={logo}
               alt="MK 1974"
               className="h-10 w-auto object-contain"
-              style={{ filter: 'invert(1) brightness(100)' }}
             />
           </Link>
-          <p className="text-muted text-sm font-light leading-relaxed mb-6 max-w-[200px]">
+          <p className="text-dark/60 text-sm font-normal leading-relaxed mb-6 max-w-[200px]">
             New Lagos streetwear.<br />Launched August 11, 2026.
           </p>
           <div className="flex gap-3">
@@ -59,7 +58,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={s.label}
-                className="text-muted hover:text-cream border border-white/10 hover:border-white/30 w-9 h-9 flex items-center justify-center transition-colors duration-200"
+                className="text-dark/70 hover:text-dark border border-black/15 hover:border-black/40 bg-white/50 rounded w-9 h-9 flex items-center justify-center transition-colors duration-200"
               >
                 {s.icon}
               </a>
@@ -69,7 +68,7 @@ export default function Footer() {
 
         {/* Shop */}
         <div>
-          <h4 className="text-cream text-xs font-semibold tracking-widest uppercase mb-5">Shop</h4>
+          <h4 className="text-dark text-xs font-bold tracking-widest uppercase mb-5">Shop</h4>
           <ul className="flex flex-col gap-3">
             {[
               { label: "New Arrivals", to: "/shop?sort=newest" },
@@ -80,7 +79,7 @@ export default function Footer() {
               { label: "Accessories", to: "/shop?category=accessories" },
             ].map((item) => (
               <li key={item.label}>
-                <Link to={item.to} className="text-muted hover:text-cream text-sm font-light transition-colors duration-200">
+                <Link to={item.to} className="text-dark/60 hover:text-dark text-sm font-medium transition-colors duration-200">
                   {item.label}
                 </Link>
               </li>
@@ -90,7 +89,7 @@ export default function Footer() {
 
         {/* Info */}
         <div>
-          <h4 className="text-cream text-xs font-semibold tracking-widest uppercase mb-5">Info</h4>
+          <h4 className="text-dark text-xs font-bold tracking-widest uppercase mb-5">Info</h4>
           <ul className="flex flex-col gap-3">
             {[
               { label: "About MK 1974", to: "/about" },
@@ -99,7 +98,7 @@ export default function Footer() {
               { label: "Size Guide", to: "/contact#faqs" },
             ].map((item) => (
               <li key={item.label}>
-                <Link to={item.to} className="text-muted hover:text-cream text-sm font-light transition-colors duration-200">
+                <Link to={item.to} className="text-dark/60 hover:text-dark text-sm font-medium transition-colors duration-200">
                   {item.label}
                 </Link>
               </li>
@@ -109,7 +108,7 @@ export default function Footer() {
 
         {/* Support */}
         <div>
-          <h4 className="text-cream text-xs font-semibold tracking-widest uppercase mb-5">Support</h4>
+          <h4 className="text-dark text-xs font-bold tracking-widest uppercase mb-5">Support</h4>
           <ul className="flex flex-col gap-3">
             {[
               { label: "FAQ", to: "/contact" },
@@ -117,13 +116,13 @@ export default function Footer() {
               { label: "Shipping Info", to: "/contact" },
             ].map((item) => (
               <li key={item.label}>
-                <Link to={item.to} className="text-muted hover:text-cream text-sm font-light transition-colors duration-200">
+                <Link to={item.to} className="text-dark/60 hover:text-dark text-sm font-medium transition-colors duration-200">
                   {item.label}
                 </Link>
               </li>
             ))}
             <li>
-              <a href="mailto:hello@mk1974.com" className="text-muted hover:text-cream text-sm font-light transition-colors duration-200">
+              <a href="mailto:hello@mk1974.com" className="text-dark/60 hover:text-dark text-sm font-medium transition-colors duration-200">
                 hello@mk1974.com
               </a>
             </li>
@@ -132,12 +131,12 @@ export default function Footer() {
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t border-white/[0.05] px-8 md:px-12 py-5 max-w-[1440px] mx-auto flex flex-col sm:flex-row justify-between items-center gap-3 text-muted text-xs">
+      <div className="border-t border-black/10 px-8 md:px-12 py-5 max-w-[1440px] mx-auto flex flex-col sm:flex-row justify-between items-center gap-3 text-dark/60 text-xs font-medium">
         <p>© 2026 MK 1974. All rights reserved.</p>
         <div className="flex items-center gap-5">
-          <Link to="/contact" className="hover:text-cream transition-colors">Privacy</Link>
-          <Link to="/contact" className="hover:text-cream transition-colors">Terms</Link>
-          <Link to="/contact" className="hover:text-cream transition-colors">Return Policy</Link>
+          <Link to="/contact" className="hover:text-dark transition-colors">Privacy</Link>
+          <Link to="/contact" className="hover:text-dark transition-colors">Terms</Link>
+          <Link to="/contact" className="hover:text-dark transition-colors">Return Policy</Link>
         </div>
       </div>
     </footer>

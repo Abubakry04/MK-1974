@@ -8,23 +8,23 @@ export default function NotFoundPage() {
   return (
     <>
       <Nav />
-      <main className="bg-dark min-h-screen flex flex-col items-center justify-center px-8 text-center">
+      <main className="bg-surface min-h-screen flex flex-col items-center justify-center px-8 text-center text-dark">
         {/* Large decorative 404 */}
         <div className="relative select-none mb-6">
           <p
-            className="font-playfair font-black italic text-white/[0.04] leading-none pointer-events-none"
+            className="font-playfair font-black italic text-black/[0.04] leading-none pointer-events-none"
             style={{ fontSize: 'clamp(10rem, 30vw, 22rem)' }}
           >
             404
           </p>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <h1 className="text-cream text-3xl md:text-4xl font-bold">
+            <h1 className="text-dark text-3xl md:text-4xl font-extrabold">
               Page not found
             </h1>
           </div>
         </div>
 
-        <p className="text-cream/40 text-sm max-w-[300px] leading-relaxed mb-8">
+        <p className="text-dark/60 text-sm max-w-[300px] leading-relaxed mb-8 font-medium">
           The page you're looking for doesn't exist.
         </p>
 

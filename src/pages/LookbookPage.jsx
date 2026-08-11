@@ -7,7 +7,7 @@ export default function LookbookPage() {
     <>
       <Nav />
       {/* Small spacer — Lookbook component has its own section header */}
-      <div className="h-[68px] bg-dark" />
+      <div className="h-[68px] bg-surface" />
       <Lookbook />
       <Footer />
     </>
