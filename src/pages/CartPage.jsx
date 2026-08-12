@@ -7,11 +7,11 @@ import usePageMeta from '../hooks/usePageMeta'
 
 const STANDARD_SHIPPING_FEE = 3500
 
-const PROMO_CODES = {
-  'MK10': { code: 'MK10', discountPercent: 10, description: '10% off your order' },
-  'LAUNCH2026': { code: 'LAUNCH2026', discountPercent: 15, description: '15% launch discount' },
-  'WELCOME': { code: 'WELCOME', discountPercent: 10, description: '10% welcome discount' },
-}
+// const PROMO_CODES = {
+//   'MK10': { code: 'MK10', discountPercent: 10, description: '10% off your order' },
+//   'LAUNCH2026': { code: 'LAUNCH2026', discountPercent: 15, description: '15% launch discount' },
+//   'WELCOME': { code: 'WELCOME', discountPercent: 10, description: '10% welcome discount' },
+// }
 
 export default function CartPage() {
   usePageMeta('Your Shopping Bag — MK 1974', 'Review and edit items in your MK 1974 shopping bag.')
@@ -267,7 +267,7 @@ export default function CartPage() {
                   </div>
 
                   {/* Promo Code Form */}
-                  <div className="mb-6">
+                  {/* <div className="mb-6">
                     <form onSubmit={handleApplyPromo} className="flex gap-2">
                       <input
                         type="text"
@@ -289,7 +289,7 @@ export default function CartPage() {
                     {appliedPromo && (
                       <p className="text-emerald-600 text-[0.72rem] mt-1.5 font-bold">✓ {appliedPromo.description} applied</p>
                     )}
-                  </div>
+                  </div> */}
 
                   {/* Grand Total */}
                   <div className="border-t border-b border-black/10 py-4 mb-6">
@@ -297,7 +297,7 @@ export default function CartPage() {
                       <span className="text-dark font-extrabold text-base uppercase">Total</span>
                       <div className="text-right">
                         <span className="text-dark font-black text-2xl">₦{grandTotal.toLocaleString()}</span>
-                        <p className="text-[0.65rem] text-dark/50 uppercase tracking-wider mt-0.5 font-semibold">Includes taxes & duties</p>
+                        {/* <p className="text-[0.65rem] text-dark/50 uppercase tracking-wider mt-0.5 font-semibold">Includes taxes & duties</p> */}
                       </div>
                     </div>
                   </div>
@@ -323,7 +323,7 @@ export default function CartPage() {
                   )}
 
                   {/* Guarantees */}
-                  <div className="mt-6 pt-5 border-t border-black/10 space-y-2 text-[0.72rem] text-dark/60 font-medium">
+                  {/* <div className="mt-6 pt-5 border-t border-black/10 space-y-2 text-[0.72rem] text-dark/60 font-medium">
                     <div className="flex items-center gap-2">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-dark shrink-0"><polyline points="20 6 9 17 4 12"/></svg>
                       <span>Free 30-day returns & exchanges</span>
@@ -336,7 +336,7 @@ export default function CartPage() {
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-dark shrink-0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                       <span>100% Authentic Lagos Streetwear</span>
                     </div>
-                  </div>
+                  </div> */}
 
                 </div>
               </div>
