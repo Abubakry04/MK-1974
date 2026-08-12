@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import TiltCard from '../TiltCard'
-import heroJerseyImg from '../../assets/hero_jersey.png'
+import heroJerseyImg from '../../assets/hero_jersey12.png'
 
 const VARIANTS = [
   { id: 0, name: 'Original', filter: 'hue-rotate-0',      bg: '#1a1a24', stripe: '#C38154', accent: '#F2A900', shadow: '#C38154' },

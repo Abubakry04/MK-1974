@@ -792,6 +792,7 @@ function extractOrderNumber(res) {
     // API Data
     products: mappedProducts,
     categories: dynamicCategories,
+    apiCategories,
     apiLoading,
     fetchStoreData,
     // Cart
