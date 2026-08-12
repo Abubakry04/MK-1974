@@ -100,21 +100,21 @@ export default function CheckoutPage() {
     }
   }
 
-  const handleApplyPromo = (e) => {
-    e.preventDefault()
-    const cleanCode = promoCode.trim().toUpperCase()
-    if (cleanCode === 'MK10' || cleanCode === 'LAUNCH10') {
-      const disc = Math.round(cartTotal * 0.1)
-      setDiscountAmount(disc)
-      showToast('Promo code applied: 10% Off!')
-    } else if (cleanCode === 'VOLT20' || cleanCode === 'MK20') {
-      const disc = Math.round(cartTotal * 0.2)
-      setDiscountAmount(disc)
-      showToast('Promo code applied: 20% Off!')
-    } else if (cleanCode) {
-      showToast('Invalid promo code. Try MK10 or VOLT20', 'error')
-    }
-  }
+  // const handleApplyPromo = (e) => {
+  //   e.preventDefault()
+  //   const cleanCode = promoCode.trim().toUpperCase()
+  //   if (cleanCode === 'MK10' || cleanCode === 'LAUNCH10') {
+  //     const disc = Math.round(cartTotal * 0.1)
+  //     setDiscountAmount(disc)
+  //     showToast('Promo code applied: 10% Off!')
+  //   } else if (cleanCode === 'VOLT20' || cleanCode === 'MK20') {
+  //     const disc = Math.round(cartTotal * 0.2)
+  //     setDiscountAmount(disc)
+  //     showToast('Promo code applied: 20% Off!')
+  //   } else if (cleanCode) {
+  //     showToast('Invalid promo code. Try MK10 or VOLT20', 'error')
+  //   }
+  // }
 
   const handleCopyAccount = () => {
     navigator.clipboard.writeText('0123456789')
@@ -192,13 +192,13 @@ export default function CheckoutPage() {
               <span className="eyebrow block mb-1">MK 1974 Official Checkout</span>
               <h1 className="font-playfair italic font-black text-cream text-3xl sm:text-4xl">Checkout</h1>
             </div>
-            <div className="flex items-center gap-2 text-xs text-cream/50 bg-white/5 px-3.5 py-2 rounded-full border border-white/10 w-fit">
+            {/* <div className="flex items-center gap-2 text-xs text-cream/50 bg-white/5 px-3.5 py-2 rounded-full border border-white/10 w-fit">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-lime">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                 <path d="M7 11V7a5 5 0 0110 0v4"/>
               </svg>
               <span>256-Bit SSL Encrypted Checkout</span>
-            </div>
+            </div> */}
           </div>
 
           {/* Responsive Stepper */}
@@ -448,7 +448,7 @@ export default function CheckoutPage() {
                       {/* Upload Receipt */}
                       <div className="bg-white/5 border border-white/10 rounded-lg p-6">
                         <label className="block text-xs font-semibold tracking-[0.2em] uppercase text-cream/80 mb-1">
-                          Upload Payment Proof (Optional)
+                          Upload Payment Proof
                         </label>
                         <p className="text-xs text-cream/40 mb-4">Attach your transfer receipt screenshot/PDF to expedite order processing.</p>
 
@@ -533,7 +533,7 @@ export default function CheckoutPage() {
                   {/* Promo Code Input */}
                   <div className="bg-white/5 border border-white/10 rounded-lg p-5">
                     <label className="block text-[0.68rem] tracking-[0.15em] uppercase text-cream/60 mb-3">Voucher / Discount Code</label>
-                    <form onSubmit={handleApplyPromo} className="flex gap-2">
+                    <form onSubmit={(e) => e.preventDefault()} className="flex gap-2">
                       <input
                         type="text"
                         placeholder="Try MK10 or VOLT20"
@@ -648,18 +648,18 @@ export default function CheckoutPage() {
                     <span className="font-bold text-base text-cream uppercase">Grand Total</span>
                     <div className="text-right">
                       <span className="font-bold text-2xl text-cream">₦{total.toLocaleString()}</span>
-                      <p className="text-[0.65rem] text-cream/40 uppercase tracking-wider mt-0.5">Includes taxes & duties</p>
+                      {/* <p className="text-[0.65rem] text-cream/40 uppercase tracking-wider mt-0.5">Includes taxes & duties</p> */}
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-white/5 p-4 rounded-lg text-xs space-y-2 text-cream/50 border border-white/5">
+                {/* <div className="bg-white/5 p-4 rounded-lg text-xs space-y-2 text-cream/50 border border-white/5">
                   <div className="flex items-center gap-2 text-cream">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-lime"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                     <span className="font-semibold text-[0.72rem]">Buyer Protection Guaranteed</span>
                   </div>
                   <p className="text-[0.68rem] leading-relaxed">Free exchange within 7 days. Need assistance? Contact customercare@mk1974.com</p>
-                </div>
+                </div> */}
               </div>
             </div>
 

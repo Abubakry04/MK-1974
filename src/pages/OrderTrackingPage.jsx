@@ -6,11 +6,11 @@ import Footer from '../components/Footer'
 import usePageMeta from '../hooks/usePageMeta'
 
 const STATUS_STEPS = [
-  { key: 'Pending Approval', label: 'Order Placed & Awaiting Verification', desc: 'Your order was received and payment receipt is under review by admin.', icon: '📝' },
+  { key: 'Pending Approval', label: 'Order Placed & Awaiting Verification', desc: 'Your order was received and payment receipt is under review.', icon: '📝' },
   { key: 'Payment Verified', label: 'Payment Verified', desc: 'Bank transfer payment successfully verified and approved.', icon: '✓' },
-  { key: 'Processing', label: 'Gear Inspection & Processing', desc: 'Your apparel is being inspected, prepared, and packed for dispatch.', icon: '⚡' },
+  { key: 'Processing', label: 'Processing', desc: 'Your apparel is being inspected, prepared, and packed for dispatch.', icon: '⚡' },
   { key: 'Shipped', label: 'Shipped & En Route', desc: 'Handed to courier for delivery to your shipping address.', icon: '📦' },
-  { key: 'Delivered', label: 'Delivered', desc: 'Package delivered successfully. Enjoy your MK 1974 streetwear!', icon: '✨' },
+  { key: 'Delivered', label: 'Delivered', desc: 'Package delivered successfully. Enjoy your MK 1974 sporttwear!', icon: '✨' },
 ]
 
 function normalizeStatusStep(statusStr) {
@@ -176,7 +176,7 @@ export default function OrderTrackingPage() {
           {/* Order details summary */}
           {effectiveOrder && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white border border-black/10 p-6 rounded-xl shadow-sm">
+              {/* <div className="bg-white border border-black/10 p-6 rounded-xl shadow-sm">
                 <h2 className="font-bold text-xs tracking-[0.2em] uppercase mb-4 text-dark">Delivery Information</h2>
                 <p className="text-sm leading-relaxed text-dark/80 font-medium">
                   <strong className="text-dark font-bold">{effectiveOrder.customer || `${effectiveOrder.firstName} ${effectiveOrder.lastName}`}</strong><br />
@@ -184,7 +184,7 @@ export default function OrderTrackingPage() {
                   {effectiveOrder.city}{effectiveOrder.state ? `, ${effectiveOrder.state}` : ''}<br />
                   <span className="text-xs text-dark/60 mt-2 block">Phone: {effectiveOrder.phone} · Email: {effectiveOrder.email}</span>
                 </p>
-              </div>
+              </div> */}
 
               <div className="bg-white border border-black/10 p-6 rounded-xl shadow-sm">
                 <h2 className="font-bold text-xs tracking-[0.2em] uppercase mb-4 text-dark">Order Summary</h2>
