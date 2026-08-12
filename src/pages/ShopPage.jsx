@@ -5,6 +5,8 @@ import Nav from '../components/Nav'
 import Footer from '../components/Footer'
 import usePageMeta from '../hooks/usePageMeta'
 
+import CategoryDropdown from '../components/CategoryDropdown'
+
 const SORT_OPTIONS = [
   { label: 'Newest First', value: 'newest' },
   { label: 'Lowest Price', value: 'price-asc' },
@@ -380,40 +382,22 @@ export default function ShopPage() {
               <span className="eyebrow block mb-1 text-[#C4622D] font-bold">MK 1974 Official Shop</span>
               <h1 className="font-playfair italic font-black text-dark text-3xl sm:text-5xl">Shop Collection</h1>
             </div>
-            <p className="text-dark/60 text-xs tracking-wider uppercase font-semibold">
+            {/* <p className="text-dark/60 text-xs tracking-wider uppercase font-semibold">
               Showing <span className="text-[#C4622D] font-bold">{filtered.length}</span> Products
-            </p>
+            </p> */}
           </div>
 
-          {/* Quick Category Pills Carousel */}
-          <div className="max-w-[1320px] mx-auto mt-6 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-            <button
-              onClick={() => { setFilters(f => ({ ...f, category: 'all' })); setPage(1); }}
-              className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-full shrink-0 transition-all ${
-                filters.category === 'all'
-                  ? 'bg-[#121212] text-white shadow-md'
-                  : 'bg-white border border-black/15 text-dark/70 hover:text-dark hover:bg-black/5'
-              }`}
-            >
-              All Products
-            </button>
-            {categoriesList.map(cat => {
-              const clean = String(cat).toLowerCase()
-              const isSelected = filters.category === clean
-              return (
-                <button
-                  key={cat}
-                  onClick={() => { setFilters(f => ({ ...f, category: clean })); setPage(1); }}
-                  className={`px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-full shrink-0 transition-all capitalize ${
-                    isSelected
-                      ? 'bg-[#121212] text-white shadow-md'
-                      : 'bg-white border border-black/15 text-dark/70 hover:text-dark hover:bg-black/5'
-                  }`}
-                >
-                  {cat}
-                </button>
-              )
-            })}
+          {/* Category Dropdown Selector */}
+          <div className="max-w-[1320px] mx-auto mt-6 flex items-center gap-3">
+            <CategoryDropdown
+              categories={categoriesList}
+              selectedCategory={filters.category}
+              onSelect={(catVal) => {
+                setFilters(f => ({ ...f, category: catVal }))
+                setPage(1)
+              }}
+              label="Collection"
+            />
           </div>
         </div>
 

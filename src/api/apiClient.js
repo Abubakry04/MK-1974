@@ -86,7 +86,7 @@ async function request(method, path, body, isPublic = false) {
   let res
 
   try {
-    console.log(`[Storefront API] ${method} ${primaryUrl}`)
+    // console.log(`[Storefront API] ${method} ${primaryUrl}`)
     res = await fetch(primaryUrl, {
       method,
       headers,
@@ -224,7 +224,9 @@ export const sizes = {
 
 export const orders = {
   getAll: () => request('GET', '/api/Order'),
-  getById: (id) => request('GET', `/api/Order/${id}`),
+  getById: (id) => request('GET', `/api/Order/${id}`, undefined, true),
+  getByUser: (userId) => request('GET', `/api/Order/user/${userId}`, undefined, true),
+  track: (id) => request('GET', `/api/Order/${id}`, undefined, true),
   create: (orderData) => request('POST', '/api/Order', orderData),
 }
 

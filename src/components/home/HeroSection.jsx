@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import TiltCard from '../TiltCard'
+import heroJerseyImg from '../../assets/hero_jersey.png'
 
 const VARIANTS = [
   { id: 0, name: 'Original', filter: 'hue-rotate-0',      bg: '#1a1a24', stripe: '#C38154', accent: '#F2A900', shadow: '#C38154' },
@@ -87,10 +88,13 @@ export default function HeroSection() {
       {/* ════════════════════════════════
           MOBILE LAYOUT  (hidden on lg+)
       ════════════════════════════════ */}
-      <div className="lg:hidden relative h-full flex flex-col justify-between z-10 pt-20 pb-8 px-6">
+      <div className="lg:hidden relative h-full flex flex-col z-10">
 
-        {/* Jersey image container */}
-        <div className="relative flex-1 min-h-0 flex items-center justify-center my-2">
+        {/* Jersey image — top 45% of screen */}
+        <div
+          className="relative flex-shrink-0 flex items-center justify-center"
+          style={{ height: '75%' }}
+        >
           {/* Ambient dynamic color glow pulse behind jersey */}
           <div
             className="absolute w-48 h-48 rounded-full filter blur-3xl opacity-40 transition-all duration-700 pointer-events-none"
@@ -101,62 +105,72 @@ export default function HeroSection() {
           />
 
           <img
-            src="/hero_jersey.png"
+            src={heroJerseyImg}
             alt="Premium Jersey"
             loading="eager"
             fetchpriority="high"
-            className={`w-full h-full max-h-[360px] object-contain ${v.filter} transition-all duration-700 relative z-10`}
+            className={`absolute inset-0 w-full h-full object-contain ${v.filter} transition-all duration-700 relative z-10`}
             style={{ animation: 'float 6s ease-in-out infinite' }}
+          />
+          {/* Gradient so text below reads clearly */}
+          <div
+            className="absolute inset-x-0 bottom-0 h-28 pointer-events-none z-15"
+            style={{ background: `linear-gradient(to bottom, transparent, ${v.bg})` }}
           />
         </div>
 
         {/* Text block — bottom portion */}
-        <div className="flex-shrink-0 hero-fade-up pt-2" style={{ zIndex: 2 }}>
+        <div className="flex-1 flex flex-col justify-between px-6 pb-4" style={{ zIndex: 2 }}>
 
-          {/* Eyebrow */}
-          <p
-            className="text-[0.58rem] font-bold tracking-[0.45em] uppercase mb-2"
-            style={{ color: v.accent, transition: 'color 0.5s ease' }}
-          >
-            Launch Edition — {v.name}
-          </p>
+          {/* Headline + subtitle */}
+          <div className="hero-fade-up">
+            {/* Eyebrow */}
+            <p
+              className="text-[0.58rem] font-bold tracking-[0.45em] uppercase mb-1"
+              style={{ color: v.accent, transition: 'color 0.5s ease' }}
+            >
+              Launch Edition — {v.name}
+            </p>
 
-          <h1
-            className="font-bebas text-white leading-[0.85] mb-2"
-            style={{
-              fontSize: 'clamp(3rem, 15vw, 5rem)',
-              textShadow: `2px 2px 0px ${v.shadow}, 5px 5px 12px rgba(0,0,0,0.5)`,
-              transition: 'text-shadow 0.7s cubic-bezier(.16,1,.3,1)',
-            }}
-          >
-            PREMIUM<br />JERSEY
-          </h1>
-
-          <p className="text-white/40 text-[0.72rem] leading-[1.6] max-w-[280px] mb-4">
-            New brand. No compromises. Built in Lagos, made to move.
-          </p>
-
-          {/* CTAs */}
-          <div className="flex items-center gap-3">
-            <Link
-              to="/shop"
-              className="px-6 py-2.5 rounded-full text-black font-bold text-[0.78rem] tracking-wide transition-all duration-500 active:scale-95"
+            <h1
+              className="font-bebas text-white leading-[0.85] mb-2"
               style={{
-                backgroundColor: v.accent,
-                boxShadow: `0 4px 20px ${v.accent}55`,
-                transition: 'background-color 0.6s ease, box-shadow 0.6s ease',
+                fontSize: 'clamp(2.6rem, 12vw, 4.2rem)',
+                textShadow: `2px 2px 0px ${v.shadow}, 5px 5px 12px rgba(0,0,0,0.5)`,
+                transition: 'text-shadow 0.7s cubic-bezier(.16,1,.3,1)',
               }}
             >
-              Shop Now
-            </Link>
-            <Link
-              to="/about"
-              className="px-6 py-2.5 rounded-full text-white font-semibold text-[0.78rem] border transition-all duration-300 active:scale-95"
-              style={{ borderColor: `${v.accent}50` }}
-            >
-              Our Story
-            </Link>
+              PREMIUM<br />JERSEY
+            </h1>
+
+            <p className="text-white/40 text-[0.7rem] leading-[1.5] max-w-[280px] mb-3">
+              A new Lagos streetwear brand. No legacy to coast on — just the clothes. Premium build, deliberate design, built to move.
+            </p>
+
+            {/* CTAs */}
+            <div className="flex items-center gap-3 mb-4">
+              <Link
+                to="/shop"
+                className="px-6 py-2.5 rounded-full text-black font-bold text-[0.78rem] tracking-wide transition-all duration-500 active:scale-95"
+                style={{
+                  backgroundColor: v.accent,
+                  boxShadow: `0 4px 20px ${v.accent}55`,
+                  transition: 'background-color 0.6s ease, box-shadow 0.6s ease',
+                }}
+              >
+                Shop Now
+              </Link>
+              <Link
+                to="/about"
+                className="px-6 py-2.5 rounded-full text-white font-semibold text-[0.78rem] border transition-all duration-300 active:scale-95"
+                style={{ borderColor: `${v.accent}50` }}
+              >
+                Our Story
+              </Link>
+            </div>
           </div>
+
+         
 
         </div>
       </div>
@@ -211,7 +225,7 @@ export default function HeroSection() {
         >
           <TiltCard className="w-full h-full" maxRotation={15} scale={1.05}>
             <img
-              src="/hero_jersey.png"
+              src={heroJerseyImg}
               alt="Premium Jersey"
               loading="eager"
               fetchpriority="high"
@@ -246,7 +260,7 @@ export default function HeroSection() {
                     }}
                   >
                     <img
-                      src="/hero_jersey.png"
+                      src={heroJerseyImg}
                       alt={variant.name}
                       className={`w-[160%] h-[160%] object-cover object-center -translate-x-[18%] -translate-y-[10%] ${variant.filter}`}
                     />

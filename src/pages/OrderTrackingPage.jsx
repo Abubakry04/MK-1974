@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import Nav from '../components/Nav'
@@ -6,29 +7,51 @@ import usePageMeta from '../hooks/usePageMeta'
 
 const STATUS_STEPS = [
   { key: 'Pending Approval', label: 'Order Placed & Awaiting Verification', desc: 'Your order was received and payment receipt is under review by admin.', icon: '📝' },
-  { key: 'Approved / Processing', label: 'Payment Verified & Processing', desc: 'Transfer confirmed. Your gear is being inspected and packed.', icon: '⚡' },
-  { key: 'Shipped / In Transit', label: 'Shipped & En Route', desc: 'Handed to courier for delivery to your shipping address.', icon: '📦' },
+  { key: 'Payment Verified', label: 'Payment Verified', desc: 'Bank transfer payment successfully verified and approved.', icon: '✓' },
+  { key: 'Processing', label: 'Gear Inspection & Processing', desc: 'Your apparel is being inspected, prepared, and packed for dispatch.', icon: '⚡' },
+  { key: 'Shipped', label: 'Shipped & En Route', desc: 'Handed to courier for delivery to your shipping address.', icon: '📦' },
   { key: 'Delivered', label: 'Delivered', desc: 'Package delivered successfully. Enjoy your MK 1974 streetwear!', icon: '✨' },
 ]
 
 function normalizeStatusStep(statusStr) {
   if (!statusStr) return 0
-  const lower = statusStr.toLowerCase()
-  if (lower.includes('reject') || lower.includes('cancel')) return -1
-  if (lower.includes('deliver')) return 3
-  if (lower.includes('ship') || lower.includes('transit')) return 2
-  if (lower.includes('approve') || lower.includes('process')) return 1
-  return 0
+  const lower = statusStr.toLowerCase().trim()
+  if (lower === 'paymentrejected' || lower === 'cancelled' || lower === 'refunded' || lower.includes('reject') || lower.includes('cancel')) return -1
+  if (lower === 'delivered' || lower.includes('deliver')) return 4
+  if (lower === 'shipped' || lower.includes('ship') || lower.includes('transit')) return 3
+  if (lower === 'processing' || lower.includes('process') || lower.includes('pack') || lower.includes('inspect')) return 2
+  if (lower === 'paid' || lower === 'paymentapproved' || lower.includes('paid') || lower.includes('approve') || lower.includes('verifi')) return 1
+  return 0 // PendingPayment, PaymentSubmitted
 }
 
 export default function OrderTrackingPage() {
   const { orderId } = useParams()
-  const { orders } = useApp()
+  const { orders, fetchOrderTracking } = useApp()
 
   usePageMeta(`Order #${orderId} Status — MK 1974`, 'Live real-time tracking for your MK 1974 streetwear order.')
 
-  // Check if we have order details from local AppContext state or localStorage
-  const foundOrder = orders.find(o => String(o.id) === String(orderId))
+  const [liveOrder, setLiveOrder] = useState(null)
+
+  useEffect(() => {
+    let isMounted = true
+    const checkTracking = async () => {
+      if (orderId && fetchOrderTracking) {
+        const res = await fetchOrderTracking(orderId)
+        if (isMounted && res) {
+          setLiveOrder(res)
+        }
+      }
+    }
+    checkTracking()
+    const interval = setInterval(checkTracking, 5000)
+    return () => {
+      isMounted = false
+      clearInterval(interval)
+    }
+  }, [orderId, fetchOrderTracking])
+
+  // Check if we have order details from live API, local AppContext state or localStorage
+  const foundOrder = (orders || []).find(o => String(o.id) === String(orderId))
   const storedOrder = (() => {
     try {
       const stored = localStorage.getItem(`mk1974_order_${orderId}`)
@@ -38,7 +61,7 @@ export default function OrderTrackingPage() {
     }
   })()
 
-  const effectiveOrder = foundOrder || storedOrder
+  const effectiveOrder = liveOrder || foundOrder || storedOrder
 
   if (!effectiveOrder && !orderId) {
     return (
@@ -81,10 +104,10 @@ export default function OrderTrackingPage() {
                 <span className="eyebrow block mb-1">Live Order Status Tracking</span>
                 <h1 className="font-playfair font-black italic text-dark text-3xl sm:text-4xl">Order #{displayOrderNumber}</h1>
               </div>
-              <div className="flex items-center gap-2 text-xs font-semibold text-dark/70 bg-white px-3.5 py-1.5 rounded-full border border-black/10 shadow-sm w-fit">
+              {/* <div className="flex items-center gap-2 text-xs font-semibold text-dark/70 bg-white px-3.5 py-1.5 rounded-full border border-black/10 shadow-sm w-fit">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
                 <span>Live Admin Sync Active</span>
-              </div>
+              </div> */}
             </div>
           </div>
 

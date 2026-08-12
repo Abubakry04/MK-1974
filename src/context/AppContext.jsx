@@ -753,6 +753,41 @@ function extractOrderNumber(res) {
     })
   }, [orders, user])
 
+  const fetchOrderTracking = useCallback(async (orderId) => {
+    if (!orderId) return null
+    const cleanId = String(orderId).trim()
+    try {
+      console.log(`[GET /api/Order/${cleanId}] Fetching live order tracking details...`)
+      let raw = await api.orders.getById(cleanId).catch(() => null)
+      
+      // If direct lookup returns null/404, fallback to fetching all orders GET /api/Order
+      if (!raw) {
+        const all = await api.orders.getAll().catch(() => null)
+        const arr = Array.isArray(all) ? all : (Array.isArray(all?.data) ? all.data : (Array.isArray(all?.$values) ? all.$values : []))
+        raw = arr.find(o => {
+          const num = extractOrderNumber(o) || String(o.id || o.orderId || '')
+          return num.toLowerCase().trim() === cleanId.toLowerCase()
+        })
+      }
+
+      if (raw) {
+        const obj = raw.data ?? raw.result ?? raw.order ?? raw
+        const rawStatus = obj.status ?? obj.orderStatus ?? obj.paymentStatus ?? obj.Status ?? obj.OrderStatus
+        return {
+          id: extractOrderNumber(obj) || cleanId,
+          status: rawStatus || 'Pending Payment',
+          total: obj.totalAmount ?? obj.total ?? obj.TotalAmount ?? obj.Total ?? 0,
+          createdAt: obj.orderDate ?? obj.createdAt ?? obj.OrderDate ?? new Date().toISOString(),
+          items: obj.items ?? obj.orderItems ?? [],
+          ...obj
+        }
+      }
+    } catch (err) {
+      console.warn(`[Order Tracking API] Could not fetch order ${cleanId} from backend:`, err.message)
+    }
+    return null
+  }, [])
+
   const value = {
     // API Data
     products: mappedProducts,
@@ -766,7 +801,7 @@ function extractOrderNumber(res) {
     // Auth
     user, login, logout, register,
     // Orders
-    orders: userOrders, allOrders: orders, placeOrder, createOrder, submitOrderPayment,
+    orders: userOrders, allOrders: orders, placeOrder, createOrder, submitOrderPayment, fetchOrderTracking,
     // Toast
     toast, showToast,
     // Search
