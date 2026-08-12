@@ -17,9 +17,9 @@ export default function HomePage() {
       <main>
         <HeroSection />
         <BrandStrip />
-        <FeaturedCategories />
         <NewArrivals />
         <BestSellers />
+        <FeaturedCategories />
         <Testimonials />
         <Newsletter />
       </main>
