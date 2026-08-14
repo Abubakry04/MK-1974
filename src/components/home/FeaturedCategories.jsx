@@ -86,7 +86,7 @@ export default function FeaturedCategories() {
     >
       <div className="max-w-[1440px] mx-auto bg-[#F0EEED] rounded-3xl p-6 sm:p-10 md:p-14">
         <h2 className="text-2xl sm:text-3xl md:text-5xl font-black uppercase text-black text-center tracking-tight mb-8 sm:mb-12 font-sans">
-          BROWSE BY DRESS STYLE
+          FIND YOUR FIT
         </h2>
 
         {apiLoading ? (
