@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import TiltCard from '../TiltCard'
-import heroJerseyImg from '../../assets/hero 3.png'
+import heroJerseyImg from '../../assets/hero9.png'
 
 const VARIANTS = [
   { id: 0, name: 'Original', filter: 'hue-rotate-0',      bg: '#1a1a24', stripe: '#C38154', accent: '#F2A900', shadow: '#C38154' },
@@ -129,7 +129,7 @@ export default function HeroSection() {
               className="text-[0.58rem] font-bold tracking-[0.45em] uppercase mb-1"
               style={{ color: v.accent, transition: 'color 0.5s ease' }}
             >
-              Launch Edition — {v.name}
+              Launch Edition 
             </p>
 
             <h1
@@ -186,7 +186,7 @@ export default function HeroSection() {
             className="text-[0.6rem] font-bold tracking-[0.45em] uppercase mb-4"
             style={{ color: v.accent, transition: 'color 0.5s ease' }}
           >
-            Launch Edition — {v.name}
+            Launch Edition 
           </p>
           <h1
             className="font-bebas text-white tracking-wide leading-[0.88] mb-5 hover:scale-105 transition-transform duration-500"
