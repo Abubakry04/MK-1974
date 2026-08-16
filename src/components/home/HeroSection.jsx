@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import TiltCard from '../TiltCard'
-import heroJerseyImg from '../../assets/hero_jersey12.png'
+import heroJerseyImg from '../../assets/hero 3.png'
 
 const VARIANTS = [
   { id: 0, name: 'Original', filter: 'hue-rotate-0',      bg: '#1a1a24', stripe: '#C38154', accent: '#F2A900', shadow: '#C38154' },
@@ -140,7 +140,7 @@ export default function HeroSection() {
                 transition: 'text-shadow 0.7s cubic-bezier(.16,1,.3,1)',
               }}
             >
-              PREMIUM<br />JERSEY
+              PREMIUM<br />FITS
             </h1>
 
             <p className="text-white/40 text-[0.7rem] leading-[1.5] max-w-[280px] mb-3">
@@ -196,7 +196,7 @@ export default function HeroSection() {
               transition: 'text-shadow 0.7s cubic-bezier(.16,1,.3,1)',
             }}
           >
-            PREMIUM<br />JERSEY
+            PREMIUM<br />FITS
           </h1>
           <p className="text-gray-400 text-sm max-w-[320px] mb-8 leading-relaxed">
             A new Lagos streetwear brand. No legacy to coast on — just the clothes. Premium build, deliberate design, built to move.
