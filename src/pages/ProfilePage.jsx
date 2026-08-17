@@ -9,7 +9,7 @@ const NAV_ITEMS = [
   { id: 'orders', label: 'Orders' },
   { id: 'wishlist', label: 'Wishlist' },
   { id: 'profile', label: 'Personal info' },
-  { id: 'settings', label: 'Settings' },
+  // { id: 'settings', label: 'Settings' },
 ]
 
 const STATUS_STYLES = {
@@ -221,7 +221,7 @@ function ProfileInfoTab({ user, onUpdate }) {
             />
           </div>
         ))}
-        <button onClick={() => onUpdate(form)} className="btn-primary">Save changes</button>
+        {/* <button onClick={() => onUpdate(form)} className="btn-primary">Save changes</button> */}
       </div>
     </div>
   )
