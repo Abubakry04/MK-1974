@@ -107,12 +107,17 @@ async function request(method, path, body, isPublic = false) {
 
   if (!res.ok) {
     let msg = `HTTP ${res.status}`
+    let rawText = ''
     try {
-      const text = await res.text()
-      const d = safeParseJson(text)
-      if (d) msg = d.message || d.title || msg
-      else if (text && !text.trim().startsWith('<')) msg = text
+      rawText = await res.text()
+      const d = safeParseJson(rawText)
+      if (d) msg = d.message || d.title || d.detail || JSON.stringify(d)
+      else if (rawText && !rawText.trim().startsWith('<')) msg = rawText
     } catch {}
+
+    if (res.status === 500) {
+      console.error(`[API ${res.status}] ${method} ${path} — Server response:`, rawText || msg)
+    }
 
     if (res.status === 401) {
       if (isAuthPath) {

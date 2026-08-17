@@ -27,76 +27,6 @@ export function formatSingleImageUrl(url) {
   return `${API_BASE_URL}${cleanPath}`
 }
 
-const FALLBACK_PRODUCTS = [
-  {
-    id: 1,
-    name: 'MK 1974 Heavyweight Oversized Tee',
-    slug: 'mk-1974-heavyweight-oversized-tee',
-    price: 35000,
-    originalPrice: 45000,
-    badge: 'Best Seller',
-    images: ['/product1.png', '/product2.png', '/product3.png'],
-    description: 'Cut from 280GSM heavy combed cotton. Crafted for an oversized silhouette with reinforced ribbed collar and drop shoulder construction. Made in Lagos.',
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    colors: [{ name: 'Core Black', hex: '#111111' }, { name: 'Volt Green', hex: '#8AF522' }],
-    inStock: true,
-    rating: 4.9,
-    reviews: 28,
-    category: 'T-Shirts',
-    specs: { material: '100% Heavyweight Cotton (280GSM)', fit: 'Oversized Boxy Fit', care: 'Machine wash cold' }
-  },
-  {
-    id: 2,
-    name: 'MK 1974 Signature Performance Tracksuit',
-    slug: 'mk-1974-signature-performance-tracksuit',
-    price: 85000,
-    originalPrice: 105000,
-    badge: 'Exclusive',
-    images: ['/product2.png', '/product1.png', '/product3.png'],
-    description: 'Architectural streetwear fleece tracksuit featuring custom hardware, deep zip pockets, and tapered cuff finishing for athletic mobility.',
-    sizes: ['M', 'L', 'XL'],
-    colors: [{ name: 'Midnight Navy', hex: '#1B263B' }, { name: 'Core Black', hex: '#111111' }],
-    inStock: true,
-    rating: 5.0,
-    reviews: 42,
-    category: 'Tracksuits',
-    specs: { material: 'Heavy Fleece Cotton Blend', fit: 'Athletic Tapered', care: 'Machine wash 30°C' }
-  },
-  {
-    id: 3,
-    name: 'MK 1974 Utility Street Joggers',
-    slug: 'mk-1974-utility-street-joggers',
-    price: 45000,
-    originalPrice: 55000,
-    badge: 'New',
-    images: ['/product3.png', '/product1.png', '/product2.png'],
-    description: 'Designed for daily movement across the city. Built with dual cargo flap pockets, elastic drawstring waist, and double-stitched stress seams.',
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: [{ name: 'Stealth Black', hex: '#1A1A1A' }, { name: 'Olive Green', hex: '#4A5D4E' }],
-    inStock: true,
-    rating: 4.8,
-    reviews: 19,
-    category: 'Joggers',
-    specs: { material: 'Cotton Hybrid', fit: 'Relaxed Tapered', care: 'Wash with similar colors' }
-  },
-  {
-    id: 4,
-    name: 'MK 1974 Essential Street Hoodie',
-    slug: 'mk-1974-essential-street-hoodie',
-    price: 65000,
-    originalPrice: 75000,
-    badge: 'Sale',
-    images: ['/hero_jersey.png', '/product2.png', '/product1.png'],
-    description: 'Double-lined hood with heavyweight fleece body. Designed for structure and comfort without sacrificing street identity.',
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    colors: [{ name: 'Core Black', hex: '#111111' }, { name: 'Heather Grey', hex: '#888888' }],
-    inStock: true,
-    rating: 4.9,
-    reviews: 34,
-    category: 'Hoodies',
-    specs: { material: '400GSM Cotton Fleece', fit: 'Relaxed Fit', care: 'Cold hand wash' }
-  }
-]
 
 export function formatProductImages(p) {
   if (!p) return []
@@ -155,7 +85,8 @@ export function AppProvider({ children }) {
   const [apiCategories, setApiCategories] = useState([])
   const [apiColors, setApiColors] = useState([])
   const [apiSizes, setApiSizes] = useState([])
-  const [apiLoading, setApiLoading] = useState(false)
+  const [apiLoading, setApiLoading] = useState(true)
+  const [productsError, setProductsError] = useState(null)
 
   const extractArray = (res) => {
     if (!res) return []
@@ -172,17 +103,22 @@ export function AppProvider({ children }) {
 
   const fetchStoreData = useCallback(async () => {
     setApiLoading(true)
+    setProductsError(null)
     try {
       const [prods, cats, cols, szs] = await Promise.all([
-        api.products.getAll().catch(err => { console.error("Failed to fetch products", err); return []; }),
-        api.categories.getAll().catch(err => { console.error("Failed to fetch categories", err); return []; }),
-        api.colors.getAll().catch(err => { console.error("Failed to fetch colors", err); return []; }),
-        api.sizes.getAll().catch(err => { console.error("Failed to fetch sizes", err); return []; }),
+        api.products.getAll(),
+        api.categories.getAll().catch(() => []),
+        api.colors.getAll().catch(() => []),
+        api.sizes.getAll().catch(() => []),
       ])
       const parsedProds = extractArray(prods)
       const parsedCats = extractArray(cats)
       const parsedCols = extractArray(cols)
       const parsedSzs = extractArray(szs)
+
+      if (parsedProds.length === 0) {
+        setProductsError('No products were returned from the server.')
+      }
 
       setApiProducts(parsedProds)
       setApiCategories(parsedCats.map(c => ({
@@ -193,7 +129,8 @@ export function AppProvider({ children }) {
       setApiColors(parsedCols)
       setApiSizes(parsedSzs)
     } catch (err) {
-      console.error('[Storefront API] Failed to load data:', err)
+      console.error('[Storefront API] Failed to load products:', err)
+      setProductsError('Failed to load products. Please check your connection and try again.')
     } finally {
       setApiLoading(false)
     }
@@ -363,7 +300,7 @@ export function AppProvider({ children }) {
       }
     })
 
-    return mappedApi.length > 0 ? mappedApi : FALLBACK_PRODUCTS
+    return mappedApi
   }, [apiProducts, apiColors, apiSizes])
 
   const dynamicCategories = useMemo(() => {
@@ -575,9 +512,17 @@ export function AppProvider({ children }) {
   }, [login])
 
   // ── Orders ──
-  const [orders, setOrders] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('mk1974_orders') || '[]') } catch { return [] }
-  })
+  const [orders, setOrders] = useState([])
+
+  // Load orders scoped to the logged-in user when user changes
+  useEffect(() => {
+    if (!user?.id) {
+      setOrders([])
+      return
+    }
+    const key = `mk1974_orders_${user.id}`
+    try { setOrders(JSON.parse(localStorage.getItem(key) || '[]')) } catch { setOrders([]) }
+  }, [user?.id])
 
 function extractOrderNumber(res) {
   if (res === null || res === undefined) return null
@@ -610,37 +555,39 @@ function extractOrderNumber(res) {
         const vSizeName = v.size?.name || apiSizes.find(s => String(s.sizeId ?? s.id) === String(v.sizeId))?.name
         return vColorName?.toLowerCase() === item.color.toLowerCase() && vSizeName?.toLowerCase() === item.size.toLowerCase()
       })
+
+      // Resolve productVariantId — try matched variant first, then first available variant, else null
+      const productVariantId =
+        (variant?.productVariantId ?? variant?.id) ??
+        (item.product.rawVariants?.[0]?.productVariantId ?? item.product.rawVariants?.[0]?.id) ??
+        null
+
       return {
-        productVariantId: variant ? (variant.productVariantId ?? variant.id) : (item.product.rawVariants?.[0]?.productVariantId ?? item.product.rawVariants?.[0]?.id ?? 1),
+        productVariantId,
         quantity: item.qty,
         price: item.price,
         orderDate: new Date().toISOString()
       }
-    })
-    
-    const shippingAmount = orderData?.shipping ?? orderData?.shippingFee ?? 3000
+    }).filter(i => i.productVariantId != null && Number(i.productVariantId) > 1)
+    // ^ strip items where no real server variant was found (fallback ID 1 = invalid)
+
+    if (itemsPayload.length === 0) {
+      throw new Error('None of the items in your cart have confirmed product variants. Please remove and re-add them.')
+    }
+
+    const shippingAmount = 0
     const discountVal = orderData?.discount ?? orderData?.discountAmount ?? 0
-    const finalTotal = orderData?.totalAmount ?? (cartTotal + shippingAmount - discountVal)
+    const finalTotal = orderData?.totalAmount ?? (cartTotal - discountVal)
 
     const payload = {
       userId: parseInt(user?.id) || 1,
-      shipping: shippingAmount,
-      shippingFee: shippingAmount,
-      shippingCost: shippingAmount,
-      deliveryFee: shippingAmount,
-      discount: discountVal,
-      discountAmount: discountVal,
-      totalAmount: finalTotal,
-      total: finalTotal,
-      address: orderData?.address || '',
-      city: orderData?.city || '',
-      state: orderData?.state || 'Lagos',
-      phone: orderData?.phone || '',
       items: itemsPayload
     }
 
+
     let createdFromApi = null
     try {
+      console.log('[POST /api/Order] Payload being sent:', JSON.stringify(payload, null, 2))
       createdFromApi = await api.orders.create(payload)
       console.log('[POST /api/Order Success Response]:', createdFromApi)
     } catch (e) {
@@ -670,7 +617,7 @@ function extractOrderNumber(res) {
       throw new Error('No valid Order Number provided for payment submission.')
     }
 
-    const shippingAmount = orderData?.shipping ?? orderData?.shippingFee ?? 3000
+    const shippingAmount = orderData?.shipping ?? orderData?.shippingFee ?? 0
     const discountVal = orderData?.discount ?? orderData?.discountAmount ?? 0
     const finalTotal = orderData?.totalAmount ?? (cartTotal + shippingAmount - discountVal)
 
@@ -708,7 +655,8 @@ function extractOrderNumber(res) {
 
     setOrders(prev => {
       const updated = [newOrder, ...prev]
-      localStorage.setItem('mk1974_orders', JSON.stringify(updated))
+      const key = `mk1974_orders_${user?.id}`
+      if (key) localStorage.setItem(key, JSON.stringify(updated))
       return updated
     })
     clearCart()
@@ -747,9 +695,9 @@ function extractOrderNumber(res) {
     if (!user) return []
     return orders.filter(o => {
       const matchUserId = o.userId && String(o.userId) === String(user.id)
-      const matchEmail = (o.email || o.userEmail) && user.email && (o.email || o.userEmail).toLowerCase().trim() === user.email.toLowerCase().trim()
-      const matchFirstName = o.firstName && user.firstName && o.firstName.toLowerCase().trim() === user.firstName.toLowerCase().trim()
-      return matchUserId || matchEmail || matchFirstName
+      const matchEmail = (o.email || o.userEmail) && user.email &&
+        (o.email || o.userEmail).toLowerCase().trim() === user.email.toLowerCase().trim()
+      return matchUserId || matchEmail
     })
   }, [orders, user])
 
@@ -794,6 +742,7 @@ function extractOrderNumber(res) {
     categories: dynamicCategories,
     apiCategories,
     apiLoading,
+    productsError,
     fetchStoreData,
     // Cart
     cart, cartOpen, setCartOpen, addToCart, removeFromCart, updateQty, clearCart, cartTotal, cartCount,
