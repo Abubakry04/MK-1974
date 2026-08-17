@@ -17,13 +17,14 @@ const SORT_OPTIONS = [
 
 const PRICE_RANGES = [
   { label: 'All Prices', min: 0, max: Infinity },
-  { label: 'Under ₦30,000', min: 0, max: 30000 },
-  { label: '₦30,000 – ₦60,000', min: 30000, max: 60000 },
-  { label: '₦60,000 – ₦100,000', min: 60000, max: 100000 },
-  { label: 'Over ₦100,000', min: 100000, max: Infinity },
+  { label: 'Under ₦10,000', min: 0, max: 9999 },
+  { label: '₦10,000 – ₦20,000', min: 10000, max: 19999 },
+  { label: '₦20,000 – ₦30,000', min: 20000, max: 29999 },
+  { label: '₦30,000 – ₦50,000', min: 30000, max: 49999 },
+  { label: 'Over ₦50,000', min: 50000, max: Infinity },
 ]
 
-const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
+const SIZES = ['S', 'M', 'L', 'XL']
 
 function ProductCard({ product }) {
   const { addToCart, toggleWishlist, isWishlisted } = useApp()
@@ -291,7 +292,7 @@ const EMPTY_FILTERS = { category: 'all', priceRange: '', priceMin: 0, priceMax: 
 
 export default function ShopPage() {
   usePageMeta('Shop All — MK 1974', 'Browse the full MK 1974 collection — tracksuits, jerseys, tees, hoodies and Lagos streetwear.')
-  const { products: storeProducts, categories: storefrontCategories, apiLoading } = useApp()
+  const { products: storeProducts, categories: storefrontCategories, apiLoading, productsError, fetchStoreData } = useApp()
   const [searchParams] = useSearchParams()
   const [sort, setSort] = useState(searchParams.get('sort') || 'newest')
   const [filters, setFilters] = useState({
@@ -466,6 +467,22 @@ export default function ShopPage() {
                       <div className="h-3 bg-black/10 rounded w-1/2" />
                     </div>
                   ))}
+                </div>
+              ) : productsError ? (
+                <div className="text-center py-20 bg-white border border-red-100 rounded-xl p-8 shadow-sm">
+                  <div className="w-16 h-16 border border-red-200 rounded-full flex items-center justify-center mx-auto mb-4 bg-red-50">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-red-400">
+                      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-bold text-dark mb-2">Couldn't load products</h3>
+                  <p className="text-dark/50 text-xs mb-6 max-w-sm mx-auto">{productsError}</p>
+                  <button
+                    onClick={fetchStoreData}
+                    className="btn-primary"
+                  >
+                    Try again
+                  </button>
                 </div>
               ) : paginated.length === 0 ? (
                 <div className="text-center py-20 bg-white border border-black/10 rounded-xl p-8 shadow-sm">

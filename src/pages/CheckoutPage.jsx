@@ -56,10 +56,7 @@ export default function CheckoutPage() {
     }
   }, [user])
 
-  const SHIPPING_FEES = { standard: 3000, express: 5000, 'next-day': 8000 }
-  const shippingFee = SHIPPING_FEES[form.delivery] ?? 3000
-  const subtotalAfterDiscount = Math.max(0, cartTotal - discountAmount)
-  const total = subtotalAfterDiscount + shippingFee
+  const total = Math.max(0, cartTotal - discountAmount)
 
   const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }))
 
@@ -74,7 +71,7 @@ export default function CheckoutPage() {
     try {
       const orderData = {
         ...form,
-        shipping: shippingFee,
+        shipping: 0,
         discount: discountAmount,
         paymentMethod: 'Direct Bank Transfer',
         totalAmount: total,
@@ -128,7 +125,7 @@ export default function CheckoutPage() {
     try {
       const orderData = {
         ...form,
-        shipping: shippingFee,
+        shipping: 0,
         discount: discountAmount,
         paymentMethod: 'Direct Bank Transfer',
         receiptName: receipt || null,
@@ -350,7 +347,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
-                  <div>
+                  {/* <div>
                     <h2 className="text-lime font-bold text-xs tracking-[0.25em] uppercase mb-4 flex items-center gap-2">
                       <span>03</span>
                       <span className="w-4 h-[1px] bg-lime/40" />
@@ -377,7 +374,7 @@ export default function CheckoutPage() {
                         </label>
                       ))}
                     </div>
-                  </div>
+                  </div> */}
 
                   <div className="pt-4 flex justify-end">
                     <button type="submit" disabled={isCreatingOrder} className="w-full sm:w-auto px-8 py-3.5 bg-lime text-dark font-semibold text-xs tracking-[0.15em] uppercase rounded hover:bg-lime-dim hover:text-white transition-all flex items-center justify-center gap-3 disabled:opacity-50">
@@ -440,7 +437,7 @@ export default function CheckoutPage() {
                           </div>
                           <div className="flex justify-between items-center py-2">
                             <span className="text-cream/50 text-xs">Exact Amount to Pay</span>
-                            <span className="font-bold text-xl text-cream">₦{total.toLocaleString()}</span>
+                            <span className="font-bold text-xl text-cream">₦{cartTotal.toLocaleString()}</span>
                           </div>
                         </div>
                       </div>
@@ -519,7 +516,7 @@ export default function CheckoutPage() {
                       </div>
                       <div className="flex justify-between py-1 border-b border-white/5">
                         <span className="text-cream/40">Delivery Option</span>
-                        <span className="font-medium text-cream capitalize">{form.delivery} Delivery (₦{shippingFee.toLocaleString()})</span>
+                        <span className="font-medium text-cream capitalize">Contact Admin for Delivery Details</span>
                       </div>
                       <div className="flex justify-between py-1">
                         <span className="text-cream/40">Payment Option</span>
@@ -528,26 +525,6 @@ export default function CheckoutPage() {
                         </span>
                       </div>
                     </div>
-                  </div>
-
-                  {/* Promo Code Input */}
-                  <div className="bg-white/5 border border-white/10 rounded-lg p-5">
-                    <label className="block text-[0.68rem] tracking-[0.15em] uppercase text-cream/60 mb-3">Voucher / Discount Code</label>
-                    <form onSubmit={(e) => e.preventDefault()} className="flex gap-2">
-                      <input
-                        type="text"
-                        placeholder="Try MK10 or VOLT20"
-                        value={promoCode}
-                        onChange={(e) => setPromoCode(e.target.value)}
-                        className="flex-1 bg-white/5 border border-white/15 text-cream text-xs px-4 py-2.5 rounded focus:outline-none focus:border-lime"
-                      />
-                      <button type="submit" className="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-cream text-xs font-semibold uppercase tracking-wider rounded transition-colors">
-                        Apply
-                      </button>
-                    </form>
-                    {discountAmount > 0 && (
-                      <p className="text-xs text-lime mt-2 font-medium">Discount applied: -₦{discountAmount.toLocaleString()}</p>
-                    )}
                   </div>
 
                   {/* Line items list */}
@@ -633,21 +610,21 @@ export default function CheckoutPage() {
                     <span>Subtotal</span>
                     <span className="text-cream font-medium">₦{cartTotal.toLocaleString()}</span>
                   </div>
-                  {discountAmount > 0 && (
+                  {/* {discountAmount > 0 && (
                     <div className="flex justify-between text-lime">
                       <span>Discount</span>
                       <span className="font-medium">-₦{discountAmount.toLocaleString()}</span>
                     </div>
-                  )}
-                  <div className="flex justify-between text-cream/60">
+                  )} */}
+                  {/* <div className="flex justify-between text-cream/60">
                     <span>Shipping ({form.delivery})</span>
                     <span className="text-cream font-medium">₦{shippingFee.toLocaleString()}</span>
-                  </div>
+                  </div> */}
 
                   <div className="border-t border-white/10 pt-4 flex justify-between items-baseline">
                     <span className="font-bold text-base text-cream uppercase">Grand Total</span>
                     <div className="text-right">
-                      <span className="font-bold text-2xl text-cream">₦{total.toLocaleString()}</span>
+                      <span className="font-bold text-2xl text-cream">₦{cartTotal.toLocaleString()}</span>
                       {/* <p className="text-[0.65rem] text-cream/40 uppercase tracking-wider mt-0.5">Includes taxes & duties</p> */}
                     </div>
                   </div>

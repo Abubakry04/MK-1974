@@ -10,7 +10,7 @@ const STATUS_STEPS = [
   { key: 'Payment Verified', label: 'Payment Verified', desc: 'Bank transfer payment successfully verified and approved.', icon: '✓' },
   { key: 'Processing', label: 'Processing', desc: 'Your apparel is being inspected, prepared, and packed for dispatch.', icon: '⚡' },
   { key: 'Shipped', label: 'Shipped & En Route', desc: 'Handed to courier for delivery to your shipping address.', icon: '📦' },
-  { key: 'Delivered', label: 'Delivered', desc: 'Package delivered successfully. Enjoy your MK 1974 sporttwear!', icon: '✨' },
+  { key: 'Delivered', label: 'Delivered', desc: 'Package delivered successfully. Enjoy your MK 1974 Sports Fashion Wear!', icon: '✨' },
 ]
 
 function normalizeStatusStep(statusStr) {

@@ -9,7 +9,7 @@ function RatingStars({ rating }) {
 
   return (
     <div className="flex items-center gap-1 my-1">
-      <div className="flex items-center text-amber-400">
+      {/* <div className="flex items-center text-amber-400">
         {[...Array(5)].map((_, i) => {
           if (i < fullStars) {
             return (
@@ -37,16 +37,16 @@ function RatingStars({ rating }) {
             )
           }
         })}
-      </div>
-      <span className="text-[0.7rem] sm:text-xs font-normal text-neutral-500 ml-1">
+      </div> */}
+      {/* <span className="text-[0.7rem] sm:text-xs font-normal text-neutral-500 ml-1">
         {score.toFixed(1)}/<span className="text-neutral-400">5</span>
-      </span>
+      </span> */}
     </div>
   )
 }
 
 export default function NewArrivals() {
-  const { products, addToCart, toggleWishlist, isWishlisted, apiLoading } = useApp()
+  const { products, addToCart, toggleWishlist, isWishlisted, apiLoading, productsError, fetchStoreData } = useApp()
   const newProducts = [...products].reverse().slice(0, 4)
   const { ref, isVisible } = useScrollReveal()
 
@@ -76,8 +76,17 @@ export default function NewArrivals() {
               </div>
             ))}
           </div>
-        ) : newProducts.length === 0 ? (
-          <p className="text-muted text-sm text-center py-10">No new arrivals found.</p>
+        ) : productsError ? (
+          <div className="text-center py-12">
+            <div className="w-12 h-12 border border-red-200 rounded-full flex items-center justify-center mx-auto mb-3 bg-red-50">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-red-400">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+            </div>
+            <p className="text-sm font-semibold text-dark mb-1">Couldn't load products</p>
+            <p className="text-dark/40 text-xs mb-4">{productsError}</p>
+            <button onClick={fetchStoreData} className="btn-primary">Retry</button>
+          </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
             {newProducts.map(p => {

@@ -56,7 +56,7 @@ function ProductCard({ product }) {
 }
 
 export default function Collection() {
-  const { products, categories: appCats, apiLoading } = useApp()
+  const { products, categories: appCats, apiLoading, productsError, fetchStoreData } = useApp()
   const [activeFilter, setActiveFilter] = useState('all')
 
   const filters = [
@@ -110,6 +110,17 @@ export default function Collection() {
                 </div>
               ))}
             </div>
+          </div>
+        ) : productsError ? (
+          <div className="text-center py-20">
+            <div className="w-14 h-14 border border-red-200 rounded-full flex items-center justify-center mx-auto mb-4 bg-red-50">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-red-400">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+            </div>
+            <h3 className="text-base font-bold text-dark mb-1">Couldn't load collection</h3>
+            <p className="text-dark/50 text-xs mb-5">{productsError}</p>
+            <button onClick={fetchStoreData} className="btn-primary">Try again</button>
           </div>
         ) : visible.length > 0 ? (
           <div id="productsGrid" className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12">
