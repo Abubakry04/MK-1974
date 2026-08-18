@@ -2,9 +2,31 @@ import Nav from '../components/Nav'
 import Footer from '../components/Footer'
 import usePageMeta from '../hooks/usePageMeta'
 import { Link } from 'react-router-dom'
+import About from '../assets/about.jpeg'
+import { useRef, useState } from 'react'
 
 export default function AboutPage() {
   usePageMeta('About — MK 1974', 'MK 1974 is a new Lagos streetwear brand built for movement, culture, and real life.')
+
+  const videoRef = useRef(null)
+  const [isPlaying, setIsPlaying] = useState(true)
+  const [showIcon, setShowIcon] = useState(false)
+  let iconTimeout = useRef(null)
+
+  const handleVideoClick = () => {
+    const video = videoRef.current
+    if (!video) return
+    if (video.paused) {
+      video.play()
+      setIsPlaying(true)
+    } else {
+      video.pause()
+      setIsPlaying(false)
+    }
+    setShowIcon(true)
+    clearTimeout(iconTimeout.current)
+    iconTimeout.current = setTimeout(() => setShowIcon(false), 1200)
+  }
 
   const values = [
     { title: 'Quality', desc: 'Every garment is cut from heavy-weight premium fabrics chosen to move, hold shape, and last.' },
@@ -21,7 +43,7 @@ export default function AboutPage() {
         <div className="pt-[70px]">
           <div className="relative h-[55vh] min-h-[360px] overflow-hidden">
             <img
-              src="/product3.png"
+              src={About}
               alt="About MK 1974"
               className="absolute inset-0 w-full h-full object-cover brightness-75"
             />
@@ -47,8 +69,41 @@ export default function AboutPage() {
               </div>
               <Link to="/shop" className="btn-primary mt-8 inline-flex">Shop the collection</Link>
             </div>
-            <div className="aspect-[4/5] overflow-hidden rounded-xl shadow-md border border-black/10">
-              <img src="/product2.png" alt="MK 1974" className="w-full h-full object-cover" />
+
+            {/* Video player */}
+            <div
+              className="aspect-[4/5] overflow-hidden rounded-xl shadow-md border border-black/10 relative cursor-pointer group"
+              onClick={handleVideoClick}
+            >
+              <video
+                ref={videoRef}
+                src="/about.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover"
+              />
+              {/* Play / Pause icon overlay */}
+              <div
+                className="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300"
+                style={{ opacity: showIcon ? 1 : 0 }}
+              >
+                <div className="bg-black/50 backdrop-blur-sm rounded-full p-4">
+                  {isPlaying ? (
+                    /* Pause icon */
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white">
+                      <rect x="6" y="4" width="4" height="16" rx="1" />
+                      <rect x="14" y="4" width="4" height="16" rx="1" />
+                    </svg>
+                  ) : (
+                    /* Play icon */
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white">
+                      <polygon points="5,3 19,12 5,21" />
+                    </svg>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </section>
