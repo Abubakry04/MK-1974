@@ -74,7 +74,7 @@ export default function AboutPage() {
         </section>
 
         {/* Values */}
-        <section className="px-8 md:px-12 py-16 bg-surface">
+        {/* <section className="px-8 md:px-12 py-16 bg-surface">
           <div className="max-w-[1440px] mx-auto">
             <h2 className="text-2xl md:text-3xl font-bold text-dark mb-10">What we stand for</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
@@ -87,7 +87,7 @@ export default function AboutPage() {
               ))}
             </div>
           </div>
-        </section>
+        </section> */}
       </main>
       <Footer />
     </>
