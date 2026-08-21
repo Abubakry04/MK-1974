@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MK 1974 – Built for the Street. Made for Motion.</title>
+    <link rel="icon" type="image/png" href="/mk2.png" />
+    <link rel="apple-touch-icon" href="/mk2.png" />
     <meta
       name="description"
       content="MK 1974 is a premium sport lifestyle brand specialising in tracksuits and joggers. Engineered for movement, styled for life."
@@ -14,8 +16,39 @@
       href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500&display=swap"
       rel="stylesheet"
     />
+    <!-- Preload logo so it renders instantly -->
+    <link rel="preload" as="image" href="/mk2.png" />
+    <style>
+      #brand-splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: #f5f4f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+      }
+      #brand-splash.fade-out {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      #brand-splash img {
+        width: 120px;
+        animation: splashPulse 1.4s ease-in-out infinite;
+      }
+      @keyframes splashPulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50%       { opacity: 0.6; transform: scale(0.96); }
+      }
+    </style>
   </head>
   <body>
+    <!-- Brand splash — removed by React after mount -->
+    <div id="brand-splash">
+      <img src="/mk2.png" alt="MK 1974" />
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
+import logo from '../assets/mk2.png'
 
 export default function SearchOverlay() {
   const { searchOpen, setSearchOpen, products, categories } = useApp()
@@ -39,7 +40,11 @@ export default function SearchOverlay() {
   return (
     <div className="fixed inset-0 z-[200] bg-white/95 backdrop-blur-md flex flex-col text-dark">
       {/* Search input bar */}
-      <div className="flex items-center gap-4 px-8 md:px-12 py-5 border-b border-black/10">
+      <div className="relative flex items-center gap-4 px-8 md:px-12 py-5 border-b border-black/10">
+        {/* Centred brand logo */}
+        {/* <div className="absolute left-1/2 -translate-x-1/2 pointer-events-none">
+          <img src={logo} alt="MK 1974" className="h-7 w-auto object-contain opacity-80" />
+        </div> */}
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="text-dark/50 shrink-0">
           <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
         </svg>

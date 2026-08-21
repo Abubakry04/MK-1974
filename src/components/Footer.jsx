@@ -142,11 +142,11 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className="border-t border-black/10 px-8 md:px-12 py-5 max-w-[1440px] mx-auto flex flex-col sm:flex-row justify-between items-center gap-3 text-dark/60 text-xs font-medium">
         <p>© 2026 MK 1974. All rights reserved.</p>
-        {/* <div className="flex items-center gap-5">
-          <Link to="/contact" className="hover:text-dark transition-colors">Privacy</Link>
-          <Link to="/contact" className="hover:text-dark transition-colors">Terms</Link>
-          <Link to="/contact" className="hover:text-dark transition-colors">Return Policy</Link>
-        </div> */}
+        <div className="flex items-center gap-5">
+          <Link to="/privacy-policy" className="hover:text-dark transition-colors">Privacy Policy</Link>
+          {/* <Link to="/contact" className="hover:text-dark transition-colors">Terms</Link>
+          <Link to="/contact" className="hover:text-dark transition-colors">Return Policy</Link> */}
+        </div>
       </div>
     </footer>
   );
