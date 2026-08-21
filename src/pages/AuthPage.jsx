@@ -273,15 +273,15 @@ export default function AuthPage() {
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
                       <label className="block text-[0.68rem] tracking-[0.15em] uppercase text-dark/70 font-bold">Password *</label>
-                      {mode === 'login' && (
-                        <button
-                          type="button"
-                          onClick={() => setMode('forgot')}
-                          className="text-[0.68rem] text-dark hover:underline font-bold transition-colors"
-                        >
-                          Forgot password?
-                        </button>
-                      )}
+                      {/* {mode === 'login' && (
+                        // <button
+                        //   type="button"
+                        //   onClick={() => setMode('forgot')}
+                        //   className="text-[0.68rem] text-dark hover:underline font-bold transition-colors"
+                        // >
+                        //   Forgot password?
+                        // </button>
+                      )} */}
                     </div>
                     <div className="relative flex items-center">
                       <input
@@ -373,8 +373,7 @@ export default function AuthPage() {
 
               <p className="text-dark/50 text-[0.68rem] text-center mt-8 leading-relaxed font-medium">
                 By continuing, you agree to MK 1974's{' '}
-                <Link to="/terms" className="underline hover:text-dark transition-colors">Terms of Service</Link> and{' '}
-                <Link to="/privacy" className="underline hover:text-dark transition-colors">Privacy Policy</Link>.
+                <Link to="/privacy-policy" className="underline hover:text-dark transition-colors">Privacy Policy</Link>
               </p>
             </div>
 
