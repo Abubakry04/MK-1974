@@ -511,6 +511,41 @@ export function AppProvider({ children }) {
     }
   }, [login])
 
+  const googleLogin = useCallback(async (credentialResponse) => {
+    try {
+      // Decode Google's JWT ID token to extract user profile
+      const idToken = credentialResponse?.credential
+      if (!idToken) throw new Error('No credential returned from Google.')
+
+      const parts = idToken.split('.')
+      if (parts.length !== 3) throw new Error('Invalid Google ID token format.')
+      const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))
+
+      const googleUser = {
+        id: `google_${payload.sub}`,
+        email: payload.email || '',
+        firstName: payload.given_name || payload.name?.split(' ')[0] || 'User',
+        lastName: payload.family_name || payload.name?.split(' ').slice(1).join(' ') || '',
+        picture: payload.picture || null,
+        phoneNumber: '',
+        phone: '',
+        role: 'Customer',
+        token: idToken,          // use Google ID token as bearer for this session
+        authProvider: 'google',
+      }
+
+      setUser(googleUser)
+      localStorage.setItem('mk1974_user', JSON.stringify(googleUser))
+      sessionStorage.setItem('mk1974_user', JSON.stringify(googleUser))
+      api.setToken(idToken)
+      showToast(`Welcome, ${googleUser.firstName}! 👋`)
+      return { success: true }
+    } catch (err) {
+      console.error('[Google OAuth]', err)
+      return { success: false, error: err.message || 'Google sign-in failed.' }
+    }
+  }, [showToast])
+
   // ── Orders ──
   const [orders, setOrders] = useState([])
 
@@ -749,7 +784,7 @@ function extractOrderNumber(res) {
     // Wishlist
     wishlist, toggleWishlist, isWishlisted,
     // Auth
-    user, login, logout, register,
+    user, login, logout, register, googleLogin,
     // Orders
     orders: userOrders, allOrders: orders, placeOrder, createOrder, submitOrderPayment, fetchOrderTracking,
     // Toast
