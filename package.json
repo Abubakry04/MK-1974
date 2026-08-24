@@ -22,6 +22,8 @@
     "vite": "^5.4.21"
   },
   "dependencies": {
+    "@react-oauth/google": "^0.13.5",
+    "next-auth": "^5.0.0-beta.32",
     "react-router-dom": "^7.18.1"
   }
 }
