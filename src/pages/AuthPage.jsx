@@ -139,12 +139,8 @@ export default function AuthPage() {
       setErrors({ general: 'Google sign-in was cancelled or failed.' })
       setGoogleLoading(false)
     },
-    flow: 'auth-code',
+    flow: 'implicit',
   })
-
-  // Because useGoogleLogin gives us an auth-code flow we need the credential popup version.
-  // Use the GoogleLogin component approach instead via the callback style.
-  // We'll render a custom button using useGoogleLogin with implicit flow.
 
   return (
     <>

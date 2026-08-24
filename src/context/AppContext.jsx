@@ -511,33 +511,36 @@ export function AppProvider({ children }) {
     }
   }, [login])
 
-  const googleLogin = useCallback(async (credentialResponse) => {
+  const googleLogin = useCallback(async (tokenResponse) => {
     try {
-      // Decode Google's JWT ID token to extract user profile
-      const idToken = credentialResponse?.credential
-      if (!idToken) throw new Error('No credential returned from Google.')
+      // tokenResponse comes from useGoogleLogin (implicit flow) and contains access_token
+      const accessToken = tokenResponse?.access_token
+      if (!accessToken) throw new Error('No access token returned from Google.')
 
-      const parts = idToken.split('.')
-      if (parts.length !== 3) throw new Error('Invalid Google ID token format.')
-      const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))
+      // Fetch user profile from Google's userinfo endpoint
+      const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      })
+      if (!res.ok) throw new Error('Failed to fetch Google user info.')
+      const profile = await res.json()
 
       const googleUser = {
-        id: `google_${payload.sub}`,
-        email: payload.email || '',
-        firstName: payload.given_name || payload.name?.split(' ')[0] || 'User',
-        lastName: payload.family_name || payload.name?.split(' ').slice(1).join(' ') || '',
-        picture: payload.picture || null,
+        id: `google_${profile.sub}`,
+        email: profile.email || '',
+        firstName: profile.given_name || profile.name?.split(' ')[0] || 'User',
+        lastName: profile.family_name || profile.name?.split(' ').slice(1).join(' ') || '',
+        picture: profile.picture || null,
         phoneNumber: '',
         phone: '',
         role: 'Customer',
-        token: idToken,          // use Google ID token as bearer for this session
+        token: accessToken,
         authProvider: 'google',
       }
 
       setUser(googleUser)
       localStorage.setItem('mk1974_user', JSON.stringify(googleUser))
       sessionStorage.setItem('mk1974_user', JSON.stringify(googleUser))
-      api.setToken(idToken)
+      api.setToken(accessToken)
       showToast(`Welcome, ${googleUser.firstName}! 👋`)
       return { success: true }
     } catch (err) {
