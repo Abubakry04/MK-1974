@@ -322,14 +322,9 @@ export function AppProvider({ children }) {
   }, [])
 
   // ── Cart ──
-  const [cart, setCart] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('mk1974_cart') || '[]') } catch { return [] }
-  })
+  // Starts empty — loaded per-user after auth state is resolved (see effects below)
+  const [cart, setCart] = useState([])
   const [cartOpen, setCartOpen] = useState(false)
-
-  useEffect(() => {
-    localStorage.setItem('mk1974_cart', JSON.stringify(cart))
-  }, [cart])
 
   const addToCart = useCallback((product, size, color, qty = 1) => {
     setCart(prev => {
@@ -390,6 +385,24 @@ export function AppProvider({ children }) {
       api.setToken(null)
     }
   }, [user])
+
+  // Load cart from localStorage scoped to the signed-in user.
+  // When the user logs out (user becomes null) the cart is cleared.
+  useEffect(() => {
+    if (!user?.id) {
+      setCart([])
+      return
+    }
+    const key = `mk1974_cart_${user.id}`
+    try { setCart(JSON.parse(localStorage.getItem(key) || '[]')) } catch { setCart([]) }
+  }, [user?.id])
+
+  // Persist cart changes back to the per-user localStorage key
+  useEffect(() => {
+    if (!user?.id) return
+    const key = `mk1974_cart_${user.id}`
+    localStorage.setItem(key, JSON.stringify(cart))
+  }, [cart, user?.id])
 
 // Listen for storage changes across tabs (e.g. logging out in one tab syncs across all tabs)
   function parseJwtPayload(token) {
@@ -453,7 +466,12 @@ export function AppProvider({ children }) {
   }, [showToast])
 
   const logout = useCallback(() => {
-    setUser(null)
+    // Clear the per-user cart key before wiping the user so we still have user.id
+    setUser(prev => {
+      if (prev?.id) localStorage.removeItem(`mk1974_cart_${prev.id}`)
+      return null
+    })
+    setCart([])
     api.setToken(null)
     localStorage.removeItem('mk1974_user')
     sessionStorage.removeItem('mk1974_user')
@@ -464,7 +482,11 @@ export function AppProvider({ children }) {
   useEffect(() => {
     const handleSessionExpired = () => {
       console.warn('[AppContext] Session expired — logging out customer automatically.')
-      setUser(null)
+      setUser(prev => {
+        if (prev?.id) localStorage.removeItem(`mk1974_cart_${prev.id}`)
+        return null
+      })
+      setCart([])
       api.setToken(null)
       localStorage.removeItem('mk1974_user')
       sessionStorage.removeItem('mk1974_user')
