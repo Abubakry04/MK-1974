@@ -28,7 +28,7 @@ export default function OrderTrackingPage() {
   const { orderId } = useParams()
   const { orders, fetchOrderTracking } = useApp()
 
-  usePageMeta(`Order #${orderId} Status — MK 1974`, 'Live real-time tracking for your MK 1974 streetwear order.')
+  usePageMeta(`Order #${orderId} Status — MK 1974`, 'Live real-time tracking for your MK 1974 streetwear order.', { noindex: true })
 
   const [liveOrder, setLiveOrder] = useState(null)
 

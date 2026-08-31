@@ -1,23 +1,55 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-NG">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MK 1974 – Built for the Street. Made for Motion.</title>
-    <link rel="icon" type="image/png" href="/mk2.png" />
-    <link rel="apple-touch-icon" href="/mk2.png" />
-    <meta
-      name="description"
-      content="MK 1974 is a premium sport lifestyle brand specialising in tracksuits and joggers. Engineered for movement, styled for life."
-    />
+
+    <!-- ── Primary SEO ─────────────────────────────────────────────────── -->
+    <title>MK 1974 — New Lagos Streetwear Brand</title>
+    <meta name="description" content="MK 1974 is a brand new Lagos streetwear label. Premium jerseys, tracksuits and street-ready clothing built for movement and culture. Shop now." />
+    <meta name="application-name" content="MK 1974" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="theme-color" content="#1a1a1a" />
+    <link rel="canonical" href="https://mk1974.com/" />
+
+    <!-- ── Open Graph (Facebook, WhatsApp, LinkedIn) ────────────────────── -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="MK 1974" />
+    <meta property="og:title" content="MK 1974 — New Lagos Streetwear Brand" />
+    <meta property="og:description" content="MK 1974 is a brand new Lagos streetwear label. Premium jerseys, tracksuits and street-ready clothing built for movement and culture." />
+    <meta property="og:url" content="https://mk1974.com/" />
+    <meta property="og:image" content="https://mk1974.com/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="MK 1974 — Lagos Streetwear" />
+    <meta property="og:locale" content="en_NG" />
+
+    <!-- ── Twitter / X Card ──────────────────────────────────────────────── -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@mk1974brand" />
+    <meta name="twitter:title" content="MK 1974 — New Lagos Streetwear Brand" />
+    <meta name="twitter:description" content="MK 1974 is a brand new Lagos streetwear label. Premium jerseys, tracksuits and street-ready clothing built for movement and culture." />
+    <meta name="twitter:image" content="https://mk1974.com/og-image.png" />
+    <meta name="twitter:image:alt" content="MK 1974 — Lagos Streetwear" />
+
+    <!-- ── Favicon ───────────────────────────────────────────────────────── -->
+    <link rel="icon" type="image/svg+xml" href="/mk2.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/mk2.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/mk2.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- ── Fonts ─────────────────────────────────────────────────────────── -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500&display=swap"
       rel="stylesheet"
     />
-    <!-- Preload logo so it renders instantly -->
+
+    <!-- ── Preload critical assets ───────────────────────────────────────── -->
     <link rel="preload" as="image" href="/mk2.png" />
+
+    <!-- ── Brand splash screen (removed by React on mount) ──────────────── -->
     <style>
       #brand-splash {
         position: fixed;
@@ -43,6 +75,54 @@
         50%       { opacity: 0.6; transform: scale(0.96); }
       }
     </style>
+
+    <!-- ── Home-page JSON-LD: Local Business + WebSite schemas ──────────── -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "ClothingStore",
+          "@id": "https://mk1974.com/#organization",
+          "name": "MK 1974",
+          "url": "https://mk1974.com/",
+          "logo": "https://mk1974.com/mk2.png",
+          "image": "https://mk1974.com/og-image.png",
+          "description": "MK 1974 is a Lagos streetwear brand specialising in premium jerseys, tracksuits and street-ready clothing.",
+          "foundingDate": "2026",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Lagos",
+            "addressCountry": "NG"
+          },
+          "sameAs": [
+            "https://instagram.com/mk1974brand"
+          ],
+          "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+            "opens": "09:00",
+            "closes": "18:00"
+          }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://mk1974.com/#website",
+          "url": "https://mk1974.com/",
+          "name": "MK 1974",
+          "publisher": { "@id": "https://mk1974.com/#organization" },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://mk1974.com/shop?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <!-- Brand splash — removed by React after mount -->

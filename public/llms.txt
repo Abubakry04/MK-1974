@@ -1,0 +1,28 @@
+# MK 1974
+
+> MK 1974 is a Lagos, Nigeria streetwear brand specialising in premium jerseys, tracksuits and street-ready clothing. Launched August 2026.
+
+## About
+
+MK 1974 sells premium sport-lifestyle clothing engineered for movement and styled for real life.
+Products include tracksuits, jerseys, tees, hoodies and accessories.
+All items are shipped nationwide across Nigeria.
+
+## Pages
+
+- /          — Home / Landing page
+- /shop      — Full product catalogue
+- /about     — Brand story and mission
+- /contact   — Customer support and enquiries
+- /privacy-policy — Privacy policy
+
+## Contact
+
+- Website: https://mk1974.com
+- Instagram: @mk1974brand
+
+## Policies
+
+- Orders are fulfilled and shipped within Lagos, Nigeria with nationwide delivery.
+- Payment is accepted via bank transfer.
+- Returns policy available on request via the contact page.

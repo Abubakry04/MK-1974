@@ -466,11 +466,9 @@ export function AppProvider({ children }) {
   }, [showToast])
 
   const logout = useCallback(() => {
-    // Clear the per-user cart key before wiping the user so we still have user.id
-    setUser(prev => {
-      if (prev?.id) localStorage.removeItem(`mk1974_cart_${prev.id}`)
-      return null
-    })
+    // Only clear in-memory state — keep cart data in localStorage so it
+    // reloads automatically when the user signs back in.
+    setUser(null)
     setCart([])
     api.setToken(null)
     localStorage.removeItem('mk1974_user')
@@ -482,10 +480,8 @@ export function AppProvider({ children }) {
   useEffect(() => {
     const handleSessionExpired = () => {
       console.warn('[AppContext] Session expired — logging out customer automatically.')
-      setUser(prev => {
-        if (prev?.id) localStorage.removeItem(`mk1974_cart_${prev.id}`)
-        return null
-      })
+      // Keep cart data in localStorage so it reloads on next sign-in
+      setUser(null)
       setCart([])
       api.setToken(null)
       localStorage.removeItem('mk1974_user')

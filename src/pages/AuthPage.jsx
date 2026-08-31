@@ -20,7 +20,7 @@ function GoogleIcon() {
 
 export default function AuthPage() {
   const { login, register, googleLogin, showToast } = useApp()
-  usePageMeta('Sign In / Register — MK 1974', 'Sign in to your MK 1974 account or create a new one.')
+  usePageMeta('Sign In / Register — MK 1974', 'Sign in to your MK 1974 account or create a new one to shop premium Lagos streetwear.', { noindex: true })
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   

@@ -14,7 +14,7 @@ const STANDARD_SHIPPING_FEE = 3500
 // }
 
 export default function CartPage() {
-  usePageMeta('Your Shopping Bag — MK 1974', 'Review and edit items in your MK 1974 shopping bag.')
+  usePageMeta('Your Shopping Bag — MK 1974', 'Review and edit items in your MK 1974 shopping bag before checkout.', { noindex: true })
   const { cart, removeFromCart, updateQty, cartTotal, showToast, products, user, toggleWishlist, isWishlisted, addToCart } = useApp()
   const navigate = useNavigate()
 

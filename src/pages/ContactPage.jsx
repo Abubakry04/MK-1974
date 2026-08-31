@@ -6,7 +6,7 @@ import usePageMeta from '../hooks/usePageMeta'
 
 export default function ContactPage() {
   const { showToast } = useApp()
-  usePageMeta('Contact — MK 1974', 'Get in touch with the MK 1974 team.')
+  usePageMeta('Contact Us — MK 1974', 'Get in touch with the MK 1974 team. Questions about orders, sizing or wholesale? We are here to help.', { canonical: 'https://mk1974.com/contact' })
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
 
   const handleSubmit = e => {

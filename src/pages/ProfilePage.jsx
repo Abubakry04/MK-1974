@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import Nav from '../components/Nav'
 import Footer from '../components/Footer'
+import usePageMeta from '../hooks/usePageMeta'
 
 // ─── User Avatar ───────────────────────────────────────────────────────────────
 function UserAvatar({ user, size = 'md' }) {
@@ -325,6 +326,7 @@ export default function ProfilePage() {
   const { user, orders, wishlist, toggleWishlist, addToCart, logout, showToast, products } = useApp()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('overview')
+  usePageMeta('My Account — MK 1974', 'Manage your MK 1974 account, view order history and your saved wishlist.', { noindex: true })
 
   if (!user) {
     return (

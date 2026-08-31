@@ -1,0 +1,13 @@
+# MK 1974 — robots.txt
+# https://mk1974.com
+
+User-agent: *
+Allow: /
+Disallow: /cart
+Disallow: /checkout
+Disallow: /profile
+Disallow: /auth
+Disallow: /order-tracking/
+
+# Sitemap
+Sitemap: https://mk1974.com/sitemap.xml
