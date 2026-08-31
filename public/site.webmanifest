@@ -1,0 +1,21 @@
+{
+  "name": "MK 1974",
+  "short_name": "MK 1974",
+  "description": "New Lagos streetwear brand — premium jerseys, tracksuits and street-ready clothing.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f4f0",
+  "theme_color": "#1a1a1a",
+  "icons": [
+    {
+      "src": "/mk2.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/mk2.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

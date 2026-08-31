@@ -154,7 +154,7 @@ export default function ProductPage() {
                         selectedImage === i ? 'border-dark ring-2 ring-black/15 scale-105' : 'border-black/10 hover:border-black/30 opacity-80 hover:opacity-100'
                       }`}
                     >
-                      <img src={img} alt="" className="w-full h-full object-cover" />
+                      <img src={img} alt={`${product.name} — view ${i + 1}`} className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>

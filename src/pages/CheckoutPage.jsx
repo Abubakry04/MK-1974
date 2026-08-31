@@ -19,7 +19,7 @@ const STEPS = [
 
 export default function CheckoutPage() {
   const { cart, cartTotal, placeOrder, createOrder, submitOrderPayment, user, products, showToast } = useApp()
-  usePageMeta('Secure Checkout — MK 1974', 'Complete your MK 1974 order with secure delivery and bank payment.')
+  usePageMeta('Secure Checkout — MK 1974', 'Complete your MK 1974 order with secure delivery and bank transfer payment.', { noindex: true })
   const navigate = useNavigate()
   
   const [step, setStep] = useState(0)
