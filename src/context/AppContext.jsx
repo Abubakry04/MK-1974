@@ -410,7 +410,14 @@ export function AppProvider({ children }) {
     try {
       const parts = token.split('.')
       if (parts.length !== 3) return null
-      return JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))
+      let output = parts[1].replace(/-/g, '+').replace(/_/g, '/')
+      switch (output.length % 4) {
+        case 0: break
+        case 2: output += '=='; break
+        case 3: output += '='; break
+        default: break
+      }
+      return JSON.parse(atob(output))
     } catch {
       return null
     }

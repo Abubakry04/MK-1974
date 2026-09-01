@@ -34,12 +34,30 @@ export function getToken() {
   return _token
 }
 
+function safeBase64Decode(str) {
+  if (!str || typeof str !== 'string') return null
+  try {
+    let output = str.replace(/-/g, '+').replace(/_/g, '/')
+    switch (output.length % 4) {
+      case 0: break
+      case 2: output += '=='; break
+      case 3: output += '='; break
+      default: break
+    }
+    return atob(output)
+  } catch {
+    return null
+  }
+}
+
 export function isTokenExpired(token) {
   if (!token || typeof token !== 'string') return true
   try {
     const parts = token.split('.')
     if (parts.length !== 3) return false
-    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))
+    const decoded = safeBase64Decode(parts[1])
+    if (!decoded) return false
+    const payload = JSON.parse(decoded)
     if (payload && payload.exp) {
       return payload.exp < Math.floor(Date.now() / 1000)
     }
