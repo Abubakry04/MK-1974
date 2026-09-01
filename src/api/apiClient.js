@@ -61,6 +61,26 @@ function safeParseJson(text) {
   try { return JSON.parse(trimmed) } catch { return null }
 }
 
+async function fetchWithRetry(url, options, maxRetries = 3) {
+  let lastErr
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const res = await fetch(url, options)
+      if ((res.status === 502 || res.status === 503 || res.status === 504) && attempt < maxRetries) {
+        await new Promise(r => setTimeout(r, 1200 * attempt))
+        continue
+      }
+      return res
+    } catch (err) {
+      lastErr = err
+      if (attempt < maxRetries) {
+        await new Promise(r => setTimeout(r, 1200 * attempt))
+      }
+    }
+  }
+  throw lastErr
+}
+
 async function request(method, path, body, isPublic = false) {
   const isAuthPath = path.toLowerCase().includes('/auth/')
   const isGetMethod = method.toUpperCase() === 'GET'
@@ -83,25 +103,28 @@ async function request(method, path, body, isPublic = false) {
   }
 
   const primaryUrl = BASE_URL ? `${BASE_URL}${path}` : path
-  let res
+  const requestOptions = {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  }
 
+  let res
   try {
-    // console.log(`[Storefront API] ${method} ${primaryUrl}`)
-    res = await fetch(primaryUrl, {
-      method,
-      headers,
-      body: body ? JSON.stringify(body) : undefined,
-    })
+    res = await fetchWithRetry(primaryUrl, requestOptions, 3)
   } catch (netErr) {
     if (!primaryUrl.startsWith('http')) {
-      console.log(`[Storefront API Proxy Fallback] ${method} ${DIRECT_BACKEND}${path}`)
-      res = await fetch(`${DIRECT_BACKEND}${path}`, {
-        method,
-        headers,
-        body: body ? JSON.stringify(body) : undefined,
-      })
+      try {
+        res = await fetchWithRetry(`${DIRECT_BACKEND}${path}`, requestOptions, 3)
+      } catch (fallbackErr) {
+        const err = new Error('Unable to connect to backend server. Please check your internet connection and try again.')
+        err.originalError = fallbackErr
+        throw err
+      }
     } else {
-      throw netErr
+      const err = new Error('Unable to connect to backend server. Please check your internet connection and try again.')
+      err.originalError = netErr
+      throw err
     }
   }
 
@@ -153,15 +176,24 @@ async function requestFormData(method, path, formData) {
   }
 
   const primaryUrl = BASE_URL ? `${BASE_URL}${path}` : path
-  let res
+  const requestOptions = { method, headers, body: formData }
 
+  let res
   try {
-    res = await fetch(primaryUrl, { method, headers, body: formData })
+    res = await fetchWithRetry(primaryUrl, requestOptions, 3)
   } catch (netErr) {
     if (!primaryUrl.startsWith('http')) {
-      res = await fetch(`${DIRECT_BACKEND}${path}`, { method, headers, body: formData })
+      try {
+        res = await fetchWithRetry(`${DIRECT_BACKEND}${path}`, requestOptions, 3)
+      } catch (fallbackErr) {
+        const err = new Error('Unable to connect to backend server. Please check your internet connection and try again.')
+        err.originalError = fallbackErr
+        throw err
+      }
     } else {
-      throw netErr
+      const err = new Error('Unable to connect to backend server. Please check your internet connection and try again.')
+      err.originalError = netErr
+      throw err
     }
   }
 
