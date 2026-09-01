@@ -79,20 +79,28 @@ function safeParseJson(text) {
   try { return JSON.parse(trimmed) } catch { return null }
 }
 
-async function fetchWithRetry(url, options, maxRetries = 3) {
+async function fetchWithRetry(url, options, maxRetries = 4) {
   let lastErr
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 25000)
+
     try {
-      const res = await fetch(url, options)
+      const res = await fetch(url, { ...options, signal: controller.signal })
+      clearTimeout(timeoutId)
+
       if ((res.status === 502 || res.status === 503 || res.status === 504) && attempt < maxRetries) {
-        await new Promise(r => setTimeout(r, 1200 * attempt))
+        console.warn(`[API Proxy ${res.status}] Warmup attempt ${attempt}/${maxRetries}. Retrying...`)
+        await new Promise(r => setTimeout(r, 1500 * attempt))
         continue
       }
       return res
     } catch (err) {
+      clearTimeout(timeoutId)
       lastErr = err
+      console.warn(`[API Fetch Attempt ${attempt}/${maxRetries} Failed]:`, err.name === 'AbortError' ? 'Timeout' : err.message)
       if (attempt < maxRetries) {
-        await new Promise(r => setTimeout(r, 1200 * attempt))
+        await new Promise(r => setTimeout(r, 1500 * attempt))
       }
     }
   }
@@ -129,18 +137,30 @@ async function request(method, path, body, isPublic = false) {
 
   let res
   try {
-    res = await fetchWithRetry(primaryUrl, requestOptions, 3)
+    res = await fetchWithRetry(primaryUrl, requestOptions, 4)
   } catch (netErr) {
     if (!primaryUrl.startsWith('http')) {
       try {
-        res = await fetchWithRetry(`${DIRECT_BACKEND}${path}`, requestOptions, 3)
+        res = await fetchWithRetry(`${DIRECT_BACKEND}${path}`, requestOptions, 2)
       } catch (fallbackErr) {
-        const err = new Error('Unable to connect to backend server. Please check your internet connection and try again.')
+        console.error('[API Connection Error]: Both Vercel proxy and direct connection failed.', fallbackErr)
+        const isTimeout = netErr?.name === 'AbortError' || fallbackErr?.name === 'AbortError'
+        const err = new Error(
+          isTimeout
+            ? 'Server is taking longer to respond. Please wait a moment and try again.'
+            : 'Unable to connect to backend server. Please check your network connection and try again.'
+        )
         err.originalError = fallbackErr
         throw err
       }
     } else {
-      const err = new Error('Unable to connect to backend server. Please check your internet connection and try again.')
+      console.error('[API Connection Error]: Direct connection failed.', netErr)
+      const isTimeout = netErr?.name === 'AbortError'
+      const err = new Error(
+        isTimeout
+          ? 'Server response timed out. Please try again in a few seconds.'
+          : 'Unable to connect to backend server. Please check your network connection and try again.'
+      )
       err.originalError = netErr
       throw err
     }
@@ -198,18 +218,30 @@ async function requestFormData(method, path, formData) {
 
   let res
   try {
-    res = await fetchWithRetry(primaryUrl, requestOptions, 3)
+    res = await fetchWithRetry(primaryUrl, requestOptions, 4)
   } catch (netErr) {
     if (!primaryUrl.startsWith('http')) {
       try {
-        res = await fetchWithRetry(`${DIRECT_BACKEND}${path}`, requestOptions, 3)
+        res = await fetchWithRetry(`${DIRECT_BACKEND}${path}`, requestOptions, 2)
       } catch (fallbackErr) {
-        const err = new Error('Unable to connect to backend server. Please check your internet connection and try again.')
+        console.error('[API Form Data Connection Error]: Both Vercel proxy and direct connection failed.', fallbackErr)
+        const isTimeout = netErr?.name === 'AbortError' || fallbackErr?.name === 'AbortError'
+        const err = new Error(
+          isTimeout
+            ? 'Server is taking longer to respond. Please wait a moment and try again.'
+            : 'Unable to connect to backend server. Please check your network connection and try again.'
+        )
         err.originalError = fallbackErr
         throw err
       }
     } else {
-      const err = new Error('Unable to connect to backend server. Please check your internet connection and try again.')
+      console.error('[API Form Data Connection Error]: Direct connection failed.', netErr)
+      const isTimeout = netErr?.name === 'AbortError'
+      const err = new Error(
+        isTimeout
+          ? 'Server response timed out. Please try again in a few seconds.'
+          : 'Unable to connect to backend server. Please check your network connection and try again.'
+      )
       err.originalError = netErr
       throw err
     }

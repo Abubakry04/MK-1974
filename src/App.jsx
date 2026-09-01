@@ -6,9 +6,14 @@ import Toast from './components/Toast'
 import SearchOverlay from './components/SearchOverlay'
 import BackToTop from './components/BackToTop'
 
+import { categories } from './api/apiClient'
+
 // Dismiss the HTML pre-React brand splash once the app has mounted
 function useDismissSplash(delayMs = 800) {
   useEffect(() => {
+    // Silently pre-warm backend server on initial app mount
+    categories.getAll().catch(() => {})
+
     const splash = document.getElementById('brand-splash')
     if (!splash) return
     const timer = setTimeout(() => {
