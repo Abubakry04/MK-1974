@@ -736,8 +736,8 @@ function extractOrderNumber(res) {
     }
 
     const itemsPayload = cart.map(item => {
-      // Find live product from state array to guarantee rawVariants is present
-      const liveProduct = products.find(p => String(p.id) === String(item.product?.id)) || item.product
+      // Find live product from mappedProducts state array to guarantee rawVariants is present
+      const liveProduct = mappedProducts.find(p => String(p.id) === String(item.product?.id)) || item.product
       const variantsArr = liveProduct?.rawVariants || liveProduct?.variants || item.product?.rawVariants || []
 
       const variant = variantsArr.find(v => {
@@ -802,7 +802,7 @@ function extractOrderNumber(res) {
     }
 
     return { orderNumber, createdData: createdFromApi }
-  }, [cart, cartTotal, user, apiColors, apiSizes, logout])
+  }, [cart, cartTotal, user, apiColors, apiSizes, mappedProducts, logout])
 
   const submitOrderPayment = useCallback(async (orderNumber, receiptFile, orderData) => {
     if (user?.token) {
