@@ -758,8 +758,11 @@ function extractOrderNumber(res) {
     const discountVal = orderData?.discount ?? orderData?.discountAmount ?? 0
     const finalTotal = orderData?.totalAmount ?? (cartTotal - discountVal)
 
+    const parsedId = parseInt(String(user?.id ?? '').replace(/\D/g, ''), 10)
+    const validUserId = (!isNaN(parsedId) && parsedId > 0) ? parsedId : 1
+
     const payload = {
-      userId: parseInt(user?.id) || 1,
+      userId: validUserId,
       items: itemsPayload
     }
 

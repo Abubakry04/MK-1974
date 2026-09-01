@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [react()],
 
   server: {
+    host: true,
     proxy: {
       '/api': {
         target: 'https://mk-brand-api.onrender.com',
