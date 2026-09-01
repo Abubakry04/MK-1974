@@ -531,34 +531,153 @@ export function AppProvider({ children }) {
 
   const googleLogin = useCallback(async (tokenResponse) => {
     try {
-      // tokenResponse comes from useGoogleLogin (implicit flow) and contains access_token
+      // ── 1. Get Google access token ─────────────────────────────────────────
       const accessToken = tokenResponse?.access_token
       if (!accessToken) throw new Error('No access token returned from Google.')
 
-      // Fetch user profile from Google's userinfo endpoint
+      // ── 2. Fetch user profile from Google ──────────────────────────────────
       const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
         headers: { Authorization: `Bearer ${accessToken}` },
       })
-      if (!res.ok) throw new Error('Failed to fetch Google user info.')
+      if (!res.ok) throw new Error('Failed to fetch Google profile.')
       const profile = await res.json()
 
+      const canonicalEmail = profile.email || ''
+      const firstName = profile.given_name  || profile.name?.split(' ')[0] || 'User'
+      const lastName  = profile.family_name || profile.name?.split(' ').slice(1).join(' ') || 'User'
+
+      // ── 3. Pull token from any backend response shape ──────────────────────
+      const extractToken = (data) => {
+        if (!data) return null
+        if (typeof data === 'string' && data.length > 20) return data
+        return data.token || data.accessToken || data.jwt || data.access_token || null
+      }
+
+      // ── 4. Check localStorage for a previously-working credential ─────────
+      //    On first success we save { email, pw } so future sign-ins are instant.
+      const CRED_KEY = `mk1974_gcred_${profile.sub}`
+      let storedCred = null
+      try { storedCred = JSON.parse(localStorage.getItem(CRED_KEY) || 'null') } catch {}
+
+      let backendResponse = null
+      let backendToken    = null
+
+      // Helper: attempt login, return token or null
+      const tryLogin = async (email, pw) => {
+        try {
+          const data = await api.auth.login({ email, password: pw })
+          return { response: data, token: extractToken(data) }
+        } catch { return null }
+      }
+
+      // Helper: attempt register, return token or null
+      const tryRegister = async (email, pw) => {
+        try {
+          const data = await api.auth.register({
+            firstName, lastName, email,
+            password:    pw,
+            phoneNumber: '0000000000',
+            role:        'Customer',
+          })
+          return { response: data, token: extractToken(data) }
+        } catch { return null }
+      }
+
+      // ── 5. FAST PATH: use stored credential ───────────────────────────────
+      if (storedCred?.email && storedCred?.pw) {
+        const result = await tryLogin(storedCred.email, storedCred.pw)
+        if (result?.token) {
+          backendResponse = result.response
+          backendToken    = result.token
+        } else {
+          // Stored cred stopped working (e.g. account deleted). Clear it and fall through.
+          localStorage.removeItem(CRED_KEY)
+        }
+      }
+
+      // ── 6. STANDARD PATH: canonical email + deterministic password ─────────
+      if (!backendToken) {
+        const pw = `Mk@${profile.sub.slice(-8)}1974!`
+
+        // Try login first (fastest for returning users on this password)
+        const loginResult = await tryLogin(canonicalEmail, pw)
+        if (loginResult?.token) {
+          backendResponse = loginResult.response
+          backendToken    = loginResult.token
+          localStorage.setItem(CRED_KEY, JSON.stringify({ email: canonicalEmail, pw }))
+        } else {
+          // Login failed → try to register a new account
+          const regResult = await tryRegister(canonicalEmail, pw)
+          if (regResult?.token) {
+            backendResponse = regResult.response
+            backendToken    = regResult.token
+            localStorage.setItem(CRED_KEY, JSON.stringify({ email: canonicalEmail, pw }))
+          }
+        }
+      }
+
+      // ── 7. LEGACY PATH: old password format ───────────────────────────────
+      if (!backendToken) {
+        const legacyPw = `GAuth_${profile.sub}_MK1974`
+        const result = await tryLogin(canonicalEmail, legacyPw)
+        if (result?.token) {
+          backendResponse = result.response
+          backendToken    = result.token
+          localStorage.setItem(CRED_KEY, JSON.stringify({ email: canonicalEmail, pw: legacyPw }))
+        }
+      }
+
+      // ── 8. FALLBACK PATH: Gmail plus-addressing ────────────────────────────
+      //    If the canonical email is taken with an unknown password (user registered
+      //    manually), use email+google@domain.com — Gmail delivers to same inbox,
+      //    backend treats it as a fresh address.
+      if (!backendToken) {
+        const [localPart, domain] = canonicalEmail.split('@')
+        const plusEmail = `${localPart}+google@${domain}`
+        const pw        = `Mk@${profile.sub.slice(-8)}1974!`
+
+        // Try login (plus account may already exist from a previous visit)
+        const loginResult = await tryLogin(plusEmail, pw)
+        if (loginResult?.token) {
+          backendResponse = loginResult.response
+          backendToken    = loginResult.token
+          localStorage.setItem(CRED_KEY, JSON.stringify({ email: plusEmail, pw }))
+        } else {
+          // Register with the plus email
+          const regResult = await tryRegister(plusEmail, pw)
+          if (regResult?.token) {
+            backendResponse = regResult.response
+            backendToken    = regResult.token
+            localStorage.setItem(CRED_KEY, JSON.stringify({ email: plusEmail, pw }))
+          }
+        }
+      }
+
+      // ── 9. All paths exhausted ─────────────────────────────────────────────
+      if (!backendToken) {
+        throw new Error('Google sign-in failed. Please try again or contact support.')
+      }
+
+      // ── 10. Build user object ──────────────────────────────────────────────
+      const decoded = parseJwtPayload(backendToken)
+      api.setToken(backendToken)
+
       const googleUser = {
-        id: `google_${profile.sub}`,
-        email: profile.email || '',
-        firstName: profile.given_name || profile.name?.split(' ')[0] || 'User',
-        lastName: profile.family_name || profile.name?.split(' ').slice(1).join(' ') || '',
-        picture: profile.picture || null,
-        phoneNumber: '',
-        phone: '',
-        role: 'Customer',
-        token: accessToken,
+        id:           decoded?.nameid || String(backendResponse?.userId || `g_${profile.sub}`),
+        email:        canonicalEmail,         // always show real Google email to user
+        firstName:    backendResponse?.firstName || firstName,
+        lastName:     backendResponse?.lastName  || lastName,
+        picture:      profile.picture || null,
+        phoneNumber:  backendResponse?.phoneNumber || '',
+        phone:        backendResponse?.phoneNumber || '',
+        role:         decoded?.role || backendResponse?.role || 'Customer',
+        token:        backendToken,
         authProvider: 'google',
       }
 
       setUser(googleUser)
       localStorage.setItem('mk1974_user', JSON.stringify(googleUser))
       sessionStorage.setItem('mk1974_user', JSON.stringify(googleUser))
-      api.setToken(accessToken)
       showToast(`Welcome, ${googleUser.firstName}! 👋`)
       return { success: true }
     } catch (err) {
@@ -567,7 +686,11 @@ export function AppProvider({ children }) {
     }
   }, [showToast])
 
+
   // ── Orders ──
+
+
+
   const [orders, setOrders] = useState([])
 
   // Load orders scoped to the logged-in user when user changes
