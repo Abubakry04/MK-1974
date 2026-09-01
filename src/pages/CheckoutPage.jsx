@@ -31,6 +31,7 @@ export default function CheckoutPage() {
   const [isCreatingOrder, setIsCreatingOrder] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [copiedAccount, setCopiedAccount] = useState(false)
+  const [paymentDetails, setPaymentDetails] = useState(null)
 
   const [form, setForm] = useState({
     firstName: user?.firstName || '',
@@ -77,8 +78,13 @@ export default function CheckoutPage() {
         totalAmount: total,
       }
       // Call POST /api/Order right here on Step 1!
-      const { orderNumber } = await createOrder(orderData)
+      const { orderNumber, createdData } = await createOrder(orderData)
       setCreatedOrderNumber(orderNumber)
+      // API returns { data: { ..., payment: {...} } } — unwrap the envelope
+      const payment =
+        createdData?.data?.payment || createdData?.data?.Payment ||
+        createdData?.payment    || createdData?.Payment    || null
+      if (payment) setPaymentDetails(payment)
       showToast(`Order created! Reference Order #${orderNumber}`, 'success')
       setStep(1)
     } catch (err) {
@@ -114,7 +120,9 @@ export default function CheckoutPage() {
   // }
 
   const handleCopyAccount = () => {
-    navigator.clipboard.writeText('0123456789')
+    const accountNum = paymentDetails?.accountNumber || paymentDetails?.AccountNumber || ''
+    if (!accountNum) return
+    navigator.clipboard.writeText(accountNum)
     setCopiedAccount(true)
     showToast('Account number copied!')
     setTimeout(() => setCopiedAccount(false), 3000)
@@ -135,9 +143,13 @@ export default function CheckoutPage() {
 
       let activeOrderNumber = createdOrderNumber
       if (!activeOrderNumber) {
-        const { orderNumber } = await createOrder(orderData)
+        const { orderNumber, createdData } = await createOrder(orderData)
         activeOrderNumber = orderNumber
         setCreatedOrderNumber(orderNumber)
+        const payment =
+          createdData?.data?.payment || createdData?.data?.Payment ||
+          createdData?.payment    || createdData?.Payment    || null
+        if (payment) setPaymentDetails(payment)
       }
 
       // Submit payment receipt to POST /api/Payment/submit with valid OrderNumber
@@ -416,24 +428,38 @@ export default function CheckoutPage() {
                           )}
                           <div className="flex justify-between items-center py-2 border-b border-white/5">
                             <span className="text-cream/50 text-xs">Bank Name</span>
-                            <span className="font-medium text-cream">Guaranty Trust Bank (GTBank)</span>
+                            <span className="font-medium text-cream">
+                              {paymentDetails?.bankName || paymentDetails?.BankName || '—'}
+                            </span>
                           </div>
                           <div className="flex justify-between items-center py-2 border-b border-white/5">
                             <span className="text-cream/50 text-xs">Account Name</span>
-                            <span className="font-medium text-cream">MK 1974 Apparel Ltd</span>
+                            <span className="font-medium text-cream">
+                              {paymentDetails?.accountName || paymentDetails?.AccountName || '—'}
+                            </span>
                           </div>
                           <div className="flex justify-between items-center py-2 border-b border-white/5">
                             <span className="text-cream/50 text-xs">Account Number</span>
                             <div className="flex items-center gap-3">
-                              <span className="font-mono text-base text-lime font-bold">0123456789</span>
-                              <button
-                                type="button"
-                                onClick={handleCopyAccount}
-                                className="text-xs px-2.5 py-1 bg-white/10 hover:bg-white/20 text-cream rounded transition-colors"
-                              >
-                                {copiedAccount ? 'Copied!' : 'Copy'}
-                              </button>
+                              <span className="font-mono text-base text-lime font-bold">
+                                {paymentDetails?.accountNumber || paymentDetails?.AccountNumber || '—'}
+                              </span>
+                              {(paymentDetails?.accountNumber || paymentDetails?.AccountNumber) && (
+                                <button
+                                  type="button"
+                                  onClick={handleCopyAccount}
+                                  className="text-xs px-2.5 py-1 bg-white/10 hover:bg-white/20 text-cream rounded transition-colors"
+                                >
+                                  {copiedAccount ? 'Copied!' : 'Copy'}
+                                </button>
+                              )}
                             </div>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-white/5">
+                            <span className="text-cream/50 text-xs">Payment Reference</span>
+                            <span className="font-mono text-xs text-lime font-semibold">
+                              {paymentDetails?.referenceCode || paymentDetails?.ReferenceCode || paymentDetails?.reference || '—'}
+                            </span>
                           </div>
                           <div className="flex justify-between items-center py-2">
                             <span className="text-cream/50 text-xs">Exact Amount to Pay</span>
