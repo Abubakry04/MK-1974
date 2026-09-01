@@ -128,7 +128,11 @@ async function request(method, path, body, isPublic = false) {
     headers['Authorization'] = `Bearer ${activeToken}`
   }
 
-  const primaryUrl = BASE_URL ? `${BASE_URL}${path}` : path
+  // Ensure relative path is used in browser to leverage Vercel / Vite proxy, unless BASE_URL is explicit
+  const primaryUrl = (typeof window !== 'undefined' && path.startsWith('/api') && !BASE_URL)
+    ? path
+    : (BASE_URL ? `${BASE_URL}${path}` : path)
+
   const requestOptions = {
     method,
     headers,
@@ -136,32 +140,36 @@ async function request(method, path, body, isPublic = false) {
   }
 
   let res
+  let primaryErr = null
   try {
-    res = await fetchWithRetry(primaryUrl, requestOptions, 4)
+    res = await fetchWithRetry(primaryUrl, requestOptions, 3)
   } catch (netErr) {
-    if (!primaryUrl.startsWith('http')) {
+    primaryErr = netErr
+    // If primary attempt failed (e.g. proxy timeout), try direct backend fallback
+    const directUrl = `${DIRECT_BACKEND}${path}`
+    if (primaryUrl !== directUrl) {
       try {
-        res = await fetchWithRetry(`${DIRECT_BACKEND}${path}`, requestOptions, 2)
+        res = await fetchWithRetry(directUrl, requestOptions, 2)
       } catch (fallbackErr) {
-        console.error('[API Connection Error]: Both Vercel proxy and direct connection failed.', fallbackErr)
-        const isTimeout = netErr?.name === 'AbortError' || fallbackErr?.name === 'AbortError'
+        console.error('[API Connection Error]: Primary & direct connections failed:', primaryErr, fallbackErr)
+        const isTimeout = primaryErr?.name === 'AbortError' || fallbackErr?.name === 'AbortError'
         const err = new Error(
           isTimeout
-            ? 'Server is taking longer to respond. Please wait a moment and try again.'
-            : 'Unable to connect to backend server. Please check your network connection and try again.'
+            ? 'Server response timed out. Render backend may be spinning up — please try again in a few seconds.'
+            : 'Unable to connect to backend server. Please check your internet connection and try again.'
         )
-        err.originalError = fallbackErr
+        err.originalError = fallbackErr || primaryErr
         throw err
       }
     } else {
-      console.error('[API Connection Error]: Direct connection failed.', netErr)
-      const isTimeout = netErr?.name === 'AbortError'
+      console.error('[API Connection Error]: Connection failed:', primaryErr)
+      const isTimeout = primaryErr?.name === 'AbortError'
       const err = new Error(
         isTimeout
           ? 'Server response timed out. Please try again in a few seconds.'
-          : 'Unable to connect to backend server. Please check your network connection and try again.'
+          : 'Unable to connect to backend server. Please check your internet connection and try again.'
       )
-      err.originalError = netErr
+      err.originalError = primaryErr
       throw err
     }
   }
@@ -213,36 +221,42 @@ async function requestFormData(method, path, formData) {
     headers['Authorization'] = `Bearer ${activeToken}`
   }
 
-  const primaryUrl = BASE_URL ? `${BASE_URL}${path}` : path
+  const primaryUrl = (typeof window !== 'undefined' && path.startsWith('/api') && !BASE_URL)
+    ? path
+    : (BASE_URL ? `${BASE_URL}${path}` : path)
+
   const requestOptions = { method, headers, body: formData }
 
   let res
+  let primaryErr = null
   try {
-    res = await fetchWithRetry(primaryUrl, requestOptions, 4)
+    res = await fetchWithRetry(primaryUrl, requestOptions, 3)
   } catch (netErr) {
-    if (!primaryUrl.startsWith('http')) {
+    primaryErr = netErr
+    const directUrl = `${DIRECT_BACKEND}${path}`
+    if (primaryUrl !== directUrl) {
       try {
-        res = await fetchWithRetry(`${DIRECT_BACKEND}${path}`, requestOptions, 2)
+        res = await fetchWithRetry(directUrl, requestOptions, 2)
       } catch (fallbackErr) {
-        console.error('[API Form Data Connection Error]: Both Vercel proxy and direct connection failed.', fallbackErr)
-        const isTimeout = netErr?.name === 'AbortError' || fallbackErr?.name === 'AbortError'
+        console.error('[API Form Data Connection Error]: Primary & direct connections failed:', primaryErr, fallbackErr)
+        const isTimeout = primaryErr?.name === 'AbortError' || fallbackErr?.name === 'AbortError'
         const err = new Error(
           isTimeout
-            ? 'Server is taking longer to respond. Please wait a moment and try again.'
-            : 'Unable to connect to backend server. Please check your network connection and try again.'
+            ? 'Server response timed out. Render backend may be spinning up — please try again in a few seconds.'
+            : 'Unable to connect to backend server. Please check your internet connection and try again.'
         )
-        err.originalError = fallbackErr
+        err.originalError = fallbackErr || primaryErr
         throw err
       }
     } else {
-      console.error('[API Form Data Connection Error]: Direct connection failed.', netErr)
-      const isTimeout = netErr?.name === 'AbortError'
+      console.error('[API Form Data Connection Error]: Connection failed:', primaryErr)
+      const isTimeout = primaryErr?.name === 'AbortError'
       const err = new Error(
         isTimeout
           ? 'Server response timed out. Please try again in a few seconds.'
-          : 'Unable to connect to backend server. Please check your network connection and try again.'
+          : 'Unable to connect to backend server. Please check your internet connection and try again.'
       )
-      err.originalError = netErr
+      err.originalError = primaryErr
       throw err
     }
   }
