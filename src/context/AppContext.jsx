@@ -736,26 +736,33 @@ function extractOrderNumber(res) {
     }
 
     const itemsPayload = cart.map(item => {
-      const variant = item.product.rawVariants?.find(v => {
+      // Find live product from state array to guarantee rawVariants is present
+      const liveProduct = products.find(p => String(p.id) === String(item.product?.id)) || item.product
+      const variantsArr = liveProduct?.rawVariants || liveProduct?.variants || item.product?.rawVariants || []
+
+      const variant = variantsArr.find(v => {
         const vColorName = v.color?.name || apiColors.find(c => String(c.colorId ?? c.id) === String(v.colorId))?.name
         const vSizeName = v.size?.name || apiSizes.find(s => String(s.sizeId ?? s.id) === String(v.sizeId))?.name
-        return vColorName?.toLowerCase() === item.color.toLowerCase() && vSizeName?.toLowerCase() === item.size.toLowerCase()
+        return (
+          (vColorName && item.color && vColorName.toLowerCase() === item.color.toLowerCase()) &&
+          (vSizeName && item.size && vSizeName.toLowerCase() === item.size.toLowerCase())
+        )
       })
 
-      // Resolve productVariantId — try matched variant first, then first available variant, else null
-      const productVariantId =
+      // Resolve productVariantId — try matched variant first, then first available variant in array
+      const resolvedVariantId =
         (variant?.productVariantId ?? variant?.id) ??
-        (item.product.rawVariants?.[0]?.productVariantId ?? item.product.rawVariants?.[0]?.id) ??
+        (variantsArr[0]?.productVariantId ?? variantsArr[0]?.id) ??
         null
 
       return {
-        productVariantId,
+        productVariantId: resolvedVariantId ? Number(resolvedVariantId) : null,
         quantity: item.qty,
         price: item.price,
         orderDate: new Date().toISOString()
       }
-    }).filter(i => i.productVariantId != null && Number(i.productVariantId) > 1)
-    // ^ strip items where no real server variant was found (fallback ID 1 = invalid)
+    }).filter(i => i.productVariantId != null && !isNaN(i.productVariantId) && i.productVariantId > 0)
+    // ^ strip items where no valid numeric server variant was resolved
 
     if (itemsPayload.length === 0) {
       throw new Error('None of the items in your cart have confirmed product variants. Please remove and re-add them.')
