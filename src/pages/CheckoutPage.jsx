@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
+import { categories } from '../api/apiClient'
 import Nav from '../components/Nav'
 import Footer from '../components/Footer'
 import usePageMeta from '../hooks/usePageMeta'
@@ -55,6 +56,8 @@ export default function CheckoutPage() {
         phone: f.phone || user.phoneNumber || '',
       }))
     }
+    // Proactively pre-warm backend server while user is filling shipping details
+    categories.getAll().catch(() => {})
   }, [user])
 
   const total = Math.max(0, cartTotal - discountAmount)
