@@ -33,6 +33,7 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [copiedAccount, setCopiedAccount] = useState(false)
   const [paymentDetails, setPaymentDetails] = useState(null)
+  const [orderError, setOrderError] = useState(null)
 
   const [form, setForm] = useState({
     firstName: user?.firstName || '',
@@ -66,6 +67,7 @@ export default function CheckoutPage() {
 
   const handleStep1 = async (e) => {
     e.preventDefault()
+    setOrderError(null)
     if (!form.firstName || !form.lastName || !form.email || !form.phone || !form.address || !form.city || !form.state) {
       showToast('Please fill in all required shipping fields', 'error')
       return
@@ -91,7 +93,9 @@ export default function CheckoutPage() {
       showToast(`Order created! Reference Order #${orderNumber}`, 'success')
       setStep(1)
     } catch (err) {
-      showToast('Order creation failed: ' + (err.message || 'Server error'), 'error')
+      const errorMsg = err.message || 'Server error'
+      setOrderError(errorMsg)
+      showToast('Order creation failed: ' + errorMsg, 'error')
     } finally {
       setIsCreatingOrder(false)
     }
@@ -133,6 +137,7 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = async () => {
     setIsSubmitting(true)
+    setOrderError(null)
     try {
       const orderData = {
         ...form,
@@ -160,7 +165,9 @@ export default function CheckoutPage() {
       showToast('Order and payment submitted successfully!', 'success')
       navigate(`/order-tracking/${order?.id || activeOrderNumber}`)
     } catch (e) {
-      showToast('Payment submission failed: ' + (e.message || 'Server error'), 'error')
+      const errorMsg = e.message || 'Server error'
+      setOrderError(errorMsg)
+      showToast('Payment submission failed: ' + errorMsg, 'error')
     } finally {
       setIsSubmitting(false)
     }
@@ -204,14 +211,34 @@ export default function CheckoutPage() {
               <span className="eyebrow block mb-1">MK 1974 Official Checkout</span>
               <h1 className="font-playfair italic font-black text-cream text-3xl sm:text-4xl">Checkout</h1>
             </div>
-            {/* <div className="flex items-center gap-2 text-xs text-cream/50 bg-white/5 px-3.5 py-2 rounded-full border border-white/10 w-fit">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-lime">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0110 0v4"/>
-              </svg>
-              <span>256-Bit SSL Encrypted Checkout</span>
-            </div> */}
           </div>
+
+          {/* Error Banner */}
+          {orderError && (
+            <div className="mb-8 p-4 sm:p-5 rounded-lg bg-red-950/90 border border-red-500/60 text-red-200 flex items-start gap-3 shadow-xl animate-fade-in">
+              <span className="text-2xl shrink-0">⚠️</span>
+              <div className="flex-1">
+                <p className="font-bold text-sm text-red-100 tracking-wide">
+                  {orderError.toLowerCase().includes('stock') ? 'Out of Stock Alert' : 'Checkout Issue'}
+                </p>
+                <p className="text-xs text-red-200 mt-1 leading-relaxed">{orderError}</p>
+                <div className="mt-3 flex items-center gap-3">
+                  <button
+                    onClick={() => navigate('/cart')}
+                    className="text-xs font-bold uppercase tracking-wider text-white bg-red-800/80 hover:bg-red-700 px-3 py-1.5 rounded transition-colors"
+                  >
+                    View Bag & Update Items
+                  </button>
+                  <button
+                    onClick={() => setOrderError(null)}
+                    className="text-xs text-red-300 hover:text-white underline"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Responsive Stepper */}
           <div className="max-w-2xl mx-auto mb-10">

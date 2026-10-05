@@ -735,6 +735,35 @@ function extractOrderNumber(res) {
       api.setToken(user.token)
     }
 
+    // Pre-check for out-of-stock items in cart
+    const outOfStockItems = []
+    cart.forEach(item => {
+      const liveProduct = mappedProducts.find(p => String(p.id) === String(item.product?.id)) || item.product
+      const variantsArr = liveProduct?.rawVariants || liveProduct?.variants || item.product?.rawVariants || []
+
+      const variant = variantsArr.find(v => {
+        const vColorName = v.color?.name || apiColors.find(c => String(c.colorId ?? c.id) === String(v.colorId))?.name
+        const vSizeName = v.size?.name || apiSizes.find(s => String(s.sizeId ?? s.id) === String(v.sizeId))?.name
+        return (
+          (vColorName && item.color && vColorName.toLowerCase() === item.color.toLowerCase()) &&
+          (vSizeName && item.size && vSizeName.toLowerCase() === item.size.toLowerCase())
+        )
+      })
+
+      const variantStock = variant?.stockQuantity ?? liveProduct?.stockQuantity ?? null
+      const isProductOutOfStock = liveProduct?.inStock === false || (liveProduct?.stockQuantity != null && liveProduct.stockQuantity <= 0)
+      const isVariantOutOfStock = variantStock != null && variantStock <= 0
+
+      if (isProductOutOfStock || isVariantOutOfStock) {
+        const label = `${liveProduct?.name || item.product?.name || 'Item'}` + (item.color || item.size ? ` (${item.color || ''} ${item.size || ''})`.trim() : '')
+        outOfStockItems.push(label)
+      }
+    })
+
+    if (outOfStockItems.length > 0) {
+      throw new Error(`Out of stock: ${outOfStockItems.join(', ')} is currently out of stock. Please remove out-of-stock items from your bag to proceed.`)
+    }
+
     const itemsPayload = cart.map(item => {
       // Find live product from mappedProducts state array to guarantee rawVariants is present
       const liveProduct = mappedProducts.find(p => String(p.id) === String(item.product?.id)) || item.product
@@ -780,7 +809,6 @@ function extractOrderNumber(res) {
       items: itemsPayload
     }
 
-
     let createdFromApi = null
     try {
       console.log('[POST /api/Order] Payload being sent:', JSON.stringify(payload, null, 2))
@@ -792,7 +820,16 @@ function extractOrderNumber(res) {
         logout()
         throw new Error('Your login session has expired. Please sign in again.')
       }
-      throw new Error(e.message || 'Failed to create order on server.')
+      const rawMsg = e.message || ''
+      const isStockErr = rawMsg.toLowerCase().includes('stock') ||
+                         rawMsg.toLowerCase().includes('quantity') ||
+                         rawMsg.toLowerCase().includes('inventory') ||
+                         rawMsg.toLowerCase().includes('available') ||
+                         e.status === 400 || e.status === 422
+      if (isStockErr && !rawMsg.toLowerCase().includes('connect') && !rawMsg.toLowerCase().includes('timed out')) {
+        throw new Error(rawMsg.toLowerCase().includes('stock') ? rawMsg : 'Out of stock: One or more products in your order are currently out of stock. Please update your bag and try again.')
+      }
+      throw new Error(rawMsg || 'Failed to create order on server.')
     }
 
     const orderNumber = extractOrderNumber(createdFromApi)

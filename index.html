@@ -55,24 +55,81 @@
         position: fixed;
         inset: 0;
         z-index: 9999;
-        background: #f5f4f0;
+        background: #0a0a0b;
+        background: radial-gradient(circle at center, rgba(35, 35, 40, 0.95) 0%, #0a0a0b 100%);
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        transition: opacity 0.5s ease, visibility 0.5s ease;
+        transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
+        font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+        color: #ffffff;
       }
       #brand-splash.fade-out {
         opacity: 0;
+        transform: scale(1.02);
         visibility: hidden;
         pointer-events: none;
       }
-      #brand-splash img {
-        width: 120px;
-        animation: splashPulse 1.4s ease-in-out infinite;
+      .splash-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        position: relative;
       }
-      @keyframes splashPulse {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50%       { opacity: 0.6; transform: scale(0.96); }
+      .splash-logo-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .splash-logo-wrap::after {
+        content: '';
+        position: absolute;
+        inset: -20px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+        animation: splashGlowPulse 2.4s ease-in-out infinite alternate;
+      }
+      #brand-splash img {
+        width: 140px;
+        height: auto;
+        filter: invert(1) brightness(1.1) drop-shadow(0 8px 25px rgba(255, 255, 255, 0.15));
+        animation: splashLogoPulse 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        user-select: none;
+      }
+      .splash-bar-track {
+        width: 130px;
+        height: 2px;
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 999px;
+        overflow: hidden;
+        position: relative;
+      }
+      .splash-bar-fill {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 45%;
+        background: linear-gradient(90deg, rgba(255,255,255,0.1), #ffffff, rgba(255,255,255,0.1));
+        border-radius: 999px;
+        animation: splashTrackIndeterminate 1.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+      }
+      @keyframes splashLogoPulse {
+        0% { transform: scale(1) translateY(0); opacity: 0.92; }
+        50% { transform: scale(1.04) translateY(-3px); opacity: 1; filter: invert(1) brightness(1.2) drop-shadow(0 12px 30px rgba(255, 255, 255, 0.25)); }
+        100% { transform: scale(1) translateY(0); opacity: 0.92; }
+      }
+      @keyframes splashGlowPulse {
+        0% { opacity: 0.4; transform: scale(0.9); }
+        100% { opacity: 0.85; transform: scale(1.15); }
+      }
+      @keyframes splashTrackIndeterminate {
+        0% { left: -45%; }
+        100% { left: 100%; }
       }
     </style>
 
@@ -127,7 +184,14 @@
   <body>
     <!-- Brand splash — removed by React after mount -->
     <div id="brand-splash">
-      <img src="/mk2.png" alt="MK 1974" />
+      <div class="splash-content">
+        <div class="splash-logo-wrap">
+          <img src="/mk2.png" alt="MK 1974" />
+        </div>
+        <div class="splash-bar-track">
+          <div class="splash-bar-fill"></div>
+        </div>
+      </div>
     </div>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>

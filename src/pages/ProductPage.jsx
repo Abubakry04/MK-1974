@@ -4,6 +4,7 @@ import { useApp } from '../context/AppContext'
 import Nav from '../components/Nav'
 import Footer from '../components/Footer'
 import usePageMeta from '../hooks/usePageMeta'
+import { getStockBadgeInfo } from '../hooks/useStockCounter'
 
 function StarRating({ rating, size = 14 }) {
   return (
@@ -200,16 +201,35 @@ export default function ProductPage() {
                 </h1>
 
                 {/* Rating & Stock */}
-                <div className="flex items-center gap-3 flex-wrap mb-4">
-                  <StarRating rating={product.rating || 5} />
-                  <span className="text-dark text-xs font-bold">{product.rating || 5.0}</span>
-                  <span className="text-dark/60 text-xs font-medium">({product.reviews || 0} reviews)</span>
-                  <span className="text-dark/20">•</span>
-                  <span className={`text-xs font-bold tracking-[0.15em] uppercase flex items-center gap-1.5 ${product.inStock ? 'text-emerald-600' : 'text-red-600'}`}>
-                    <span className="w-2 h-2 rounded-full bg-current inline-block" />
-                    {product.inStock ? 'In Stock' : 'Sold Out'}
-                  </span>
-                </div>
+                {(() => {
+                  const currentColor = product.colors?.[selectedColor]?.name
+                  const currentSize = selectedSize !== null ? product.sizes?.[selectedSize] : null
+                  const selectedVariant = (product.rawVariants || []).find(v => {
+                    const vColor = typeof v.color === 'object' ? v.color?.name : v.color
+                    const vSize = typeof v.size === 'object' ? v.size?.name : v.size
+                    return vColor && vSize && currentColor && currentSize &&
+                      String(vColor).toLowerCase() === String(currentColor).toLowerCase() &&
+                      String(vSize).toLowerCase() === String(currentSize).toLowerCase()
+                  })
+                  const stockInfo = getStockBadgeInfo(product, selectedVariant)
+
+                  return (
+                    <div className="flex items-center gap-3 flex-wrap mb-4">
+                      <StarRating rating={product.rating || 5} />
+                      <span className="text-dark text-xs font-bold">{product.rating || 5.0}</span>
+                      <span className="text-dark/60 text-xs font-medium">({product.reviews || 0} reviews)</span>
+                      <span className="text-dark/20">•</span>
+                      <span className={`text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider ${stockInfo.badgeBg}`}>
+                        {stockInfo.badgeText}
+                      </span>
+                      {stockInfo.isLowStock && (
+                        <span className="text-xs text-amber-700 font-semibold flex items-center gap-1 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                          ⚡ Only {stockInfo.availableQty} left in stock - order soon!
+                        </span>
+                      )}
+                    </div>
+                  )
+                })()}
 
                 {/* Price */}
                 <div className="flex items-baseline gap-3 mb-6">
@@ -319,25 +339,43 @@ export default function ProductPage() {
 
                 {/* CTAs */}
                 <div className="space-y-3 pt-2">
-                  <button
-                    id="add-to-cart-btn"
-                    onClick={handleAddToCart}
-                    disabled={!product.inStock}
-                    className="w-full py-4 bg-dark hover:bg-accent text-cream font-bold text-xs tracking-[0.2em] uppercase rounded-lg shadow-md transition-all flex items-center justify-center gap-3 disabled:opacity-40"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-                    <span>{product.inStock ? 'Add to Bag' : 'Sold Out'}</span>
-                  </button>
+                  {(() => {
+                    const currentColor = product.colors?.[selectedColor]?.name
+                    const currentSize = selectedSize !== null ? product.sizes?.[selectedSize] : null
+                    const selectedVariant = (product.rawVariants || []).find(v => {
+                      const vColor = typeof v.color === 'object' ? v.color?.name : v.color
+                      const vSize = typeof v.size === 'object' ? v.size?.name : v.size
+                      return vColor && vSize && currentColor && currentSize &&
+                        String(vColor).toLowerCase() === String(currentColor).toLowerCase() &&
+                        String(vSize).toLowerCase() === String(currentSize).toLowerCase()
+                    })
+                    const isVariantOutOfStock = selectedVariant != null && selectedVariant.stockQuantity <= 0
+                    const isOutOfStock = !product.inStock || (product.stockQuantity != null && product.stockQuantity <= 0) || isVariantOutOfStock
 
-                  {product.inStock && (
-                    <button
-                      id="buy-now-btn"
-                      onClick={handleBuyNow}
-                      className="w-full py-3.5 border border-black/20 hover:bg-dark hover:text-cream text-dark font-bold text-xs tracking-[0.2em] uppercase rounded-lg transition-all"
-                    >
-                      Buy Now
-                    </button>
-                  )}
+                    return (
+                      <>
+                        <button
+                          id="add-to-cart-btn"
+                          onClick={handleAddToCart}
+                          disabled={isOutOfStock}
+                          className="w-full py-4 bg-dark hover:bg-accent text-cream font-bold text-xs tracking-[0.2em] uppercase rounded-lg shadow-md transition-all flex items-center justify-center gap-3 disabled:opacity-40 disabled:hover:bg-dark"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                          <span>{!isOutOfStock ? 'Add to Bag' : 'Out of Stock'}</span>
+                        </button>
+
+                        {!isOutOfStock && (
+                          <button
+                            id="buy-now-btn"
+                            onClick={handleBuyNow}
+                            className="w-full py-3.5 border border-black/20 hover:bg-dark hover:text-cream text-dark font-bold text-xs tracking-[0.2em] uppercase rounded-lg transition-all"
+                          >
+                            Buy Now
+                          </button>
+                        )}
+                      </>
+                    )
+                  })()}
 
                   <button
                     onClick={() => toggleWishlist(product.id)}
